@@ -15,14 +15,14 @@ is the go-sql-driver:
 	import "database/sql"
 	import _ "github.com/go-sql-driver/mysql"
 
-	db, err := sql.Open("mysql", "user@cloudsql(project-id:instance-name)/dbname")
+	db, err := sql.Open("mysql", "user@cloudsql(INSTANCE_CONNECTION_NAME)/dbname")
 
 
 Another driver that works well with Clould SQL is the mymysql driver:
 	import "database/sql"
 	import _ "github.com/ziutek/mymysql/godrv"
 
-	db, err := sql.Open("mymysql", "cloudsql:instance-name*dbname/user/password")
+	db, err := sql.Open("mymysql", "cloudsql:INSTANCE_CONNECTION_NAME*dbname/user/password")
 
 
 Using either of these drivers, you can perform a standard SQL query.

@@ -211,41 +211,44 @@ func plural(n int, suffix string) string {
 }
 
 func buildApp(app *App) error {
-	newPackages, newRootPackages, err := constructRootPackageTree(app.RootPackages, maxRootPackageTreeImportsPerFile)
-	if err != nil {
-		return fmt.Errorf("failed creating import tree: %v", err)
-	}
-	app.Packages = append(app.Packages, newPackages...)
-	app.RootPackages = newRootPackages
-
-	defer func() {
-		for _, p := range newPackages {
-			for _, f := range p.Files {
-				os.Remove(f.Name)
-			}
+	if !app.HasMain {
+		newPackages, newRootPackages, err := constructRootPackageTree(app.RootPackages, maxRootPackageTreeImportsPerFile)
+		if err != nil {
+			return fmt.Errorf("failed creating import tree: %v", err)
 		}
-	}()
-	mainStr, err := MakeMain(app)
-	if err != nil {
-		return fmt.Errorf("failed creating main: %v", err)
-	}
-	mainFile := filepath.Join(*workDir, "_go_main.go")
-	defer os.Remove(mainFile)
-	if err := ioutil.WriteFile(mainFile, []byte(mainStr), 0640); err != nil {
-		return fmt.Errorf("failed writing main: %v", err)
-	}
-	app.Packages = append(app.Packages, &Package{
-		ImportPath: "main",
-		Files: []*File{
-			&File{
-				Name:        mainFile,
-				PackageName: "main",
-				// don't care about ImportPaths
+		app.Packages = append(app.Packages, newPackages...)
+		app.RootPackages = newRootPackages
+
+		defer func() {
+			for _, p := range newPackages {
+				for _, f := range p.Files {
+					os.Remove(f.Name)
+				}
+			}
+		}()
+
+		mainStr, err := MakeMain(app)
+		if err != nil {
+			return fmt.Errorf("failed creating main: %v", err)
+		}
+		mainFile := filepath.Join(*workDir, "_go_main.go")
+		defer os.Remove(mainFile)
+		if err := ioutil.WriteFile(mainFile, []byte(mainStr), 0640); err != nil {
+			return fmt.Errorf("failed writing main: %v", err)
+		}
+		app.Packages = append(app.Packages, &Package{
+			ImportPath: "main",
+			Files: []*File{
+				&File{
+					Name:        mainFile,
+					PackageName: "main",
+					// don't care about ImportPaths
+				},
 			},
-		},
-		Dependencies: app.RootPackages,
-		Synthetic:    true,
-	})
+			Dependencies: app.RootPackages,
+			Synthetic:    true,
+		})
+	}
 
 	// Prepare dependency channels.
 	for _, pkg := range app.Packages {
@@ -266,7 +269,6 @@ func buildApp(app *App) error {
 	// Compile phase.
 	c := &compiler{
 		app:              app,
-		mainFile:         mainFile,
 		goRootSearchPath: goRootSearchPath,
 		compiler:         toolPath("compile"),
 		env:              env,
@@ -366,7 +368,6 @@ func buildApp(app *App) error {
 
 type compiler struct {
 	app              *App
-	mainFile         string
 	goRootSearchPath string
 	compiler         string
 	env              []string

@@ -25,13 +25,9 @@ import logging
 import os
 import pickle
 import shutil
-import socket
-import sys
-import tempfile
 import threading
 import time
 import traceback
-import urllib2
 import urlparse
 
 import google
@@ -51,7 +47,6 @@ from google.appengine.api.files import file_service_stub
 from google.appengine.api.logservice import logservice_stub
 from google.appengine.api.search import simple_search_stub
 from google.appengine.api.taskqueue import taskqueue_stub
-from google.appengine.api.prospective_search import prospective_search_stub
 from google.appengine.api.memcache import memcache_stub
 from google.appengine.api.modules import modules_stub
 from google.appengine.api.remote_socket import _remote_socket_stub
@@ -67,6 +62,7 @@ from google.appengine.api import datastore
 from google.appengine.ext.remote_api import remote_api_pb
 from google.appengine.ext.remote_api import remote_api_services
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.tools.devappserver2 import metrics
 from google.appengine.tools.devappserver2 import wsgi_server
 
 
@@ -187,6 +183,10 @@ def _execute_request(request):
   else:
     with GLOBAL_API_LOCK:
       make_request()
+  metrics.GetMetricsLogger().LogOnceOnStop(
+      metrics.API_STUB_USAGE_CATEGORY,
+      metrics.API_STUB_USAGE_ACTION_TEMPLATE % service)
+
   return response_data
 
 
@@ -316,7 +316,6 @@ def setup_stubs(
     mail_enable_sendmail,
     mail_show_mail_body,
     mail_allow_tls,
-    matcher_prospective_search_path,
     search_index_path,
     taskqueue_auto_run_tasks,
     taskqueue_default_http_server,
@@ -373,8 +372,6 @@ def setup_stubs(
     mail_allow_tls: A bool indicating whether TLS should be allowed when
         communicating with an SMTP server. This argument is ignored if
         mail_smtp_host is None.
-    matcher_prospective_search_path: The path to the file that should be used to
-        save prospective search subscriptions.
     search_index_path: The path to the file that should be used for search index
         storage.
     taskqueue_auto_run_tasks: A bool indicating whether taskqueue tasks should
@@ -508,12 +505,6 @@ def setup_stubs(
       xmpp_service_stub.XmppServiceStub())
 
   apiproxy_stub_map.apiproxy.RegisterStub(
-      'matcher',
-      prospective_search_stub.ProspectiveSearchStub(
-          matcher_prospective_search_path,
-          apiproxy_stub_map.apiproxy.GetStub('taskqueue')))
-
-  apiproxy_stub_map.apiproxy.RegisterStub(
       'remote_socket',
       _remote_socket_stub.RemoteSocketServiceStub())
 
@@ -594,7 +585,6 @@ def test_setup_stubs(
     mail_enable_sendmail=False,
     mail_show_mail_body=False,
     mail_allow_tls=True,
-    matcher_prospective_search_path=os.devnull,
     search_index_path=None,
     taskqueue_auto_run_tasks=False,
     taskqueue_default_http_server='http://localhost:8080',
@@ -632,7 +622,6 @@ def test_setup_stubs(
               mail_enable_sendmail,
               mail_show_mail_body,
               mail_allow_tls,
-              matcher_prospective_search_path,
               search_index_path,
               taskqueue_auto_run_tasks,
               taskqueue_default_http_server,
