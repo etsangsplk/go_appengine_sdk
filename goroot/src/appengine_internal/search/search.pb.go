@@ -157,12 +157,14 @@ func (x *Entry_Permission) UnmarshalJSON(data []byte) error {
 type FieldValue_ContentType int32
 
 const (
-	FieldValue_TEXT   FieldValue_ContentType = 0
-	FieldValue_HTML   FieldValue_ContentType = 1
-	FieldValue_ATOM   FieldValue_ContentType = 2
-	FieldValue_DATE   FieldValue_ContentType = 3
-	FieldValue_NUMBER FieldValue_ContentType = 4
-	FieldValue_GEO    FieldValue_ContentType = 5
+	FieldValue_TEXT             FieldValue_ContentType = 0
+	FieldValue_HTML             FieldValue_ContentType = 1
+	FieldValue_ATOM             FieldValue_ContentType = 2
+	FieldValue_DATE             FieldValue_ContentType = 3
+	FieldValue_NUMBER           FieldValue_ContentType = 4
+	FieldValue_GEO              FieldValue_ContentType = 5
+	FieldValue_PREFIX           FieldValue_ContentType = 6
+	FieldValue_TOKENIZED_PREFIX FieldValue_ContentType = 7
 )
 
 var FieldValue_ContentType_name = map[int32]string{
@@ -172,14 +174,18 @@ var FieldValue_ContentType_name = map[int32]string{
 	3: "DATE",
 	4: "NUMBER",
 	5: "GEO",
+	6: "PREFIX",
+	7: "TOKENIZED_PREFIX",
 }
 var FieldValue_ContentType_value = map[string]int32{
-	"TEXT":   0,
-	"HTML":   1,
-	"ATOM":   2,
-	"DATE":   3,
-	"NUMBER": 4,
-	"GEO":    5,
+	"TEXT":             0,
+	"HTML":             1,
+	"ATOM":             2,
+	"DATE":             3,
+	"NUMBER":           4,
+	"GEO":              5,
+	"PREFIX":           6,
+	"TOKENIZED_PREFIX": 7,
 }
 
 func (x FieldValue_ContentType) Enum() *FieldValue_ContentType {
@@ -667,7 +673,7 @@ type FieldValue struct {
 	Type             *FieldValue_ContentType `protobuf:"varint,1,opt,name=type,enum=search.FieldValue_ContentType,def=0" json:"type,omitempty"`
 	Language         *string                 `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
 	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value" json:"string_value,omitempty"`
-	Geo              *FieldValue_Geo         `protobuf:"group,4,opt" json:"geo,omitempty"`
+	Geo              *FieldValue_Geo         `protobuf:"group,4,opt,name=Geo" json:"geo,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -1753,7 +1759,7 @@ func (m *ScorerSpec) GetMatchScorerParameters() string {
 
 type FieldSpec struct {
 	Name             []string                `protobuf:"bytes,1,rep,name=name" json:"name,omitempty"`
-	Expression       []*FieldSpec_Expression `protobuf:"group,2,rep" json:"expression,omitempty"`
+	Expression       []*FieldSpec_Expression `protobuf:"group,2,rep,name=Expression" json:"expression,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
