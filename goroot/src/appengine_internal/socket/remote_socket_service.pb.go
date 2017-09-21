@@ -1024,6 +1024,7 @@ type CreateSocketRequest struct {
 	RemoteIp         *AddressPort                        `protobuf:"bytes,6,opt,name=remote_ip" json:"remote_ip,omitempty"`
 	AppId            *string                             `protobuf:"bytes,9,opt,name=app_id" json:"app_id,omitempty"`
 	ProjectId        *int64                              `protobuf:"varint,10,opt,name=project_id" json:"project_id,omitempty"`
+	Pool             *string                             `protobuf:"bytes,11,opt,name=pool" json:"pool,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
@@ -1087,6 +1088,13 @@ func (m *CreateSocketRequest) GetProjectId() int64 {
 		return *m.ProjectId
 	}
 	return 0
+}
+
+func (m *CreateSocketRequest) GetPool() string {
+	if m != nil && m.Pool != nil {
+		return *m.Pool
+	}
+	return ""
 }
 
 type CreateSocketReply struct {

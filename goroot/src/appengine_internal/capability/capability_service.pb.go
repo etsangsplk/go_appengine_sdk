@@ -234,7 +234,7 @@ func (m *IsEnabledRequest) GetCall() []string {
 }
 
 type IsEnabledResponse struct {
-	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,req,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
+	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,opt,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
 	TimeUntilScheduled *int64                           `protobuf:"varint,2,opt,name=time_until_scheduled" json:"time_until_scheduled,omitempty"`
 	Config             []*CapabilityConfig              `protobuf:"bytes,3,rep,name=config" json:"config,omitempty"`
 	XXX_unrecognized   []byte                           `json:"-"`

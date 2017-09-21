@@ -5,9 +5,9 @@
 // Package blobstore provides a client for App Engine's persistent blob
 // storage service.
 //
-// Important: The Files API was deprecated on June 11, 2013 (v1.8.1) and will
-// be shut down soon, at which point the Create function and the Writer object
-// and its methods will no longer work. Instead, use
+// Important: The Files API was deprecated on June 11, 2013 (v1.8.1) and was shut
+// down on September 9, 2015, at which point the Create function and the Writer object
+// and its methods stopped working. Instead, use
 // Google Cloud Storage (https://cloud.google.com/storage/). For shutdown
 // timetable details, see Files API Service Turndown
 // (https://cloud.google.com/appengine/docs/deprecations/files_api).
@@ -15,8 +15,8 @@ package blobstore
 
 import (
 	"bufio"
-	"crypto/sha512"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -36,7 +36,6 @@ import (
 
 	basepb "appengine_internal/base"
 	blobpb "appengine_internal/blobstore"
-	filepb "appengine_internal/files"
 )
 
 const (
@@ -263,13 +262,12 @@ type Reader interface {
 	io.Seeker
 }
 
-// NewReader returns a reader for a blob. It always succeeds; if the blob does
-// not exist then an error will be reported upon first read.
+// NewReader returns a reader for a blob.
+// If blobKey is empty or the blob does not exist,
+// then an error will be reported upon first read.
 func NewReader(c appengine.Context, blobKey appengine.BlobKey) Reader {
 	return file.OpenBlob(c, blobKey)
 }
-
-const writeBufferSize = 256 * 1024
 
 // Writer is used for writing blobs.
 //
@@ -279,31 +277,9 @@ const writeBufferSize = 256 * 1024
 // Blobs aren't fully written until Close is called, at which point the key can
 // be retrieved by calling the Key method.
 type Writer struct {
-	c        appengine.Context
-	filename string
-
-	buf      []byte
-	writeErr error // set in flush
-
-	// set on Close:
-	closed   bool
-	closeErr error
-
-	// set on first Key:
-	blobKey appengine.BlobKey
 }
 
-// Verify that Writer implements the io.WriteCloser interface.
-var _ io.WriteCloser = (*Writer)(nil)
-
-// Prefix for all blobstore-based files.
-const blobstoreFileDirectory = "/blobstore/"
-
-// Prefix (after blobstoreFileDirectory) on all writable blob filenames.
-// The part that follows when this is present is the "creation handle",
-// which must then be looked up in datastore to find the blob once it's
-// been finalized.
-const creationHandlePrefix = "writable:"
+var errDeprecated = errors.New("deprecated: use the Google Cloud Storage API instead; see google.golang.org/cloud/storage")
 
 // Create begins creating a new blob.
 //
@@ -315,188 +291,23 @@ const creationHandlePrefix = "writable:"
 // should be written to, then closed, and then its Key method can be called to
 // retrieve the newly-created blob key if there were no errors.
 func Create(c appengine.Context, mimeType string) (*Writer, error) {
-	c, _ = appengine.Namespace(c, "") // Blobstore is always in the empty string namespace
-	if mimeType == "" {
-		mimeType = "application/octet-stream"
-	}
-	req := &filepb.CreateRequest{
-		Filesystem:  proto.String("blobstore"),
-		ContentType: filepb.FileContentType_RAW.Enum(),
-		Parameters: []*filepb.CreateRequest_Parameter{
-			{
-				Name:  proto.String("content_type"),
-				Value: proto.String(mimeType),
-			},
-		},
-	}
-	res := &filepb.CreateResponse{}
-	if err := c.Call("file", "Create", req, res, nil); err != nil {
-		return nil, err
-	}
-
-	w := &Writer{
-		c:        c,
-		filename: *res.Filename,
-	}
-	if !strings.HasPrefix(w.filename, blobstoreFileDirectory) {
-		return nil, errorf("unexpected filename from files service: %q", w.filename)
-	}
-
-	oreq := &filepb.OpenRequest{
-		Filename:      res.Filename,
-		ContentType:   filepb.FileContentType_RAW.Enum(),
-		OpenMode:      filepb.OpenRequest_APPEND.Enum(),
-		ExclusiveLock: proto.Bool(true),
-	}
-	ores := &filepb.OpenResponse{}
-	if err := c.Call("file", "Open", oreq, ores, nil); err != nil {
-		return nil, err
-	}
-	return w, nil
+	return nil, errDeprecated
 }
 
 func (w *Writer) Write(p []byte) (n int, err error) {
-	if w.closed {
-		return 0, errorf("Writer is already closed")
-	}
-	w.buf = append(w.buf, p...)
-	if len(w.buf) >= writeBufferSize {
-		w.flush()
-	}
-	return len(p), w.writeErr
-}
-
-// maxWriteChunkSize bounds our write RPC sizes.
-const maxWriteChunkSize = 16 << 20
-
-func (w *Writer) flush() {
-	for len(w.buf) > 0 {
-		chunk := w.buf
-		if len(chunk) > maxWriteChunkSize {
-			chunk = chunk[:maxWriteChunkSize]
-		}
-		req := &filepb.AppendRequest{
-			Filename: proto.String(w.filename),
-			Data:     chunk,
-		}
-		res := &filepb.AppendResponse{}
-		if err := w.c.Call("file", "Append", req, res, nil); err != nil {
-			w.writeErr = err
-			return
-		}
-		w.buf = w.buf[len(chunk):]
-	}
-	w.buf = nil
+	return 0, errDeprecated
 }
 
 // Close flushes outstanding buffered writes and finalizes the blob. After
 // calling Close the key can be retrieved by calling Key.
 func (w *Writer) Close() (closeErr error) {
-	defer func() {
-		// Save the error for Key
-		w.closeErr = closeErr
-	}()
-	if w.closed {
-		return errorf("Writer is already closed")
-	}
-	w.closed = true
-	w.flush()
-	if w.writeErr != nil {
-		return w.writeErr
-	}
-	req := &filepb.CloseRequest{
-		Filename: proto.String(w.filename),
-		Finalize: proto.Bool(true),
-	}
-	res := &filepb.CloseResponse{}
-	return w.c.Call("file", "Close", req, res, nil)
+	return errDeprecated
 }
 
 // Key returns the created blob key. It must be called after Close.
 // An error is returned if Close wasn't called or returned an error.
 func (w *Writer) Key() (appengine.BlobKey, error) {
-	if !w.closed {
-		return "", errorf("cannot call Key before Close")
-	}
-
-	if w.blobKey != "" {
-		return w.blobKey, w.closeErr
-	}
-
-	handle := w.filename[len(blobstoreFileDirectory):]
-	if !strings.HasPrefix(handle, creationHandlePrefix) {
-		w.blobKey = appengine.BlobKey(handle)
-		return w.blobKey, w.closeErr
-	}
-
-	k, err := w.keyNewWay(handle)
-	if err == nil {
-		w.blobKey = k
-		return k, nil
-	}
-
-	k, err = w.keyOldWay(handle)
-	if err == nil {
-		w.blobKey = k
-	}
-
-	return k, err
-}
-
-// blobFileIndexKeyName returns the key name for a __BlobFileIndex__ entity.
-//
-// Per the Python SDK's blobstore.py, we return the creationHandle directly
-// if it's under 500 bytes, else we return its hex SHA-512 value.
-func blobFileIndexKeyName(creationHandle string) string {
-	if len(creationHandle) < 500 {
-		return creationHandle
-	}
-	h := sha512.New()
-	io.WriteString(h, creationHandle)
-	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func (w *Writer) keyNewWay(handle string) (appengine.BlobKey, error) {
-	key := datastore.NewKey(w.c, blobFileIndexKind, blobFileIndexKeyName(handle), 0, nil)
-	var blobKey struct {
-		Value string `datastore:"blob_key"`
-	}
-	err := datastore.Get(w.c, key, &blobKey)
-	if err != nil && !isErrFieldMismatch(err) {
-		return zeroKey, err
-	}
-	if blobKey.Value == "" {
-		return zeroKey, errorf("no metadata for creation_handle %q", handle)
-	}
-
-	// Double-check that the BlobInfo actually exists.
-	// (Consistent with Python.)
-	key = datastore.NewKey(w.c, blobInfoKind, blobKey.Value, 0, nil)
-	var dummy datastore.PropertyList
-	err = datastore.Get(w.c, key, &dummy)
-	if err != nil {
-		return zeroKey, err
-	}
-	return appengine.BlobKey(blobKey.Value), nil
-}
-
-// keyOldWay looks up a blobkey from its creation_handle the old way:
-// by doing an query against __BlobInfo__ entities.  This is now
-// deprecated (corollary: the other way doesn't work yet), so we try
-// this only after the new way fails, like Python does.
-func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, error) {
-	query := datastore.NewQuery(blobInfoKind).
-		Filter("creation_handle =", handle).
-		KeysOnly().
-		Limit(1)
-	key, err := query.Run(w.c).Next(nil)
-	if err != nil {
-		if err != datastore.Done {
-			return "", errorf("error looking up __BlobInfo__ entity for creation_handle %q: %v", handle, err)
-		}
-		return "", errorf("didn't find __BlobInfo__ entity for creation_handle %q", handle)
-	}
-	return appengine.BlobKey(key.StringID()), w.closeErr
+	return "", errDeprecated
 }
 
 // BlobKeyForFile returns a BlobKey for a Google Storage file.
