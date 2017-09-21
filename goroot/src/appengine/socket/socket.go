@@ -17,7 +17,7 @@ import (
 	"appengine"
 	"appengine_internal"
 	pb "appengine_internal/socket"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 )
 
 // Dial connects to the address addr on the network protocol.

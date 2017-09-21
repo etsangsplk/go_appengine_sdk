@@ -32,7 +32,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"appengine/file"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 
 	basepb "appengine_internal/base"
 	blobpb "appengine_internal/blobstore"

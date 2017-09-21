@@ -57,7 +57,7 @@ import (
 	"appengine"
 	"appengine/user"
 	"appengine_internal"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 
 	basepb "appengine_internal/base"
 	remoteapipb "appengine_internal/remote_api"

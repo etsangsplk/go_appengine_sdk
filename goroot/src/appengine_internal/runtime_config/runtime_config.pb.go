@@ -20,7 +20,7 @@ It has these top-level messages:
 */
 package appengine_tools_devappserver2
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -28,6 +28,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type Config struct {
 	AppId            []byte        `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
@@ -462,4 +466,7 @@ func init() {
 	proto.RegisterType((*Library)(nil), "appengine.tools.devappserver2.Library")
 	proto.RegisterType((*Environ)(nil), "appengine.tools.devappserver2.Environ")
 	proto.RegisterType((*VMConfig)(nil), "appengine.tools.devappserver2.VMConfig")
+}
+
+func init() {
 }
