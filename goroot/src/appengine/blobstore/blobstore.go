@@ -10,7 +10,7 @@
 // and its methods will no longer work. Instead, use
 // Google Cloud Storage (https://cloud.google.com/storage/). For shutdown
 // timetable details, see Files API Service Turndown
-// (https:/cloud.google.com/appengine/docs/deprecations/files_api).
+// (https://cloud.google.com/appengine/docs/deprecations/files_api).
 package blobstore
 
 import (
