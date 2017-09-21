@@ -2,8 +2,8 @@
 
 package sys
 
-const DefaultGoroot = `/tmp/go_sdk088345691/appengine/go_appengine/goroot`
-const TheVersion = `1.6.3 (appengine-1.9.53)`
+const DefaultGoroot = `/tmp/go_sdk901727537/appengine/go_appengine/goroot`
+const TheVersion = `1.6.4 (appengine-1.9.54)`
 const Goexperiment = ``
 const StackGuardMultiplier = 1
 

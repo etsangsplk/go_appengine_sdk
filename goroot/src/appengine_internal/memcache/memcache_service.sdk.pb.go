@@ -229,7 +229,6 @@ const (
 	MemcacheDeleteResponse_DEADLINE_EXCEEDED MemcacheDeleteResponse_DeleteStatusCode = 3
 	MemcacheDeleteResponse_UNREACHABLE       MemcacheDeleteResponse_DeleteStatusCode = 4
 	MemcacheDeleteResponse_OTHER_ERROR       MemcacheDeleteResponse_DeleteStatusCode = 5
-	MemcacheDeleteResponse_CAS_MISMATCH      MemcacheDeleteResponse_DeleteStatusCode = 6
 )
 
 var MemcacheDeleteResponse_DeleteStatusCode_name = map[int32]string{
@@ -238,7 +237,6 @@ var MemcacheDeleteResponse_DeleteStatusCode_name = map[int32]string{
 	3: "DEADLINE_EXCEEDED",
 	4: "UNREACHABLE",
 	5: "OTHER_ERROR",
-	6: "CAS_MISMATCH",
 }
 var MemcacheDeleteResponse_DeleteStatusCode_value = map[string]int32{
 	"DELETED":           1,
@@ -246,7 +244,6 @@ var MemcacheDeleteResponse_DeleteStatusCode_value = map[string]int32{
 	"DEADLINE_EXCEEDED": 3,
 	"UNREACHABLE":       4,
 	"OTHER_ERROR":       5,
-	"CAS_MISMATCH":      6,
 }
 
 func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_DeleteStatusCode {
