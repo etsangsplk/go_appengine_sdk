@@ -107,9 +107,9 @@ func buildContext(goPath string) *build.Context {
 		GOOS:        build.Default.GOOS,
 		GOROOT:      *goRoot,
 		GOPATH:      goPath,
-		ReleaseTags: releaseTags(*apiVersion),
 		Compiler:    "gc",
 		BuildTags:   []string{"appengine"},
+		ReleaseTags: build.Default.ReleaseTags,
 	}
 	return ctxt
 }
@@ -117,11 +117,14 @@ func buildContext(goPath string) *build.Context {
 // ParseFiles parses the named files, deduces their package structure,
 // and returns the dependency DAG as an App.
 // Elements of filenames are considered relative to baseDir.
+// If ignoreReleaseTags is true, ParseFiles will include files (and their
+// dependencies) which would have been excluded because they included future
+// release tags.
 //
 // TODO: Add a check that applications based outside gopath do
 // not look like they're using vendoring: it doesn't work, and we don't want
 // to add confusion.
-func ParseFiles(baseDir string, filenames []string) (*App, error) {
+func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*App, error) {
 	// go/build.Import relies on baseDir being absolute to correctly
 	// evaluate vendored dependencies. appcfg.py passes it as a relative
 	// path.
@@ -239,7 +242,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			}
 		}
 		fs := appFilesInGOPATH(baseDir, *goPath, app)
-		if err := addFromGOPATH(app, re, fs); err != nil {
+		if err := addFromGOPATH(app, re, fs, ignoreReleaseTags); err != nil {
 			return nil, err
 		}
 	}
@@ -311,7 +314,7 @@ func validatePkgPaths(pkg *build.Package, appFilesInGOPATH map[string]bool) erro
 }
 
 // addFromGOPATH adds packages from GOPATH that are needed by the app.
-func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string]bool) error {
+func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string]bool, ignoreReleaseTags bool) error {
 	warned := make(map[string]bool)
 	for i := 0; i < len(app.Packages); i++ { // app.Packages is grown during this loop
 		p := app.Packages[i]
@@ -326,6 +329,9 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 				}
 				pkg, err := gopathPackage(path, p.SrcDir)
 				if err != nil {
+					if _, ok := app.PackageIndex[path]; ok {
+						continue // Don't warn for packages we've seen before.
+					}
 					if !warned[path] {
 						log.Printf("Can't find package %q in $GOPATH: %v", path, err)
 						warned[path] = true
@@ -338,6 +344,12 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 						continue
 					}
 					return fmt.Errorf("package %q is imported from multiple locations: %q and %q", path, p.SrcDir, pkg.Dir)
+				}
+				// If requested, expand the package to include ignored release tags.
+				if ignoreReleaseTags {
+					if err := expandIgnoringReleases(pkg); err != nil {
+						return err
+					}
 				}
 				// Check the package doesn't use files already in the app.
 				if err := validatePkgPaths(pkg, appFilesInGOPATH); err != nil {
@@ -587,6 +599,109 @@ func gopathPackage(s, srcDir string) (*build.Package, error) {
 	// Don't use FindOnly or AllowBinary because we want import information
 	// and we require the source files.
 	return ctxt.Import(s, srcDir, 0)
+}
+
+// findReleaseTagSets returns the set of release tags which might influence the
+// files chosen in the given package for future releases.
+func findReleaseTagsSet(pkg *build.Package) [][]string {
+	if len(pkg.IgnoredGoFiles) == 0 {
+		return nil // No files were ignored.
+	}
+
+	// minVersion is the smallest Go version we expect this application to
+	// build against (ie. the oldest Go version available in production).
+	// It's okay if it falls out of date: at worst we do more work and upload
+	// more files than necessary.
+	const minVersion = 4
+
+	// Find the all the go1.x tags which affected file selection
+	// (where x > minVersion).
+	const prefix = "go1."
+	vs := make(map[int]bool)
+	maxV := 0
+	for _, tag := range pkg.AllTags {
+		if !strings.HasPrefix(tag, prefix) {
+			continue
+		}
+		v, err := strconv.Atoi(tag[len(prefix):])
+		if err == nil && v > minVersion {
+			vs[v] = true
+			if v > maxV {
+				maxV = v
+			}
+		}
+	}
+	if maxV == 0 {
+		return nil
+	}
+
+	// Generate the sequence "go1.1", "go1.2", etc.
+	tags := make([]string, 0, maxV)
+	for i := 1; i <= maxV; i++ {
+		tags = append(tags, fmt.Sprintf("go1.%d", i))
+	}
+
+	// Generate the set of all relevant release tags.
+	allTags := [][]string{
+		tags[:minVersion], // Always add the minVersion as a baseline.
+	}
+	for v := range vs {
+		allTags = append(allTags, tags[:v])
+	}
+	return allTags
+}
+
+// expandIgnoringReleases expands the list of Go files and imports for the
+// given package by considering all relevant sets of release tags to satisfy
+// all possible future releases.
+func expandIgnoringReleases(pkg *build.Package) error {
+	tagsSet := findReleaseTagsSet(pkg)
+	if len(tagsSet) == 0 {
+		return nil
+	}
+
+	goFiles := make(map[string]bool, len(pkg.GoFiles))
+	imports := make(map[string]bool, len(pkg.Imports))
+	addToSet(goFiles, pkg.GoFiles)
+	addToSet(imports, pkg.Imports)
+
+	ctxt := buildContext(*goPath)
+	for _, tags := range tagsSet {
+		// NOTE: we could use ctxt.MatchFile against
+		// pkg.IgnoredGoFiles to check that this set of tags will have
+		// some effect before doing a full ImportDir if this approach
+		// proves to be too slow.
+		ctxt.ReleaseTags = tags
+
+		// Don't use FindOnly or AllowBinary because we want import information
+		// and we require the source files.
+		p, err := ctxt.ImportDir(pkg.Dir, 0)
+		if err != nil {
+			return err
+		}
+		addToSet(goFiles, p.GoFiles)
+		addToSet(imports, p.Imports)
+	}
+
+	pkg.GoFiles = pkg.GoFiles[:0]
+	for x := range goFiles {
+		pkg.GoFiles = append(pkg.GoFiles, x)
+	}
+	sort.Strings(pkg.GoFiles)
+	pkg.Imports = pkg.Imports[:0]
+	for x := range imports {
+		pkg.Imports = append(pkg.Imports, x)
+	}
+	sort.Strings(pkg.Imports)
+
+	return nil
+}
+
+// addToSet adds the strings from x to set.
+func addToSet(set map[string]bool, x []string) {
+	for _, s := range x {
+		set[s] = true
+	}
 }
 
 // topologicalSort sorts the given slice of *Package in topological order.
