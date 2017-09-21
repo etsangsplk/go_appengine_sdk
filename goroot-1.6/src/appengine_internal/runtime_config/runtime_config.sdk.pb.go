@@ -294,6 +294,7 @@ func (m *PhpConfig) GetXdebugExtensionPath() []byte {
 type PythonConfig struct {
 	StartupScript    *string `protobuf:"bytes,1,opt,name=startup_script,json=startupScript" json:"startup_script,omitempty"`
 	StartupArgs      *string `protobuf:"bytes,2,opt,name=startup_args,json=startupArgs" json:"startup_args,omitempty"`
+	GrpcProxyPort    *int32  `protobuf:"varint,3,opt,name=grpc_proxy_port,json=grpcProxyPort" json:"grpc_proxy_port,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -313,6 +314,13 @@ func (m *PythonConfig) GetStartupArgs() string {
 		return *m.StartupArgs
 	}
 	return ""
+}
+
+func (m *PythonConfig) GetGrpcProxyPort() int32 {
+	if m != nil && m.GrpcProxyPort != nil {
+		return *m.GrpcProxyPort
+	}
+	return 0
 }
 
 type JavaConfig struct {
