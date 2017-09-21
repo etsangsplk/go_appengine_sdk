@@ -48,6 +48,7 @@ type Package struct {
 	Synthetic    bool       // whether the package is a synthetic main or import tree package
 
 	compiled chan struct{} // closed when the package has finished compiling
+	hash     []byte        // a hash representing the package's sources and deps
 }
 
 func (p *Package) String() string {
@@ -109,7 +110,7 @@ func buildContext(goPath string) *build.Context {
 		GOPATH:      goPath,
 		Compiler:    "gc",
 		BuildTags:   []string{"appengine"},
-		ReleaseTags: build.Default.ReleaseTags,
+		ReleaseTags: releaseTags(*apiVersion),
 	}
 	return ctxt
 }
@@ -125,14 +126,6 @@ func buildContext(goPath string) *build.Context {
 // not look like they're using vendoring: it doesn't work, and we don't want
 // to add confusion.
 func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*App, error) {
-	// go/build.Import relies on baseDir being absolute to correctly
-	// evaluate vendored dependencies. appcfg.py passes it as a relative
-	// path.
-	baseDir, err := filepath.Abs(baseDir)
-	if err != nil {
-		return nil, err
-	}
-
 	app := &App{
 		PackageIndex: make(map[string]*Package),
 	}
@@ -171,6 +164,10 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 		if _, ok := err.(*build.NoGoError); ok {
 			// There were .go files, but they were all excluded (e.g. by "// +build ignore").
 			continue
+		}
+		if err, ok := err.(*build.MultiplePackageError); ok {
+			// Sanitize path.
+			err.Dir = rel(baseDir, err.Dir)
 		}
 		if err != nil {
 			return nil, fmt.Errorf("failed parsing dir %v: %v", dir, err)

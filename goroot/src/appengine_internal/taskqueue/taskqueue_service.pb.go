@@ -62,7 +62,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.ProtoPackageIsVersion1
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type TaskQueueServiceError_ErrorCode int32
 
@@ -338,8 +340,8 @@ func (m *TaskQueueServiceError) String() string { return proto.CompactTextString
 func (*TaskQueueServiceError) ProtoMessage()    {}
 
 type TaskPayload struct {
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *TaskPayload) Reset()         { *m = TaskPayload{} }
@@ -347,16 +349,16 @@ func (m *TaskPayload) String() string { return proto.CompactTextString(m) }
 func (*TaskPayload) ProtoMessage()    {}
 
 func (m *TaskPayload) Marshal() ([]byte, error) {
-	return proto.MarshalMessageSet(m.ExtensionMap())
+	return proto.MarshalMessageSet(&m.XXX_InternalExtensions)
 }
 func (m *TaskPayload) Unmarshal(buf []byte) error {
-	return proto.UnmarshalMessageSet(buf, m.ExtensionMap())
+	return proto.UnmarshalMessageSet(buf, &m.XXX_InternalExtensions)
 }
 func (m *TaskPayload) MarshalJSON() ([]byte, error) {
-	return proto.MarshalMessageSetJSON(m.XXX_extensions)
+	return proto.MarshalMessageSetJSON(&m.XXX_InternalExtensions)
 }
 func (m *TaskPayload) UnmarshalJSON(buf []byte) error {
-	return proto.UnmarshalMessageSetJSON(buf, m.XXX_extensions)
+	return proto.UnmarshalMessageSetJSON(buf, &m.XXX_InternalExtensions)
 }
 
 // ensure TaskPayload satisfies proto.Marshaler and proto.Unmarshaler
@@ -369,12 +371,6 @@ var extRange_TaskPayload = []proto.ExtensionRange{
 
 func (*TaskPayload) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_TaskPayload
-}
-func (m *TaskPayload) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 type TaskQueueRetryParameters struct {
