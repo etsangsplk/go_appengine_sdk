@@ -58,6 +58,7 @@ It has these top-level messages:
 	AddActionsResponse
 	BeginTransactionRequest
 	CommitResponse
+	GetIndicesRequest
 */
 package datastore
 
@@ -3221,6 +3222,30 @@ func (m *CommitResponse_Version) GetVersion() int64 {
 	return 0
 }
 
+type GetIndicesRequest struct {
+	AppId            *string `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	DatabaseId       *string `protobuf:"bytes,2,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *GetIndicesRequest) Reset()         { *m = GetIndicesRequest{} }
+func (m *GetIndicesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetIndicesRequest) ProtoMessage()    {}
+
+func (m *GetIndicesRequest) GetAppId() string {
+	if m != nil && m.AppId != nil {
+		return *m.AppId
+	}
+	return ""
+}
+
+func (m *GetIndicesRequest) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Action)(nil), "datastore.Action")
 	proto.RegisterType((*StringProto)(nil), "datastore.StringProto")
@@ -3289,6 +3314,7 @@ func init() {
 	proto.RegisterType((*BeginTransactionRequest)(nil), "datastore.BeginTransactionRequest")
 	proto.RegisterType((*CommitResponse)(nil), "datastore.CommitResponse")
 	proto.RegisterType((*CommitResponse_Version)(nil), "datastore.CommitResponse.Version")
+	proto.RegisterType((*GetIndicesRequest)(nil), "datastore.GetIndicesRequest")
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)
 	proto.RegisterEnum("datastore.EntityProto_Kind", EntityProto_Kind_name, EntityProto_Kind_value)
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)

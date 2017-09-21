@@ -253,37 +253,40 @@ func (i *instance) startChild() (err error) {
 		return err
 	}
 
-	// Wait until we have read the URLs of the API server and admin interface.
+	// Read stderr until we have read the URLs of the API server and admin interface.
 	errc := make(chan error, 1)
-	apic := make(chan string)
-	adminc := make(chan string)
 	go func() {
 		s := bufio.NewScanner(stderr)
 		for s.Scan() {
-			if match := apiServerAddrRE.FindSubmatch(s.Bytes()); match != nil {
-				apic <- string(match[1])
+			if match := apiServerAddrRE.FindStringSubmatch(s.Text()); match != nil {
+				i.apiURL = match[1]
 			}
-			if match := adminServerAddrRE.FindSubmatch(s.Bytes()); match != nil {
-				adminc <- string(match[1])
+			if match := adminServerAddrRE.FindStringSubmatch(s.Text()); match != nil {
+				i.adminURL = match[1]
+			}
+			if i.adminURL != "" && i.apiURL != "" {
+				break
 			}
 		}
-		if err = s.Err(); err != nil {
-			errc <- err
-		}
+		errc <- s.Err()
 	}()
 
-	for i.apiURL == "" || i.adminURL == "" {
-		select {
-		case i.apiURL = <-apic:
-		case i.adminURL = <-adminc:
-		case <-time.After(15 * time.Second):
-			if p := i.child.Process; p != nil {
-				p.Kill()
-			}
-			return errors.New("timeout starting child process")
-		case err := <-errc:
+	select {
+	case <-time.After(15 * time.Second):
+		if p := i.child.Process; p != nil {
+			p.Kill()
+		}
+		return errors.New("timeout starting child process")
+	case err := <-errc:
+		if err != nil {
 			return fmt.Errorf("error reading child process stderr: %v", err)
 		}
+	}
+	if i.adminURL == "" {
+		return errors.New("unable to find admin server URL")
+	}
+	if i.apiURL == "" {
+		return errors.New("unable to find API server URL")
 	}
 	return nil
 }

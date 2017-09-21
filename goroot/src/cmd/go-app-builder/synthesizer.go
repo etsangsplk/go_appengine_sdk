@@ -45,6 +45,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	{{end}}
 
 	// Top-level app packages
@@ -58,7 +59,11 @@ func main() {
 	internal.Main()
 	{{else}}
 	installHealthChecker()
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	port := "8080"
+	if s := os.Getenv("PORT"); s != "" {
+		port = s
+	}
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatalf("http.ListenAndServe: %v", err)
 	}
 	{{end}}
