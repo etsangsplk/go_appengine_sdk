@@ -416,6 +416,12 @@ class TimeZoneOffset(datetime.tzinfo):
       offset = total_seconds(offset) / 60
     self.__offset = offset
 
+  def __copy__(self):
+    return self.__class__(self.__offset)
+
+  def __deepcopy__(self, unused_memo):
+    return self.__class__(self.__offset)
+
   def utcoffset(self, dt):
     """Get the a timedelta with the time zone's offset from UTC.
 
