@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 )
 
 var (

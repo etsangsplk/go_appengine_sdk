@@ -59,10 +59,11 @@ It has these top-level messages:
 	BeginTransactionRequest
 	CommitResponse
 	GetIndicesRequest
+	DatastoreService_3
 */
 package datastore
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -70,6 +71,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type Property_Meaning int32
 
@@ -590,6 +595,81 @@ func (x *PutRequest_AutoIdPolicy) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type DatastoreService_3_Method int32
+
+const (
+	DatastoreService_3_Get              DatastoreService_3_Method = 1
+	DatastoreService_3_Put              DatastoreService_3_Method = 2
+	DatastoreService_3_Touch            DatastoreService_3_Method = 3
+	DatastoreService_3_Delete           DatastoreService_3_Method = 4
+	DatastoreService_3_RunQuery         DatastoreService_3_Method = 5
+	DatastoreService_3_AddActions       DatastoreService_3_Method = 6
+	DatastoreService_3_Next             DatastoreService_3_Method = 7
+	DatastoreService_3_DeleteCursor     DatastoreService_3_Method = 8
+	DatastoreService_3_BeginTransaction DatastoreService_3_Method = 9
+	DatastoreService_3_Commit           DatastoreService_3_Method = 10
+	DatastoreService_3_Rollback         DatastoreService_3_Method = 11
+	DatastoreService_3_AllocateIds      DatastoreService_3_Method = 12
+	DatastoreService_3_CreateIndex      DatastoreService_3_Method = 13
+	DatastoreService_3_UpdateIndex      DatastoreService_3_Method = 14
+	DatastoreService_3_GetIndices       DatastoreService_3_Method = 15
+	DatastoreService_3_DeleteIndex      DatastoreService_3_Method = 16
+)
+
+var DatastoreService_3_Method_name = map[int32]string{
+	1:  "Get",
+	2:  "Put",
+	3:  "Touch",
+	4:  "Delete",
+	5:  "RunQuery",
+	6:  "AddActions",
+	7:  "Next",
+	8:  "DeleteCursor",
+	9:  "BeginTransaction",
+	10: "Commit",
+	11: "Rollback",
+	12: "AllocateIds",
+	13: "CreateIndex",
+	14: "UpdateIndex",
+	15: "GetIndices",
+	16: "DeleteIndex",
+}
+var DatastoreService_3_Method_value = map[string]int32{
+	"Get":              1,
+	"Put":              2,
+	"Touch":            3,
+	"Delete":           4,
+	"RunQuery":         5,
+	"AddActions":       6,
+	"Next":             7,
+	"DeleteCursor":     8,
+	"BeginTransaction": 9,
+	"Commit":           10,
+	"Rollback":         11,
+	"AllocateIds":      12,
+	"CreateIndex":      13,
+	"UpdateIndex":      14,
+	"GetIndices":       15,
+	"DeleteIndex":      16,
+}
+
+func (x DatastoreService_3_Method) Enum() *DatastoreService_3_Method {
+	p := new(DatastoreService_3_Method)
+	*p = x
+	return p
+}
+func (x DatastoreService_3_Method) String() string {
+	return proto.EnumName(DatastoreService_3_Method_name, int32(x))
+}
+func (x *DatastoreService_3_Method) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(DatastoreService_3_Method_value, data, "DatastoreService_3_Method")
+	if err != nil {
+		return err
+	}
+	*x = DatastoreService_3_Method(value)
+	return nil
+}
+
 type Action struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -858,7 +938,7 @@ type PropertyValue_ReferenceValue struct {
 	App              *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
 	NameSpace        *string                                     `protobuf:"bytes,20,opt,name=name_space,json=nameSpace" json:"name_space,omitempty"`
 	Pathelement      []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement,json=pathelement" json:"pathelement,omitempty"`
-	Database         *string                                     `protobuf:"bytes,23,opt,name=database" json:"database,omitempty"`
+	DatabaseId       *string                                     `protobuf:"bytes,23,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	XXX_unrecognized []byte                                      `json:"-"`
 }
 
@@ -887,9 +967,9 @@ func (m *PropertyValue_ReferenceValue) GetPathelement() []*PropertyValue_Referen
 	return nil
 }
 
-func (m *PropertyValue_ReferenceValue) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *PropertyValue_ReferenceValue) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -1048,7 +1128,7 @@ type Reference struct {
 	App              *string `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
 	NameSpace        *string `protobuf:"bytes,20,opt,name=name_space,json=nameSpace" json:"name_space,omitempty"`
 	Path             *Path   `protobuf:"bytes,14,req,name=path" json:"path,omitempty"`
-	Database         *string `protobuf:"bytes,23,opt,name=database" json:"database,omitempty"`
+	DatabaseId       *string `protobuf:"bytes,23,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1077,9 +1157,9 @@ func (m *Reference) GetPath() *Path {
 	return nil
 }
 
-func (m *Reference) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *Reference) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -1329,7 +1409,7 @@ func (m *Index_Property) GetMode() Index_Property_Mode {
 
 type CompositeIndex struct {
 	AppId               *string                       `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
-	Database            *string                       `protobuf:"bytes,12,opt,name=database" json:"database,omitempty"`
+	DatabaseId          *string                       `protobuf:"bytes,12,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	Id                  *int64                        `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
 	Definition          *Index                        `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
 	State               *CompositeIndex_State         `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
@@ -1356,9 +1436,9 @@ func (m *CompositeIndex) GetAppId() string {
 	return ""
 }
 
-func (m *CompositeIndex) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *CompositeIndex) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -1585,7 +1665,7 @@ func (m *Snapshot) GetTs() int64 {
 type Transaction struct {
 	Handle           *uint64           `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
 	App              *string           `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
-	Database         *string           `protobuf:"bytes,6,opt,name=database" json:"database,omitempty"`
+	DatabaseId       *string           `protobuf:"bytes,6,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	MarkChanges      *bool             `protobuf:"varint,3,opt,name=mark_changes,json=markChanges,def=0" json:"mark_changes,omitempty"`
 	CompositeIndex   []*CompositeIndex `protobuf:"bytes,5,rep,name=composite_index,json=compositeIndex" json:"composite_index,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
@@ -1611,9 +1691,9 @@ func (m *Transaction) GetApp() string {
 	return ""
 }
 
-func (m *Transaction) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *Transaction) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -1634,7 +1714,7 @@ func (m *Transaction) GetCompositeIndex() []*CompositeIndex {
 
 type Query struct {
 	App                 *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
-	Database            *string           `protobuf:"bytes,42,opt,name=database" json:"database,omitempty"`
+	DatabaseId          *string           `protobuf:"bytes,42,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	NameSpace           *string           `protobuf:"bytes,29,opt,name=name_space,json=nameSpace" json:"name_space,omitempty"`
 	Kind                *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
 	Ancestor            *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
@@ -1680,9 +1760,9 @@ func (m *Query) GetApp() string {
 	return ""
 }
 
-func (m *Query) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *Query) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -2355,7 +2435,7 @@ func (m *CompiledCursor_Position_IndexValue) GetValue() *PropertyValue {
 type Cursor struct {
 	Cursor           *uint64 `protobuf:"fixed64,1,req,name=cursor" json:"cursor,omitempty"`
 	App              *string `protobuf:"bytes,2,opt,name=app" json:"app,omitempty"`
-	Database         *string `protobuf:"bytes,3,opt,name=database" json:"database,omitempty"`
+	DatabaseId       *string `protobuf:"bytes,3,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -2377,9 +2457,9 @@ func (m *Cursor) GetApp() string {
 	return ""
 }
 
-func (m *Cursor) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *Cursor) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -3143,7 +3223,7 @@ func (*AddActionsResponse) ProtoMessage()    {}
 type BeginTransactionRequest struct {
 	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
 	AllowMultipleEg  *bool   `protobuf:"varint,2,opt,name=allow_multiple_eg,json=allowMultipleEg,def=0" json:"allow_multiple_eg,omitempty"`
-	Database         *string `protobuf:"bytes,4,opt,name=database" json:"database,omitempty"`
+	DatabaseId       *string `protobuf:"bytes,4,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -3167,9 +3247,9 @@ func (m *BeginTransactionRequest) GetAllowMultipleEg() bool {
 	return Default_BeginTransactionRequest_AllowMultipleEg
 }
 
-func (m *BeginTransactionRequest) GetDatabase() string {
-	if m != nil && m.Database != nil {
-		return *m.Database
+func (m *BeginTransactionRequest) GetDatabaseId() string {
+	if m != nil && m.DatabaseId != nil {
+		return *m.DatabaseId
 	}
 	return ""
 }
@@ -3246,6 +3326,14 @@ func (m *GetIndicesRequest) GetDatabaseId() string {
 	return ""
 }
 
+type DatastoreService_3 struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *DatastoreService_3) Reset()         { *m = DatastoreService_3{} }
+func (m *DatastoreService_3) String() string { return proto.CompactTextString(m) }
+func (*DatastoreService_3) ProtoMessage()    {}
+
 func init() {
 	proto.RegisterType((*Action)(nil), "datastore.Action")
 	proto.RegisterType((*StringProto)(nil), "datastore.StringProto")
@@ -3315,6 +3403,7 @@ func init() {
 	proto.RegisterType((*CommitResponse)(nil), "datastore.CommitResponse")
 	proto.RegisterType((*CommitResponse_Version)(nil), "datastore.CommitResponse.Version")
 	proto.RegisterType((*GetIndicesRequest)(nil), "datastore.GetIndicesRequest")
+	proto.RegisterType((*DatastoreService_3)(nil), "datastore.DatastoreService_3")
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)
 	proto.RegisterEnum("datastore.EntityProto_Kind", EntityProto_Kind_name, EntityProto_Kind_value)
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)
@@ -3327,4 +3416,8 @@ func init() {
 	proto.RegisterEnum("datastore.Query_Order_Direction", Query_Order_Direction_name, Query_Order_Direction_value)
 	proto.RegisterEnum("datastore.Error_ErrorCode", Error_ErrorCode_name, Error_ErrorCode_value)
 	proto.RegisterEnum("datastore.PutRequest_AutoIdPolicy", PutRequest_AutoIdPolicy_name, PutRequest_AutoIdPolicy_value)
+	proto.RegisterEnum("datastore.DatastoreService_3_Method", DatastoreService_3_Method_name, DatastoreService_3_Method_value)
+}
+
+func init() {
 }

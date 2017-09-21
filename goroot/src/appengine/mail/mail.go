@@ -24,7 +24,7 @@ import (
 
 	"appengine"
 	"appengine_internal"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 
 	bpb "appengine_internal/base"
 	pb "appengine_internal/mail"

@@ -3,8 +3,12 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
-Version 1.9.31 - December 2015
-==============================
+Version 1.9.32 - January 2016
+=============================
+No changes.
+
+Version 1.9.31 - January 2016
+=============================
 appengine/aetest:
   - Fix a data race in NewInstance.
 

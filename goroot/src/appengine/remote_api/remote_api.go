@@ -20,7 +20,7 @@ import (
 	"appengine_internal"
 	pb "appengine_internal/remote_api"
 	userpb "appengine_internal/user"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 )
 
 func init() {

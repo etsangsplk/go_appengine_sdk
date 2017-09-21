@@ -51,7 +51,7 @@ It has these top-level messages:
 */
 package appengine
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -59,6 +59,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type TaskQueueServiceError_ErrorCode int32
 
@@ -1972,4 +1976,7 @@ func init() {
 	proto.RegisterEnum("appengine.TaskQueueMode_Mode", TaskQueueMode_Mode_name, TaskQueueMode_Mode_value)
 	proto.RegisterEnum("appengine.TaskQueueAddRequest_RequestMethod", TaskQueueAddRequest_RequestMethod_name, TaskQueueAddRequest_RequestMethod_value)
 	proto.RegisterEnum("appengine.TaskQueueQueryTasksResponse_Task_RequestMethod", TaskQueueQueryTasksResponse_Task_RequestMethod_name, TaskQueueQueryTasksResponse_Task_RequestMethod_value)
+}
+
+func init() {
 }

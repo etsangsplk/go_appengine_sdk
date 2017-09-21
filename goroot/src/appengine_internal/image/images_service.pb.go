@@ -30,7 +30,7 @@ It has these top-level messages:
 */
 package appengine
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -38,6 +38,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type ImagesServiceError_ErrorCode int32
 
@@ -930,4 +934,7 @@ func init() {
 	proto.RegisterEnum("appengine.InputSettings_ORIENTATION_CORRECTION_TYPE", InputSettings_ORIENTATION_CORRECTION_TYPE_name, InputSettings_ORIENTATION_CORRECTION_TYPE_value)
 	proto.RegisterEnum("appengine.OutputSettings_MIME_TYPE", OutputSettings_MIME_TYPE_name, OutputSettings_MIME_TYPE_value)
 	proto.RegisterEnum("appengine.CompositeImageOptions_ANCHOR", CompositeImageOptions_ANCHOR_name, CompositeImageOptions_ANCHOR_value)
+}
+
+func init() {
 }

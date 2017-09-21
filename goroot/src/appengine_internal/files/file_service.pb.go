@@ -54,7 +54,7 @@ It has these top-level messages:
 */
 package files
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -62,6 +62,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type FileServiceErrors_ErrorCode int32
 
@@ -1451,4 +1455,7 @@ func init() {
 	proto.RegisterEnum("files.ShuffleEnums_InputFormat", ShuffleEnums_InputFormat_name, ShuffleEnums_InputFormat_value)
 	proto.RegisterEnum("files.ShuffleEnums_OutputFormat", ShuffleEnums_OutputFormat_name, ShuffleEnums_OutputFormat_value)
 	proto.RegisterEnum("files.ShuffleEnums_Status", ShuffleEnums_Status_name, ShuffleEnums_Status_value)
+}
+
+func init() {
 }

@@ -23,7 +23,7 @@ It has these top-level messages:
 */
 package appengine
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -31,6 +31,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type AppIdentityServiceError_ErrorCode int32
 
@@ -308,4 +312,7 @@ func init() {
 	proto.RegisterType((*GetDefaultGcsBucketNameRequest)(nil), "appengine.GetDefaultGcsBucketNameRequest")
 	proto.RegisterType((*GetDefaultGcsBucketNameResponse)(nil), "appengine.GetDefaultGcsBucketNameResponse")
 	proto.RegisterEnum("appengine.AppIdentityServiceError_ErrorCode", AppIdentityServiceError_ErrorCode_name, AppIdentityServiceError_ErrorCode_value)
+}
+
+func init() {
 }
