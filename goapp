@@ -5,10 +5,10 @@
 # license that can be found in the LICENSE file.
 
 """Convenience wrapper for starting a Go tool in the App Engine SDK."""
+from __future__ import print_function
 
 import argparse
 import os
-import subprocess
 import sys
 
 SDK_BASE = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -52,6 +52,9 @@ def GetArgsAndArgv():
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument(
       '--dev_appserver', default=os.path.join(SDK_BASE, 'dev_appserver.py'))
+  parser.add_argument(
+      '--print-command', dest='print_command', default=False,
+      action='store_true')
   namespace, rest = parser.parse_known_args()
   flags = vars(namespace)
   rem = [sys.argv[0]]
@@ -140,8 +143,7 @@ if __name__ == '__main__':
 
   # Replace the path to this file with the path to the underlying tool
   new_argv[0] = tool
-  p = subprocess.Popen(new_argv, stdin=subprocess.PIPE, env=os.environ)
-  try:
-    p.wait()
-  except KeyboardInterrupt:
-    pass
+  if vals['print_command']:
+    print(' '.join(new_argv))
+  else:
+    os.execve(tool, new_argv, os.environ)
