@@ -3,10 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.37 - April 2016
+===========================
+This release is based on Go 1.6.1.
+
 Version 1.9.36 - April 2016
 ===========================
 Other:
-  - the SDK now ships with the cover tool. For details, run:
+  - The SDK now ships with the cover tool. For details, run:
     "goapp tool cover"
 
 Version 1.9.35 - March 2016
@@ -14,7 +18,7 @@ Version 1.9.35 - March 2016
 This release is based on Go 1.6.
 
 Other:
-  - applications inside a GOPATH workspace have support for
+  - Applications inside a GOPATH workspace have support for
     vendoring external dependencies. For details, see:
     https://golang.org/cmd/go/#hdr-Vendor_Directories
 

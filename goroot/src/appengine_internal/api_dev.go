@@ -93,10 +93,12 @@ func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	ctxsMu.Lock()
-	ctxs[r] = &httpContext{req: &creq}
+	ctx := &httpContext{req: &creq, done: make(chan struct{})}
+	ctxs[r] = ctx
 	ctxsMu.Unlock()
 
 	http.DefaultServeMux.ServeHTTP(w, r)
+	close(ctx.done)
 
 	ctxsMu.Lock()
 	delete(ctxs, r)
@@ -241,7 +243,8 @@ type context interface {
 // httpContext represents the context of an in-flight HTTP request.
 // It implements the appengine.Context interface.
 type httpContext struct {
-	req *http.Request
+	req  *http.Request
+	done chan struct{} // Closed when the context has expired.
 }
 
 func NewContext(req *http.Request) context {
@@ -276,6 +279,12 @@ func RegisterTestContext(req *http.Request, c context) func() {
 	}
 }
 
+var errExpired = &CallError{
+	Detail:  "invalid security ticket (context expired)",
+	Code:    3, // SECURITY_VIOLATION
+	Timeout: false,
+}
+
 func (c *httpContext) Call(service, method string, in, out ProtoMessage, opts *CallOptions) error {
 	if service == "__go__" {
 		if method == "GetNamespace" {
@@ -300,11 +309,24 @@ func (c *httpContext) Call(service, method string, in, out ProtoMessage, opts *C
 	if opts != nil && opts.Timeout != 0 {
 		d = opts.Timeout
 	}
-	res, err := call(service, method, data, requestID, d)
-	if err != nil {
+
+	errc := make(chan error, 1)
+	go func() {
+		res, err := call(service, method, data, requestID, d)
+		if err != nil {
+			errc <- err
+			return
+		}
+		errc <- proto.Unmarshal(res, out)
+	}()
+
+	select {
+	case err := <-errc:
 		return err
+	case <-c.done:
+		log.Printf("ERROR: context expired before API call %s/%s completed\nrequest URL: %v", service, method, c.req.URL)
+		return errExpired
 	}
-	return proto.Unmarshal(res, out)
 }
 
 func (c *httpContext) Request() interface{} {

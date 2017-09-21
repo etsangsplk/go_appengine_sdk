@@ -1718,6 +1718,7 @@ type Query struct {
 	NameSpace           *string           `protobuf:"bytes,29,opt,name=name_space,json=nameSpace" json:"name_space,omitempty"`
 	Kind                *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
 	Ancestor            *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
+	Shallow             *bool             `protobuf:"varint,43,opt,name=shallow" json:"shallow,omitempty"`
 	Filter              []*Query_Filter   `protobuf:"group,4,rep,name=Filter,json=filter" json:"filter,omitempty"`
 	SearchQuery         *string           `protobuf:"bytes,8,opt,name=search_query,json=searchQuery" json:"search_query,omitempty"`
 	Order               []*Query_Order    `protobuf:"group,9,rep,name=Order,json=order" json:"order,omitempty"`
@@ -1786,6 +1787,13 @@ func (m *Query) GetAncestor() *Reference {
 		return m.Ancestor
 	}
 	return nil
+}
+
+func (m *Query) GetShallow() bool {
+	if m != nil && m.Shallow != nil {
+		return *m.Shallow
+	}
+	return false
 }
 
 func (m *Query) GetFilter() []*Query_Filter {
@@ -2105,6 +2113,7 @@ type CompiledQuery struct {
 	KeysOnly          *bool                          `protobuf:"varint,12,req,name=keys_only,json=keysOnly" json:"keys_only,omitempty"`
 	PropertyName      []string                       `protobuf:"bytes,24,rep,name=property_name,json=propertyName" json:"property_name,omitempty"`
 	DistinctInfixSize *int32                         `protobuf:"varint,25,opt,name=distinct_infix_size,json=distinctInfixSize" json:"distinct_infix_size,omitempty"`
+	KeyPathLength     *int32                         `protobuf:"varint,27,opt,name=key_path_length,json=keyPathLength" json:"key_path_length,omitempty"`
 	Entityfilter      *CompiledQuery_EntityFilter    `protobuf:"group,13,opt,name=EntityFilter,json=entityfilter" json:"entityfilter,omitempty"`
 	PlanLabel         *string                        `protobuf:"bytes,26,opt,name=plan_label,json=planLabel" json:"plan_label,omitempty"`
 	XXX_unrecognized  []byte                         `json:"-"`
@@ -2168,6 +2177,13 @@ func (m *CompiledQuery) GetPropertyName() []string {
 func (m *CompiledQuery) GetDistinctInfixSize() int32 {
 	if m != nil && m.DistinctInfixSize != nil {
 		return *m.DistinctInfixSize
+	}
+	return 0
+}
+
+func (m *CompiledQuery) GetKeyPathLength() int32 {
+	if m != nil && m.KeyPathLength != nil {
+		return *m.KeyPathLength
 	}
 	return 0
 }

@@ -29,10 +29,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -65,7 +63,6 @@ var (
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
 	printExtrasHash = flag.Bool("print_extras_hash", false, "Whether to skip building and just print a hash of the extra-app files.")
-	printExtraPkgs  = flag.Bool("print_extra_packages", false, "Whether to skip building and just print extra-app packages.")
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
@@ -99,30 +96,6 @@ func fullArch(c string) string {
 	return "amd64"
 }
 
-var apiVersionBeta = regexp.MustCompile(`go1.(\d+)beta`)
-
-// Extracts the minor version (x) from an API version string if it is of the form "go1.xbeta"
-func betaVersion(apiVersion string) (v int, ok bool) {
-	if m := apiVersionBeta.FindStringSubmatch(apiVersion); m != nil {
-		v, err := strconv.Atoi(m[1])
-		return v, err == nil
-	}
-	return 0, false
-}
-
-func releaseTags(apiVersion string) []string {
-	v, ok := betaVersion(apiVersion)
-	if !ok {
-		v = 4 // we support up to go1.4
-	}
-
-	var tags []string
-	for i := 1; i <= v; i++ {
-		tags = append(tags, "go1."+strconv.Itoa(i))
-	}
-	return tags
-}
-
 func main() {
 	flag.Usage = usage
 	flag.Parse()
@@ -140,7 +113,13 @@ func main() {
 		log.SetOutput(f)
 	}
 
-	app, err := ParseFiles(*appBase, flag.Args())
+	// In printExtras mode, we want to include files that would have
+	// otherwise been ignored due to their release tags. This allows an
+	// SDK built on an older version of Go to upload the right files to
+	// upload with a later version of Go.
+	ignoreReleaseTags := *printExtras
+
+	app, err := ParseFiles(*appBase, flag.Args(), ignoreReleaseTags)
 	if err != nil {
 		if errl, ok := err.(scanner.ErrorList); ok {
 			log.Printf("go-app-builder: Failed parsing input (%d error%s)", len(errl), plural(len(errl), "s"))
@@ -158,10 +137,6 @@ func main() {
 	}
 	if *printExtrasHash {
 		printExtraFilesHash(os.Stdout, app)
-		return
-	}
-	if *printExtraPkgs {
-		printExtraPackages(os.Stdout, app)
 		return
 	}
 
@@ -244,7 +219,6 @@ func buildApp(app *App) error {
 		mainFile:         mainFile,
 		goRootSearchPath: goRootSearchPath,
 		compiler:         toolPath("compile"),
-		gopack:           toolPath("pack"),
 		env:              env,
 	}
 	if *extraImports != "" {
@@ -345,7 +319,6 @@ type compiler struct {
 	mainFile         string
 	goRootSearchPath string
 	compiler         string
-	gopack           string
 	env              []string
 	extra            []string
 
@@ -539,41 +512,6 @@ func printExtraFilesHash(w io.Writer, app *App) {
 		}
 	}
 	fmt.Fprintf(w, "%x", h.Sum(nil))
-}
-
-func printExtraPackages(w io.Writer, app *App) {
-	// Print all the packages that aren't in the app that look like they aren't in the standard library.
-	// This is a heuristic approach, but should be good enough for its intended use,
-	// namely finding the packages we need to fetch.
-	appPkgs, extPkgs := make(map[string]bool), make(map[string]bool)
-	for _, pkg := range app.Packages {
-		appPkgs[pkg.ImportPath] = true
-	}
-	for _, pkg := range app.Packages {
-		// Look at all the imports for all packages (even ones we get from GOPATH).
-		for _, f := range pkg.Files {
-			for _, imp := range f.ImportPaths {
-				if appPkgs[imp] {
-					// The imported path is in the app, or in GOPATH.
-					continue
-				}
-				// Heuristic: If an import path has no dot, assume it is in the standard library.
-				if !strings.Contains(imp, ".") {
-					continue
-				}
-				extPkgs[imp] = true
-			}
-		}
-	}
-
-	imps := make([]string, 0, len(extPkgs))
-	for imp := range extPkgs {
-		imps = append(imps, imp)
-	}
-	sort.Strings(imps)
-	for _, imp := range imps {
-		fmt.Fprintln(w, imp)
-	}
 }
 
 func toolPath(x string) string {
