@@ -907,6 +907,7 @@ _WHITE_LIST_C_MODULES = [
     'posix',  # Only indirectly through the os module.
     'pyexpat',
     '_random',
+    '_scproxy',  # Mac OS X compatibility
     '_sha256',  # Python2.5 compatibility
     '_sha512',  # Python2.5 compatibility
     '_sha',  # Python2.5 compatibility
