@@ -18,6 +18,7 @@ package main
 
 import (
 	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
@@ -284,9 +285,9 @@ func buildApp(app *App) error {
 	abortc := make(chan struct{}) // closed if we need to abort the build
 	sem := make(chan int, *parallelism)
 	var wg sync.WaitGroup
-	for i, pkg := range app.Packages {
+	for _, pkg := range app.Packages {
 		wg.Add(1)
-		go func(i int, pkg *Package) {
+		go func(pkg *Package) {
 			defer wg.Done()
 
 			// Wait for this package's dependencies to have been compiled.
@@ -305,7 +306,7 @@ func buildApp(app *App) error {
 				return
 			}
 
-			if err := c.compile(i, pkg); err != nil {
+			if err := c.compile(pkg); err != nil {
 				// We only care about the first compile to fail.
 				// If this error is the first, tell the others to abort.
 				select {
@@ -318,7 +319,7 @@ func buildApp(app *App) error {
 
 			// Mark this package as being compiled; unblocks dependent packages.
 			close(pkg.compiled)
-		}(i, pkg)
+		}(pkg)
 	}
 
 	// Wait for either a compile error, or for the main package to be compiled.
@@ -391,7 +392,7 @@ func (c *compiler) removeFiles() {
 	c.mu.Unlock()
 }
 
-func (c *compiler) compile(i int, pkg *Package) error {
+func (c *compiler) compile(pkg *Package) error {
 	objectFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
 	hashFile := filepath.Join(*workDir, pkg.ImportPath) + ".hash"
 	objectDir, _ := filepath.Split(objectFile)
@@ -453,7 +454,9 @@ func (c *compiler) compile(i int, pkg *Package) error {
 			if err != nil {
 				return fmt.Errorf("failed creating extra-imports file: %v", err)
 			}
-			extraImportsFile := filepath.Join(*workDir, fmt.Sprintf("_extra_imports_%d.go", i))
+			pkgImportPathHash := sha1.Sum([]byte(pkg.ImportPath))
+			extraImportsFileName := fmt.Sprintf("_extra_imports_%s.go", hex.EncodeToString(pkgImportPathHash[:]))
+			extraImportsFile := filepath.Join(*workDir, extraImportsFileName)
 			c.removeLater(extraImportsFile)
 			if err := ioutil.WriteFile(extraImportsFile, []byte(extraImportsStr), 0640); err != nil {
 				return fmt.Errorf("failed writing extra-imports file: %v", err)

@@ -62,6 +62,7 @@ from google.appengine.api import datastore
 from google.appengine.ext.remote_api import remote_api_pb
 from google.appengine.ext.remote_api import remote_api_services
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.tools.devappserver2 import errors
 from google.appengine.tools.devappserver2 import metrics
 from google.appengine.tools.devappserver2 import wsgi_server
 
@@ -118,12 +119,13 @@ def set_filesapi_enabled(enabled):
   _FILESAPI_ENABLED = enabled
 
 
-def _execute_request(request):
+def _execute_request(request, use_proto3=False):
   """Executes an API method call and returns the response object.
 
   Args:
     request: A remote_api_pb.Request object representing the API call e.g. a
         call to memcache.Get.
+    use_proto3: A boolean representing is request is in proto3.
 
   Returns:
     A ProtocolBuffer.ProtocolMessage representing the API response e.g. a
@@ -133,13 +135,22 @@ def _execute_request(request):
     apiproxy_errors.CallNotFoundError: if the requested method doesn't exist.
     apiproxy_errors.ApplicationError: if the API method calls fails.
   """
-  service = request.service_name()
-  method = request.method()
-  if request.has_request_id():
-    request_id = request.request_id()
+  if use_proto3:
+    service = request.service_name
+    method = request.method
+    if request.request_id:
+      request_id = request.request_id
+    else:
+      logging.error('Received a request without request_id: %s', request)
+      request_id = None
   else:
-    logging.error('Received a request without request_id: %s', request)
-    request_id = None
+    service = request.service_name()
+    method = request.method()
+    if request.has_request_id():
+      request_id = request.request_id()
+    else:
+      logging.error('Received a request without request_id: %s', request)
+      request_id = None
 
   service_methods = (_DATASTORE_V4_METHODS if service == 'datastore_v4'
                      else remote_api_services.SERVICE_PB_MAP.get(service, {}))
@@ -161,7 +172,10 @@ def _execute_request(request):
         % (service, method))
 
   request_data = request_class()
-  request_data.ParseFromString(request.request())
+  if use_proto3:
+    request_data.ParseFromString(request.request)
+  else:
+    request_data.ParseFromString(request.request())
   response_data = response_class()
   service_stub = apiproxy_stub_map.apiproxy.GetStub(service)
 
@@ -188,6 +202,55 @@ def _execute_request(request):
       metrics.API_STUB_USAGE_ACTION_TEMPLATE % service)
 
   return response_data
+
+
+class GRPCAPIServer(object):
+  """Serves API calls over GPC."""
+
+  def __init__(self, port):
+    self._port = port
+    self._stop = False
+    self._server = None
+
+  def _start_server(self):
+    """Starts gRPC API server."""
+    grpc_service_pb2 = __import__('google.appengine.tools.devappserver2.'
+                                  'grpc_service_pb2', globals(), locals(),
+                                  ['grpc_service_pb2'])
+
+    class CallHandler(grpc_service_pb2.BetaCallHandlerServicer):
+      """Handles gRPC method calls."""
+
+      def HandleCall(self, request, context):
+        api_response = _execute_request(request, use_proto3=True)
+        response = grpc_service_pb2.Response(response=api_response.Encode())
+        return response
+
+    self._server = grpc_service_pb2.beta_create_CallHandler_server(
+        CallHandler())
+
+    # add_insecure_port() returns positive port number when port allocation is
+    # successful. Otherwise it returns 0, and we handle the exception in start()
+    # from the caller thread.
+    # 'localhost' works with both ipv4 and ipv6.
+    self._port = self._server.add_insecure_port('localhost:' + str(self._port))
+    os.environ['GRPC_PORT'] = str(self._port)
+    if self._port:
+      logging.info('Starting GRPC_API_server at: http://localhost:%d',
+                   self._port)
+    self._server.start()
+
+  def start(self):
+    with threading.Lock():
+      self._server_thread = threading.Thread(target=self._start_server)
+      self._server_thread.start()
+      self._server_thread.join()
+      if not self._port:
+        raise errors.GrpcPortError('Error assigning grpc api port!')
+
+  def quit(self):
+    logging.info('Keyboard interrupting grpc_api_server')
+    self._server.stop(0)
 
 
 class APIServer(wsgi_server.WsgiServer):

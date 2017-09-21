@@ -616,6 +616,14 @@ def create_command_line_parser():
       '--api_port', type=PortParser(), default=0,
       help='port to which the server for API calls should bind')
   misc_group.add_argument(
+      '--grpc_api', action='append', dest='grpc_apis',
+      help='apis that talk grpc to api_server. For example: '
+      '--grpc_api memcache --grpc_api datastore. Setting --grpc_api all '
+      'lets every api talk grpc.')
+  misc_group.add_argument(
+      '--grpc_api_port', type=PortParser(), default=0,
+      help='port to which the server for grpc API calls should bind')
+  misc_group.add_argument(
       '--automatic_restart',
       action=boolean_action.BooleanAction,
       const=True,
@@ -803,12 +811,18 @@ class DevelopmentServer(object):
     if options.blobstore_warn_on_files_api_use:
       api_server.enable_filesapi_tracking(request_data)
 
-    apis = self._create_api_server(
+    apiserver = self._create_api_server(
         request_data, storage_path, options, configuration)
-    apis.start()
-    self._running_modules.append(apis)
+    apiserver.start()
+    self._running_modules.append(apiserver)
 
-    self._dispatcher.start(options.api_host, apis.port, request_data)
+    if options.grpc_apis:
+      grpc_apiserver = api_server.GRPCAPIServer(options.grpc_api_port)
+      grpc_apiserver.start()
+      self._running_modules.append(grpc_apiserver)
+
+    self._dispatcher.start(options.api_host, apiserver.port, request_data,
+                           options.grpc_apis)
 
     xsrf_path = os.path.join(storage_path, 'xsrf')
     admin = admin_server.AdminServer(options.admin_host, options.admin_port,
@@ -817,7 +831,7 @@ class DevelopmentServer(object):
     self._running_modules.append(admin)
     try:
       default = self._dispatcher.get_module_by_name('default')
-      apis.set_balanced_address(default.balanced_address)
+      apiserver.set_balanced_address(default.balanced_address)
     except request_info.ModuleDoesNotExistError:
       logging.warning('No default module found. Ignoring.')
 
@@ -848,7 +862,7 @@ class DevelopmentServer(object):
     if options.clear_search_indexes:
       _clear_search_indexes_storage(search_index_path)
 
-    if options.auto_id_policy==datastore_stub_util.SEQUENTIAL:
+    if options.auto_id_policy == datastore_stub_util.SEQUENTIAL:
       logging.warn("--auto_id_policy='sequential' is deprecated. This option "
                    "will be removed in a future release.")
 

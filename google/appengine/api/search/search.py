@@ -1920,10 +1920,13 @@ class Document(object):
 
     self._facet_map = None
 
-    doc_rank = rank
-    if doc_rank is None:
-      doc_rank = self._GetDefaultRank()
-    self._rank = self._CheckRank(doc_rank)
+    if rank is None:
+      rank = self._GetDefaultRank()
+      self._rank_defaulted = True
+    else:
+      self._rank_defaulted = False
+
+    self._rank = self._CheckRank(rank)
 
     _CheckDocument(self)
 
@@ -2070,6 +2073,14 @@ def _CopyDocumentToProtocolBuffer(document, pb):
     facet_pb = pb.add_facet()
     facet._CopyToProtocolBuffer(facet_pb)
   pb.set_order_id(document.rank)
+
+
+  if hasattr(document, '_rank_defaulted'):
+    if document._rank_defaulted:
+      pb.set_order_id_source(document_pb.Document.DEFAULTED)
+    else:
+      pb.set_order_id_source(document_pb.Document.SUPPLIED)
+
   return pb
 
 

@@ -82,6 +82,13 @@ def _run_file(file_path, globals_):
   """
   script_name = os.path.basename(file_path)
 
+
+
+
+
+  if '--grpc_api' in sys.argv:
+    _PATHS.add_grpc_path(script_name)
+
   sys.path = (_PATHS.script_paths(script_name) +
               _PATHS.scrub_path(script_name, sys.path))
 

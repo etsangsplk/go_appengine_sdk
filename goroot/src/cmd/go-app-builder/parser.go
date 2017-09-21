@@ -183,7 +183,8 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 			app.Files = append(app.Files, file)
 			pkgFiles[dir] = append(pkgFiles[dir], file)
 
-			if file.HasMain {
+			// Skip any main.main that isn't at the application root.
+			if file.HasMain && dir == "." {
 				app.HasMain = true
 			}
 		}
@@ -222,7 +223,7 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 			p.Dupe = true
 		}
 		for _, f := range files {
-			if f.HasMain {
+			if f.HasMain && filepath.Dir(f.Name) == "." {
 				p.IsMain = true
 			}
 			if f.HasInit {
@@ -236,12 +237,11 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 		}
 
 		if p.IsMain {
-			if dirname != "." {
-				return nil, fmt.Errorf("package main must be the top-level package")
-			}
 			for _, f := range files {
 				if f.HasMain && !f.callsAEMain {
-					return nil, fmt.Errorf("parser: found a top level package main with function main, but main does not call appengine.Main(); see https://godoc.org/google.golang.org/appengine#Main for more information")
+					return nil, fmt.Errorf("parser: found a top level package main with function main, " +
+						"but main does not call appengine.Main(); " +
+						"see https://godoc.org/google.golang.org/appengine#Main for more information")
 				}
 			}
 		}
@@ -914,7 +914,25 @@ func init() {
 	whitelist.UnkeyedLiteral["appengine/datastore.PropertyList"] = true
 	whitelist.UnkeyedLiteral["appengine.MultiError"] = true
 
-	// TODO: Figure out why this isn't getting picked up by the
-	// whitelist in third_party/go/vet/whitelist anymore.
+	// These were removed from go vet in
+	// https://go-review.googlesource.com/#/c/22318/ so we must keep a copy here.
+	whitelist.UnkeyedLiteral["crypto/x509/pkix.RDNSequence"] = true
+	whitelist.UnkeyedLiteral["crypto/x509/pkix.RelativeDistinguishedNameSET"] = true
+	whitelist.UnkeyedLiteral["database/sql.RawBytes"] = true
+	whitelist.UnkeyedLiteral["debug/macho.LoadBytes"] = true
+	whitelist.UnkeyedLiteral["encoding/asn1.ObjectIdentifier"] = true
+	whitelist.UnkeyedLiteral["encoding/asn1.RawContent"] = true
+	whitelist.UnkeyedLiteral["encoding/json.RawMessage"] = true
+	whitelist.UnkeyedLiteral["encoding/xml.CharData"] = true
+	whitelist.UnkeyedLiteral["encoding/xml.Comment"] = true
+	whitelist.UnkeyedLiteral["encoding/xml.Directive"] = true
+	whitelist.UnkeyedLiteral["go/scanner.ErrorList"] = true
+	whitelist.UnkeyedLiteral["image/color.Palette"] = true
+	whitelist.UnkeyedLiteral["net.HardwareAddr"] = true
 	whitelist.UnkeyedLiteral["net.IP"] = true
+	whitelist.UnkeyedLiteral["net.IPMask"] = true
+	whitelist.UnkeyedLiteral["sort.Float64Slice"] = true
+	whitelist.UnkeyedLiteral["sort.IntSlice"] = true
+	whitelist.UnkeyedLiteral["sort.StringSlice"] = true
+	whitelist.UnkeyedLiteral["unicode.SpecialCase"] = true
 }

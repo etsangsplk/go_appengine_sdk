@@ -136,20 +136,26 @@ func (x *PresenceResponse_SHOW) UnmarshalJSON(data []byte) error {
 type XmppMessageResponse_XmppMessageStatus int32
 
 const (
-	XmppMessageResponse_NO_ERROR    XmppMessageResponse_XmppMessageStatus = 0
-	XmppMessageResponse_INVALID_JID XmppMessageResponse_XmppMessageStatus = 1
-	XmppMessageResponse_OTHER_ERROR XmppMessageResponse_XmppMessageStatus = 2
+	XmppMessageResponse_NO_ERROR     XmppMessageResponse_XmppMessageStatus = 0
+	XmppMessageResponse_INVALID_JID  XmppMessageResponse_XmppMessageStatus = 1
+	XmppMessageResponse_OTHER_ERROR  XmppMessageResponse_XmppMessageStatus = 2
+	XmppMessageResponse_INVALID_XML  XmppMessageResponse_XmppMessageStatus = 3
+	XmppMessageResponse_INVALID_TYPE XmppMessageResponse_XmppMessageStatus = 4
 )
 
 var XmppMessageResponse_XmppMessageStatus_name = map[int32]string{
 	0: "NO_ERROR",
 	1: "INVALID_JID",
 	2: "OTHER_ERROR",
+	3: "INVALID_XML",
+	4: "INVALID_TYPE",
 }
 var XmppMessageResponse_XmppMessageStatus_value = map[string]int32{
-	"NO_ERROR":    0,
-	"INVALID_JID": 1,
-	"OTHER_ERROR": 2,
+	"NO_ERROR":     0,
+	"INVALID_JID":  1,
+	"OTHER_ERROR":  2,
+	"INVALID_XML":  3,
+	"INVALID_TYPE": 4,
 }
 
 func (x XmppMessageResponse_XmppMessageStatus) Enum() *XmppMessageResponse_XmppMessageStatus {

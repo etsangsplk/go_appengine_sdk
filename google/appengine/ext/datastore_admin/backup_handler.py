@@ -740,8 +740,8 @@ class BackupLinkHandler(webapp.RequestHandler):
 
       if ('X-AppEngine-TaskName' not in self.request.headers and
           'X-AppEngine-Cron' not in self.request.headers):
-        logging.critical('Scheduled backups must be started via task queue or '
-                         'cron.')
+        logging.error('Scheduled backups must be started via task queue or '
+                      'cron.')
         self.response.set_status(403)
         return
 
