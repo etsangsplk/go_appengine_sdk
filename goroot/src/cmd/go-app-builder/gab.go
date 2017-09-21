@@ -38,6 +38,15 @@ import (
 	"time"
 )
 
+const (
+	// go15 indicates that we're building using the 1.5 toolchain, which has
+	// different compiler/linker binary names uses different output file
+	// extensions.
+	// It may be set to true by the toolchain build.sh script.
+	// TODO: delete this flag once 1.4 is no longer used.
+	go15 = false
+)
+
 var (
 	apiVersion      = flag.String("api_version", "go1", "API version to build for.")
 	appBase         = flag.String("app_base", ".", "Path to app root. Command-line filenames are relative to this.")
@@ -156,18 +165,22 @@ func main() {
 	}
 
 	gTimer.name = *arch + "g"
-	pTimer.name = "gopack"
 	lTimer.name = *arch + "l"
 
+	if go15 {
+		gTimer.name = "compile"
+		lTimer.name = "link"
+	}
+
 	err = buildApp(app)
-	log.Printf("go-app-builder: build timing: %v, %v, %v", &gTimer, &pTimer, &lTimer)
+	log.Printf("go-app-builder: build timing: %v, %v", &gTimer, &lTimer)
 	if err != nil {
 		log.Fatalf("go-app-builder: %v", err)
 	}
 }
 
 // Timers that are manipulated in buildApp.
-var gTimer, pTimer, lTimer timer // manipulated in buildApp
+var gTimer, lTimer timer // manipulated in buildApp
 
 func plural(n int, suffix string) string {
 	if n == 1 {
@@ -209,17 +222,21 @@ func buildApp(app *App) error {
 		// Use a less efficient, but stricter malloc/free.
 		"MALLOC_CHECK_=3",
 	}
-	// Since we pass -I *workDir and -L *workDir to 6g and 6l respectively,
+	// Since we pass -I *workDir and -L *workDir to the compiler and linker respectively,
 	// we must also pass -I/-L $GOROOT/pkg/$GOOS_$GOARCH to them before that
 	// to ensure that the $GOROOT versions of dupe packages take precedence.
 	goRootSearchPath := filepath.Join(*goRoot, "pkg", runtime.GOOS+"_"+runtime.GOARCH)
 
 	// Compile phase.
+	compPath := toolPath(*arch + "g")
+	if go15 {
+		compPath = toolPath("compile")
+	}
 	c := &compiler{
 		app:              app,
 		mainFile:         mainFile,
 		goRootSearchPath: goRootSearchPath,
-		compiler:         toolPath(*arch + "g"),
+		compiler:         compPath,
 		gopack:           toolPath("pack"),
 		env:              env,
 	}
@@ -282,6 +299,10 @@ func buildApp(app *App) error {
 	// Link phase.
 	linker := toolPath(*arch + "l")
 	ext := "." + *arch
+	if go15 {
+		linker = toolPath("link")
+		ext = ".a"
+	}
 	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ext
 	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
@@ -346,7 +367,11 @@ func (c *compiler) removeFiles() {
 }
 
 func (c *compiler) compile(i int, pkg *Package) error {
-	objectFile := filepath.Join(*workDir, pkg.ImportPath) + "." + *arch
+	ext := "." + *arch
+	if go15 {
+		ext = ".a"
+	}
+	objectFile := filepath.Join(*workDir, pkg.ImportPath) + ext
 	objectDir, _ := filepath.Split(objectFile)
 	if err := os.MkdirAll(objectDir, 0750); err != nil {
 		return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
@@ -356,6 +381,9 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		"-I", c.goRootSearchPath,
 		"-I", *workDir,
 		"-o", objectFile,
+	}
+	if go15 {
+		args = append(args, "-pack")
 	}
 	if !*unsafe && !*vm {
 		// reject unsafe code

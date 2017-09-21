@@ -13,7 +13,6 @@ import (
 
 	"appengine"
 	blobpb "appengine_internal/blobstore"
-	filepb "appengine_internal/files"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -24,8 +23,9 @@ type BlobReader interface {
 	io.Seeker
 }
 
-// OpenBlob returns a reader for a blob. It always succeeds; if the blob does
-// not exist then an error will be reported upon first read.
+// OpenBlob returns a reader for a blob. BlobKey must not be empty.
+// If blobKey is empty or the blob does not exist,
+// then an error will be reported upon first read.
 func OpenBlob(c appengine.Context, blobKey appengine.BlobKey) BlobReader {
 	return &reader{
 		c:       c,
@@ -43,26 +43,7 @@ type FileReader interface {
 
 // Open opens a file for reading.
 func Open(c appengine.Context, filename string) (FileReader, error) {
-	oreq := &filepb.OpenRequest{
-		Filename:    &filename,
-		ContentType: filepb.FileContentType_RAW.Enum(),
-		OpenMode:    filepb.OpenRequest_READ.Enum(),
-	}
-	ores := &filepb.OpenResponse{}
-	if err := c.Call("file", "Open", oreq, ores, nil); err != nil {
-		return nil, err
-	}
-	r := &reader{
-		c:        c,
-		filename: filename,
-		closeFunc: func() {
-			creq := &filepb.CloseRequest{
-				Filename: oreq.Filename,
-			}
-			c.Call("file", "Close", creq, new(filepb.CloseResponse), nil)
-		},
-	}
-	return r, nil
+	return nil, errDeprecated
 }
 
 const readBufferSize = 256 * 1024
@@ -167,10 +148,10 @@ func (r *reader) Seek(offset int64, whence int) (ret int64, err error) {
 // fetch fetches readBufferSize bytes starting at the given offset. On success,
 // the data is saved as r.buf.
 func (r *reader) fetch(off int64) error {
-	if r.blobKey != "" {
-		return r.fetchBlobData(off)
+	if r.blobKey == "" {
+		return errors.New("empty blob key")
 	}
-	return r.fetchFileData(off)
+	return r.fetchBlobData(off)
 }
 
 func (r *reader) fetchBlobData(off int64) error {
@@ -181,23 +162,6 @@ func (r *reader) fetchBlobData(off int64) error {
 	}
 	res := &blobpb.FetchDataResponse{}
 	if err := r.c.Call("blobstore", "FetchData", req, res, nil); err != nil {
-		return err
-	}
-	if len(res.Data) == 0 {
-		return io.EOF
-	}
-	r.buf, r.r, r.off = res.Data, 0, off
-	return nil
-}
-
-func (r *reader) fetchFileData(off int64) error {
-	req := &filepb.ReadRequest{
-		Filename: proto.String(r.filename),
-		Pos:      proto.Int64(off),
-		MaxBytes: proto.Int64(readBufferSize),
-	}
-	res := &filepb.ReadResponse{}
-	if err := r.c.Call("file", "Read", req, res, nil); err != nil {
 		return err
 	}
 	if len(res.Data) == 0 {

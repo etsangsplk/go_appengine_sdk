@@ -163,7 +163,7 @@ func (m *GetDefaultVersionRequest) GetModule() string {
 }
 
 type GetDefaultVersionResponse struct {
-	Version          *string `protobuf:"bytes,1,req,name=version" json:"version,omitempty"`
+	Version          *string `protobuf:"bytes,1,opt,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -203,7 +203,7 @@ func (m *GetNumInstancesRequest) GetVersion() string {
 }
 
 type GetNumInstancesResponse struct {
-	Instances        *int64 `protobuf:"varint,1,req,name=instances" json:"instances,omitempty"`
+	Instances        *int64 `protobuf:"varint,1,opt,name=instances" json:"instances,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 

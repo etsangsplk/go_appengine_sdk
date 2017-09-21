@@ -1615,11 +1615,12 @@ func (m *InternalHeader) GetApiSettings() []byte {
 }
 
 type Transaction struct {
-	Header           *InternalHeader `protobuf:"bytes,4,opt,name=header" json:"header,omitempty"`
-	Handle           *uint64         `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
-	App              *string         `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
-	MarkChanges      *bool           `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	XXX_unrecognized []byte          `json:"-"`
+	Header           *InternalHeader   `protobuf:"bytes,4,opt,name=header" json:"header,omitempty"`
+	Handle           *uint64           `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
+	App              *string           `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
+	MarkChanges      *bool             `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	CompositeIndex   []*CompositeIndex `protobuf:"bytes,5,rep,name=composite_index" json:"composite_index,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (m *Transaction) Reset()         { *m = Transaction{} }
@@ -1654,6 +1655,13 @@ func (m *Transaction) GetMarkChanges() bool {
 		return *m.MarkChanges
 	}
 	return Default_Transaction_MarkChanges
+}
+
+func (m *Transaction) GetCompositeIndex() []*CompositeIndex {
+	if m != nil {
+		return m.CompositeIndex
+	}
+	return nil
 }
 
 type Query struct {
