@@ -32,6 +32,12 @@ It has these top-level messages:
 	ListDocumentsParams
 	ListDocumentsRequest
 	ListDocumentsResponse
+	DeleteIndexParams
+	DeleteIndexRequest
+	DeleteIndexResponse
+	CancelDeleteIndexParams
+	CancelDeleteIndexRequest
+	CancelDeleteIndexResponse
 	ListIndexesParams
 	ListIndexesRequest
 	ListIndexesResponse
@@ -401,6 +407,42 @@ func (x *IndexSpec_Mode) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = IndexSpec_Mode(value)
+	return nil
+}
+
+type IndexMetadata_IndexState int32
+
+const (
+	IndexMetadata_ACTIVE       IndexMetadata_IndexState = 0
+	IndexMetadata_SOFT_DELETED IndexMetadata_IndexState = 1
+	IndexMetadata_PURGING      IndexMetadata_IndexState = 2
+)
+
+var IndexMetadata_IndexState_name = map[int32]string{
+	0: "ACTIVE",
+	1: "SOFT_DELETED",
+	2: "PURGING",
+}
+var IndexMetadata_IndexState_value = map[string]int32{
+	"ACTIVE":       0,
+	"SOFT_DELETED": 1,
+	"PURGING":      2,
+}
+
+func (x IndexMetadata_IndexState) Enum() *IndexMetadata_IndexState {
+	p := new(IndexMetadata_IndexState)
+	*p = x
+	return p
+}
+func (x IndexMetadata_IndexState) String() string {
+	return proto.EnumName(IndexMetadata_IndexState_name, int32(x))
+}
+func (x *IndexMetadata_IndexState) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(IndexMetadata_IndexState_value, data, "IndexMetadata_IndexState")
+	if err != nil {
+		return err
+	}
+	*x = IndexMetadata_IndexState(value)
 	return nil
 }
 
@@ -1010,15 +1052,19 @@ func (m *IndexSpec) GetMode() IndexSpec_Mode {
 }
 
 type IndexMetadata struct {
-	IndexSpec        *IndexSpec             `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
-	Field            []*FieldTypes          `protobuf:"bytes,2,rep,name=field" json:"field,omitempty"`
-	Storage          *IndexMetadata_Storage `protobuf:"bytes,3,opt,name=storage" json:"storage,omitempty"`
-	XXX_unrecognized []byte                 `json:"-"`
+	IndexSpec        *IndexSpec                `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	Field            []*FieldTypes             `protobuf:"bytes,2,rep,name=field" json:"field,omitempty"`
+	Storage          *IndexMetadata_Storage    `protobuf:"bytes,3,opt,name=storage" json:"storage,omitempty"`
+	IndexState       *IndexMetadata_IndexState `protobuf:"varint,4,opt,name=index_state,enum=search.IndexMetadata_IndexState,def=0" json:"index_state,omitempty"`
+	IndexDeleteTime  *int64                    `protobuf:"varint,5,opt,name=index_delete_time" json:"index_delete_time,omitempty"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (m *IndexMetadata) Reset()         { *m = IndexMetadata{} }
 func (m *IndexMetadata) String() string { return proto.CompactTextString(m) }
 func (*IndexMetadata) ProtoMessage()    {}
+
+const Default_IndexMetadata_IndexState IndexMetadata_IndexState = IndexMetadata_ACTIVE
 
 func (m *IndexMetadata) GetIndexSpec() *IndexSpec {
 	if m != nil {
@@ -1039,6 +1085,20 @@ func (m *IndexMetadata) GetStorage() *IndexMetadata_Storage {
 		return m.Storage
 	}
 	return nil
+}
+
+func (m *IndexMetadata) GetIndexState() IndexMetadata_IndexState {
+	if m != nil && m.IndexState != nil {
+		return *m.IndexState
+	}
+	return Default_IndexMetadata_IndexState
+}
+
+func (m *IndexMetadata) GetIndexDeleteTime() int64 {
+	if m != nil && m.IndexDeleteTime != nil {
+		return *m.IndexDeleteTime
+	}
+	return 0
 }
 
 type IndexMetadata_Storage struct {
@@ -1306,6 +1366,118 @@ func (m *ListDocumentsResponse) GetStatus() *RequestStatus {
 func (m *ListDocumentsResponse) GetDocument() []*Document {
 	if m != nil {
 		return m.Document
+	}
+	return nil
+}
+
+type DeleteIndexParams struct {
+	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
+}
+
+func (m *DeleteIndexParams) Reset()         { *m = DeleteIndexParams{} }
+func (m *DeleteIndexParams) String() string { return proto.CompactTextString(m) }
+func (*DeleteIndexParams) ProtoMessage()    {}
+
+func (m *DeleteIndexParams) GetIndexSpec() *IndexSpec {
+	if m != nil {
+		return m.IndexSpec
+	}
+	return nil
+}
+
+type DeleteIndexRequest struct {
+	Params           *DeleteIndexParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
+	AppId            []byte             `protobuf:"bytes,2,opt,name=app_id" json:"app_id,omitempty"`
+	XXX_unrecognized []byte             `json:"-"`
+}
+
+func (m *DeleteIndexRequest) Reset()         { *m = DeleteIndexRequest{} }
+func (m *DeleteIndexRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteIndexRequest) ProtoMessage()    {}
+
+func (m *DeleteIndexRequest) GetParams() *DeleteIndexParams {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+func (m *DeleteIndexRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
+	}
+	return nil
+}
+
+type DeleteIndexResponse struct {
+	Status           *RequestStatus `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
+}
+
+func (m *DeleteIndexResponse) Reset()         { *m = DeleteIndexResponse{} }
+func (m *DeleteIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteIndexResponse) ProtoMessage()    {}
+
+func (m *DeleteIndexResponse) GetStatus() *RequestStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+type CancelDeleteIndexParams struct {
+	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
+}
+
+func (m *CancelDeleteIndexParams) Reset()         { *m = CancelDeleteIndexParams{} }
+func (m *CancelDeleteIndexParams) String() string { return proto.CompactTextString(m) }
+func (*CancelDeleteIndexParams) ProtoMessage()    {}
+
+func (m *CancelDeleteIndexParams) GetIndexSpec() *IndexSpec {
+	if m != nil {
+		return m.IndexSpec
+	}
+	return nil
+}
+
+type CancelDeleteIndexRequest struct {
+	Params           *CancelDeleteIndexParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
+	AppId            []byte                   `protobuf:"bytes,2,opt,name=app_id" json:"app_id,omitempty"`
+	XXX_unrecognized []byte                   `json:"-"`
+}
+
+func (m *CancelDeleteIndexRequest) Reset()         { *m = CancelDeleteIndexRequest{} }
+func (m *CancelDeleteIndexRequest) String() string { return proto.CompactTextString(m) }
+func (*CancelDeleteIndexRequest) ProtoMessage()    {}
+
+func (m *CancelDeleteIndexRequest) GetParams() *CancelDeleteIndexParams {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+func (m *CancelDeleteIndexRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
+	}
+	return nil
+}
+
+type CancelDeleteIndexResponse struct {
+	Status           *RequestStatus `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
+}
+
+func (m *CancelDeleteIndexResponse) Reset()         { *m = CancelDeleteIndexResponse{} }
+func (m *CancelDeleteIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*CancelDeleteIndexResponse) ProtoMessage()    {}
+
+func (m *CancelDeleteIndexResponse) GetStatus() *RequestStatus {
+	if m != nil {
+		return m.Status
 	}
 	return nil
 }
@@ -2130,6 +2302,7 @@ func init() {
 	proto.RegisterEnum("search.IndexSpec_Consistency", IndexSpec_Consistency_name, IndexSpec_Consistency_value)
 	proto.RegisterEnum("search.IndexSpec_Source", IndexSpec_Source_name, IndexSpec_Source_value)
 	proto.RegisterEnum("search.IndexSpec_Mode", IndexSpec_Mode_name, IndexSpec_Mode_value)
+	proto.RegisterEnum("search.IndexMetadata_IndexState", IndexMetadata_IndexState_name, IndexMetadata_IndexState_value)
 	proto.RegisterEnum("search.IndexDocumentParams_Freshness", IndexDocumentParams_Freshness_name, IndexDocumentParams_Freshness_value)
 	proto.RegisterEnum("search.ScorerSpec_Scorer", ScorerSpec_Scorer_name, ScorerSpec_Scorer_value)
 	proto.RegisterEnum("search.SearchParams_CursorType", SearchParams_CursorType_name, SearchParams_CursorType_value)

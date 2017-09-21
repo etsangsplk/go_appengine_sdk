@@ -25,6 +25,7 @@ var _ = math.Inf
 type CapabilityConfig_Status int32
 
 const (
+	CapabilityConfig_DEFAULT   CapabilityConfig_Status = 0
 	CapabilityConfig_ENABLED   CapabilityConfig_Status = 1
 	CapabilityConfig_SCHEDULED CapabilityConfig_Status = 2
 	CapabilityConfig_DISABLED  CapabilityConfig_Status = 3
@@ -32,12 +33,14 @@ const (
 )
 
 var CapabilityConfig_Status_name = map[int32]string{
+	0: "DEFAULT",
 	1: "ENABLED",
 	2: "SCHEDULED",
 	3: "DISABLED",
 	4: "UNKNOWN",
 }
 var CapabilityConfig_Status_value = map[string]int32{
+	"DEFAULT":   0,
 	"ENABLED":   1,
 	"SCHEDULED": 2,
 	"DISABLED":  3,
