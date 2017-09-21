@@ -452,6 +452,14 @@ _SUPPORTED_LIBRARIES = [
         latest_version='1.0',
         ),
     _VersionedLibrary(
+        'grpcio',
+        'http://http://www.grpc.io/',
+        'A high performance general RPC framework',
+        ['1.0.0'],
+        latest_version='1.0.0',
+        default_version='1.0.0',
+        ),
+    _VersionedLibrary(
         'jinja2',
         'http://jinja.pocoo.org/docs/',
         'A modern and designer friendly templating language for Python.',
@@ -526,7 +534,6 @@ _SUPPORTED_LIBRARIES = [
         ['1.7'],
         latest_version='1.7',
         ),
-
     _VersionedLibrary(
         'PyAMF',
         'http://pyamf.appspot.com/index.html',

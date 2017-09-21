@@ -12,6 +12,7 @@ It has these top-level messages:
 	PhpConfig
 	PythonConfig
 	JavaConfig
+	GoConfig
 	CustomConfig
 	CloudSQL
 	Library
@@ -49,6 +50,7 @@ type Config struct {
 	PhpConfig        *PhpConfig    `protobuf:"bytes,9,opt,name=php_config,json=phpConfig" json:"php_config,omitempty"`
 	JavaConfig       *JavaConfig   `protobuf:"bytes,21,opt,name=java_config,json=javaConfig" json:"java_config,omitempty"`
 	CustomConfig     *CustomConfig `protobuf:"bytes,23,opt,name=custom_config,json=customConfig" json:"custom_config,omitempty"`
+	GoConfig         *GoConfig     `protobuf:"bytes,25,opt,name=go_config,json=goConfig" json:"go_config,omitempty"`
 	Environ          []*Environ    `protobuf:"bytes,10,rep,name=environ" json:"environ,omitempty"`
 	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config,json=cloudSqlConfig" json:"cloud_sql_config,omitempty"`
 	Datacenter       *string       `protobuf:"bytes,12,req,name=datacenter" json:"datacenter,omitempty"`
@@ -161,6 +163,13 @@ func (m *Config) GetJavaConfig() *JavaConfig {
 func (m *Config) GetCustomConfig() *CustomConfig {
 	if m != nil {
 		return m.CustomConfig
+	}
+	return nil
+}
+
+func (m *Config) GetGoConfig() *GoConfig {
+	if m != nil {
+		return m.GoConfig
 	}
 	return nil
 }
@@ -322,6 +331,22 @@ func (m *JavaConfig) GetJvmArgs() []string {
 	return nil
 }
 
+type GoConfig struct {
+	WorkDir          *string `protobuf:"bytes,1,opt,name=work_dir,json=workDir" json:"work_dir,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *GoConfig) Reset()         { *m = GoConfig{} }
+func (m *GoConfig) String() string { return proto.CompactTextString(m) }
+func (*GoConfig) ProtoMessage()    {}
+
+func (m *GoConfig) GetWorkDir() string {
+	if m != nil && m.WorkDir != nil {
+		return *m.WorkDir
+	}
+	return ""
+}
+
 type CustomConfig struct {
 	CustomEntrypoint *string `protobuf:"bytes,1,opt,name=custom_entrypoint,json=customEntrypoint" json:"custom_entrypoint,omitempty"`
 	Runtime          *string `protobuf:"bytes,2,opt,name=runtime" json:"runtime,omitempty"`
@@ -471,6 +496,7 @@ func init() {
 	proto.RegisterType((*PhpConfig)(nil), "appengine.tools.devappserver2.PhpConfig")
 	proto.RegisterType((*PythonConfig)(nil), "appengine.tools.devappserver2.PythonConfig")
 	proto.RegisterType((*JavaConfig)(nil), "appengine.tools.devappserver2.JavaConfig")
+	proto.RegisterType((*GoConfig)(nil), "appengine.tools.devappserver2.GoConfig")
 	proto.RegisterType((*CustomConfig)(nil), "appengine.tools.devappserver2.CustomConfig")
 	proto.RegisterType((*CloudSQL)(nil), "appengine.tools.devappserver2.CloudSQL")
 	proto.RegisterType((*Library)(nil), "appengine.tools.devappserver2.Library")
