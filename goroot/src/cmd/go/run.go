@@ -37,7 +37,8 @@ Run compiles and runs the main package comprising the named Go source files.
 A Go source file is defined to be a file ending in a literal ".go" suffix.
 
 By default, 'go run' runs the compiled binary directly: 'a.out arguments...'.
-If the -exec flag is given, 'go run' invokes the binary using xprog: 'xprog a.out arguments...'.
+If the -exec flag is given, 'go run' invokes the binary using xprog:
+	'xprog a.out arguments...'.
 If the -exec flag is not given, GOOS or GOARCH is different from the system
 default, and a program named go_$GOOS_$GOARCH_exec can be found
 on the current search path, 'go run' invokes the binary using that program,
@@ -69,7 +70,8 @@ func runRun(cmd *Command, args []string) {
 		}
 		buildContext.InstallSuffix += "appengine"
 		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
-		raceInit()
+		instrumentInit()
+	buildModeInit()
 	var b builder
 	b.init()
 	b.print = printStderr
@@ -93,8 +95,18 @@ func runRun(cmd *Command, args []string) {
 		fatalf("%s", p.Error)
 	}
 	p.omitDWARF = true
-	for _, err := range p.DepsErrors {
-		errorf("%s", err)
+	if len(p.DepsErrors) > 0 {
+		// Since these are errors in dependencies,
+		// the same error might show up multiple times,
+		// once in each package that depends on it.
+		// Only print each once.
+		printed := map[*PackageError]bool{}
+		for _, err := range p.DepsErrors {
+			if !printed[err] {
+				printed[err] = true
+				errorf("%s", err)
+			}
+		}
 	}
 	exitIfErrors()
 	if p.Name != "main" {
@@ -142,6 +154,7 @@ func runStdin(cmdline []string) {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Env = origEnv
 	startSigHandlers()
 	if err := cmd.Run(); err != nil {
 		errorf("%v", err)

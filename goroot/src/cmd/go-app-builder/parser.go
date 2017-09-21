@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"go/ast"
@@ -34,8 +33,6 @@ type App struct {
 	RootPackages []*Package // the subset of packages with init functions
 
 	PackageIndex map[string]*Package // index from import path to package object
-
-	InternalPkg string // the name of the internal package
 }
 
 // Package represents a Go package.
@@ -43,6 +40,7 @@ type Package struct {
 	ImportPath   string     // the path under which this package may be imported
 	Files        []*File    // the set of source files that form this package
 	BaseDir      string     // what the file names are relative to, if outside app
+	SrcDir       string     // the source location of the files, always set
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
 	HasMain      bool       // whether the file has internal.Main
@@ -111,11 +109,7 @@ func buildContext(goPath string) *build.Context {
 		GOPATH:      goPath,
 		ReleaseTags: releaseTags(*apiVersion),
 		Compiler:    "gc",
-	}
-	if *vm {
-		ctxt.BuildTags = []string{"appenginevm"}
-	} else {
-		ctxt.BuildTags = []string{"appengine"}
+		BuildTags:   []string{"appengine"},
 	}
 	return ctxt
 }
@@ -123,12 +117,21 @@ func buildContext(goPath string) *build.Context {
 // ParseFiles parses the named files, deduces their package structure,
 // and returns the dependency DAG as an App.
 // Elements of filenames are considered relative to baseDir.
+//
+// TODO: Add a check that applications based outside gopath do
+// not look like they're using vendoring: it doesn't work, and we don't want
+// to add confusion.
 func ParseFiles(baseDir string, filenames []string) (*App, error) {
+	// go/build.Import relies on baseDir being absolute to correctly
+	// evaluate vendored dependencies. appcfg.py passes it as a relative
+	// path.
+	baseDir, err := filepath.Abs(baseDir)
+	if err != nil {
+		return nil, err
+	}
+
 	app := &App{
 		PackageIndex: make(map[string]*Package),
-	}
-	if !*vm {
-		app.InternalPkg = "appengine_internal"
 	}
 	pkgFiles := make(map[string][]*File) // app package name => its files
 
@@ -200,6 +203,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		p := &Package{
 			ImportPath: imp,
 			Files:      files,
+			SrcDir:     filepath.Join(baseDir, dirname),
 		}
 		if p.ImportPath == "main" {
 			return nil, errors.New("top-level main package is forbidden")
@@ -219,7 +223,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			}
 		}
 		app.Packages = append(app.Packages, p)
-		if p.HasInit || *vm {
+		if p.HasInit {
 			app.RootPackages = append(app.RootPackages, p)
 		}
 		app.PackageIndex[p.ImportPath] = p
@@ -237,22 +241,6 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		fs := appFilesInGOPATH(baseDir, *goPath, app)
 		if err := addFromGOPATH(app, re, fs); err != nil {
 			return nil, err
-		}
-	}
-
-	if app.InternalPkg == "" {
-		var mainPkg *Package
-		for _, pkg := range app.Packages {
-			if !pkg.HasMain {
-				continue
-			}
-			if mainPkg != nil {
-				return nil, fmt.Errorf("duplicate internal.Main in %q and %q", mainPkg.ImportPath, pkg.ImportPath)
-			}
-			mainPkg = pkg
-		}
-		if mainPkg != nil {
-			app.InternalPkg = mainPkg.ImportPath
 		}
 	}
 
@@ -333,10 +321,10 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 				if !checkImport(path) {
 					return fmt.Errorf("parser: bad import %q in %s from GOPATH", path, f.Name)
 				}
-				if isStandardPackage(path) || app.PackageIndex[path] != nil {
+				if isStandardPackage(path) {
 					continue
 				}
-				pkg, err := gopathPackage(path)
+				pkg, err := gopathPackage(path, p.SrcDir)
 				if err != nil {
 					if !warned[path] {
 						log.Printf("Can't find package %q in $GOPATH: %v", path, err)
@@ -344,6 +332,14 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 					}
 					continue
 				}
+				// Check for duplicate imports.
+				if p, ok := app.PackageIndex[path]; ok {
+					if p.SrcDir == pkg.Dir {
+						continue
+					}
+					return fmt.Errorf("package %q is imported from multiple locations: %q and %q", path, p.SrcDir, pkg.Dir)
+				}
+				// Check the package doesn't use files already in the app.
 				if err := validatePkgPaths(pkg, appFilesInGOPATH); err != nil {
 					return err
 				}
@@ -355,17 +351,6 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 						continue
 					}
 					hasMain := false
-					if *vm && pkg.Name == "internal" {
-						// See if this file has internal.Main.
-						// This check duplicates conditions in readFile
-						// as an optimisation to avoid parsing lots of code
-						// that can't have internal.Main.
-						var err error
-						_, _, hasMain, err = readFile(pkg.Dir, f)
-						if err != nil {
-							return err
-						}
-					}
 					files = append(files, &File{
 						Name:        f,
 						PackageName: pkg.Name,
@@ -385,6 +370,7 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 					ImportPath: path,
 					Files:      files,
 					BaseDir:    pkg.Dir,
+					SrcDir:     pkg.Dir,
 					HasMain:    pkgHasMain,
 				}
 				app.Packages = append(app.Packages, p)
@@ -408,12 +394,6 @@ func isNiladic(f *ast.FuncDecl, name string) bool {
 	return f.Name.Name == name && f.Recv == nil && ft.Params.NumFields() == 0 && ft.Results.NumFields() == 0
 }
 
-// If this magic string occurs in a file with a niladic Main,
-// and the file's package is "internal",
-// and -internal_pkg is empty,
-// then the file's package is used for internal.Main.
-const magicInternalMain = `The gophers party all night; the rabbits provide the beats.`
-
 func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, hasMain bool, err error) {
 	fullName := filepath.Join(baseDir, filename)
 	var src []byte
@@ -423,22 +403,6 @@ func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, ha
 	}
 	fset = token.NewFileSet()
 	file, err = parser.ParseFile(fset, fullName, src, 0)
-	if *vm && file.Name.Name == "internal" {
-		for _, decl := range file.Decls {
-			funcDecl, ok := decl.(*ast.FuncDecl)
-			if !ok {
-				continue
-			}
-			if !isMain(funcDecl) {
-				continue
-			}
-			if !bytes.Contains(src, []byte(magicInternalMain)) {
-				continue
-			}
-			hasMain = true
-			break
-		}
-	}
 	return
 }
 
@@ -508,8 +472,7 @@ func checkImport(path string) bool {
 		return false
 	}
 	if path == "syscall" || path == "unsafe" {
-		// VM apps may import "syscall" and "unsafe"
-		return *vm
+		return false
 	}
 	return true
 }
@@ -619,11 +582,11 @@ func isStandardPackage(s string) bool {
 }
 
 // gopathPackage imports information about a package in GOPATH.
-func gopathPackage(s string) (*build.Package, error) {
+func gopathPackage(s, srcDir string) (*build.Package, error) {
 	ctxt := buildContext(*goPath)
 	// Don't use FindOnly or AllowBinary because we want import information
 	// and we require the source files.
-	return ctxt.Import(s, "/nowhere", 0)
+	return ctxt.Import(s, srcDir, 0)
 }
 
 // topologicalSort sorts the given slice of *Package in topological order.

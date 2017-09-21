@@ -24,6 +24,7 @@ It has these top-level messages:
 	MemcacheFlushResponse
 	MemcacheStatsRequest
 	MergedNamespaceStats
+	MemcacheHotKey
 	MemcacheStatsResponse
 	MemcacheGrabTailRequest
 	MemcacheGrabTailResponse
@@ -782,12 +783,15 @@ func (*MemcacheFlushResponse) ProtoMessage()    {}
 
 type MemcacheStatsRequest struct {
 	Override         *AppOverride `protobuf:"bytes,1,opt,name=override" json:"override,omitempty"`
+	MaxHotkeyCount   *int32       `protobuf:"varint,2,opt,name=max_hotkey_count,json=maxHotkeyCount,def=0" json:"max_hotkey_count,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (m *MemcacheStatsRequest) Reset()         { *m = MemcacheStatsRequest{} }
 func (m *MemcacheStatsRequest) String() string { return proto.CompactTextString(m) }
 func (*MemcacheStatsRequest) ProtoMessage()    {}
+
+const Default_MemcacheStatsRequest_MaxHotkeyCount int32 = 0
 
 func (m *MemcacheStatsRequest) GetOverride() *AppOverride {
 	if m != nil {
@@ -796,14 +800,22 @@ func (m *MemcacheStatsRequest) GetOverride() *AppOverride {
 	return nil
 }
 
+func (m *MemcacheStatsRequest) GetMaxHotkeyCount() int32 {
+	if m != nil && m.MaxHotkeyCount != nil {
+		return *m.MaxHotkeyCount
+	}
+	return Default_MemcacheStatsRequest_MaxHotkeyCount
+}
+
 type MergedNamespaceStats struct {
-	Hits             *uint64 `protobuf:"varint,1,req,name=hits" json:"hits,omitempty"`
-	Misses           *uint64 `protobuf:"varint,2,req,name=misses" json:"misses,omitempty"`
-	ByteHits         *uint64 `protobuf:"varint,3,req,name=byte_hits,json=byteHits" json:"byte_hits,omitempty"`
-	Items            *uint64 `protobuf:"varint,4,req,name=items" json:"items,omitempty"`
-	Bytes            *uint64 `protobuf:"varint,5,req,name=bytes" json:"bytes,omitempty"`
-	OldestItemAge    *uint32 `protobuf:"fixed32,6,req,name=oldest_item_age,json=oldestItemAge" json:"oldest_item_age,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Hits             *uint64           `protobuf:"varint,1,req,name=hits" json:"hits,omitempty"`
+	Misses           *uint64           `protobuf:"varint,2,req,name=misses" json:"misses,omitempty"`
+	ByteHits         *uint64           `protobuf:"varint,3,req,name=byte_hits,json=byteHits" json:"byte_hits,omitempty"`
+	Items            *uint64           `protobuf:"varint,4,req,name=items" json:"items,omitempty"`
+	Bytes            *uint64           `protobuf:"varint,5,req,name=bytes" json:"bytes,omitempty"`
+	OldestItemAge    *uint32           `protobuf:"fixed32,6,req,name=oldest_item_age,json=oldestItemAge" json:"oldest_item_age,omitempty"`
+	Hotkeys          []*MemcacheHotKey `protobuf:"bytes,7,rep,name=hotkeys" json:"hotkeys,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (m *MergedNamespaceStats) Reset()         { *m = MergedNamespaceStats{} }
@@ -850,6 +862,45 @@ func (m *MergedNamespaceStats) GetOldestItemAge() uint32 {
 		return *m.OldestItemAge
 	}
 	return 0
+}
+
+func (m *MergedNamespaceStats) GetHotkeys() []*MemcacheHotKey {
+	if m != nil {
+		return m.Hotkeys
+	}
+	return nil
+}
+
+type MemcacheHotKey struct {
+	Key              []byte   `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Qps              *float64 `protobuf:"fixed64,2,req,name=qps" json:"qps,omitempty"`
+	NameSpace        *string  `protobuf:"bytes,3,opt,name=name_space,json=nameSpace" json:"name_space,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *MemcacheHotKey) Reset()         { *m = MemcacheHotKey{} }
+func (m *MemcacheHotKey) String() string { return proto.CompactTextString(m) }
+func (*MemcacheHotKey) ProtoMessage()    {}
+
+func (m *MemcacheHotKey) GetKey() []byte {
+	if m != nil {
+		return m.Key
+	}
+	return nil
+}
+
+func (m *MemcacheHotKey) GetQps() float64 {
+	if m != nil && m.Qps != nil {
+		return *m.Qps
+	}
+	return 0
+}
+
+func (m *MemcacheHotKey) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
+	}
+	return ""
 }
 
 type MemcacheStatsResponse struct {
@@ -960,6 +1011,7 @@ func init() {
 	proto.RegisterType((*MemcacheFlushResponse)(nil), "appengine.MemcacheFlushResponse")
 	proto.RegisterType((*MemcacheStatsRequest)(nil), "appengine.MemcacheStatsRequest")
 	proto.RegisterType((*MergedNamespaceStats)(nil), "appengine.MergedNamespaceStats")
+	proto.RegisterType((*MemcacheHotKey)(nil), "appengine.MemcacheHotKey")
 	proto.RegisterType((*MemcacheStatsResponse)(nil), "appengine.MemcacheStatsResponse")
 	proto.RegisterType((*MemcacheGrabTailRequest)(nil), "appengine.MemcacheGrabTailRequest")
 	proto.RegisterType((*MemcacheGrabTailResponse)(nil), "appengine.MemcacheGrabTailResponse")

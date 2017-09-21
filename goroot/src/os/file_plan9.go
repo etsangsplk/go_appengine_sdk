@@ -79,7 +79,7 @@ func syscallMode(i FileMode) (o uint32) {
 // (O_RDONLY etc.) and perm, (0666 etc.) if applicable.  If successful,
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type *PathError.
-func OpenFile(name string, flag int, perm FileMode) (file *File, err error) {
+func OpenFile(name string, flag int, perm FileMode) (*File, error) {
 
 		if DisableWritesForAppEngine && flag&(O_WRONLY|O_RDWR|O_CREATE|O_EXCL) != 0 {
 			return nil, &PathError{"open", name, errDisabledWrites}
@@ -163,7 +163,7 @@ func (file *file) close() error {
 
 // Stat returns the FileInfo structure describing file.
 // If there is an error, it will be of type *PathError.
-func (f *File) Stat() (fi FileInfo, err error) {
+func (f *File) Stat() (FileInfo, error) {
 	if f == nil {
 		return nil, ErrInvalid
 	}
@@ -228,7 +228,7 @@ func (f *File) Chmod(mode FileMode) error {
 // Sync commits the current contents of the file to stable storage.
 // Typically, this means flushing the file system's in-memory copy
 // of recently written data to disk.
-func (f *File) Sync() (err error) {
+func (f *File) Sync() error {
 	if f == nil {
 		return ErrInvalid
 	}
@@ -323,7 +323,7 @@ func hasPrefix(s, prefix string) bool {
 	return len(s) >= len(prefix) && s[0:len(prefix)] == prefix
 }
 
-// Variant of LastIndex from the strings package.
+// LastIndexByte from the strings package.
 func lastIndex(s string, sep byte) int {
 	for i := len(s) - 1; i >= 0; i-- {
 		if s[i] == sep {
@@ -343,7 +343,9 @@ func rename(oldname, newname string) error {
 
 	// If newname still contains slashes after removing the oldname
 	// prefix, the rename is cross-directory and must be rejected.
-	// This case is caught by d.Marshal below.
+	if lastIndex(newname, '/') >= 0 {
+		return &LinkError{"rename", oldname, newname, ErrInvalid}
+	}
 
 	var d syscall.Dir
 
@@ -355,6 +357,13 @@ func rename(oldname, newname string) error {
 	if err != nil {
 		return &LinkError{"rename", oldname, newname, err}
 	}
+
+	// If newname already exists and is not a directory, rename replaces it.
+	f, err := Stat(dirname + newname)
+	if err == nil && !f.IsDir() {
+		Remove(dirname + newname)
+	}
+
 	if err = syscall.Wstat(oldname, buf[:n]); err != nil {
 		return &LinkError{"rename", oldname, newname, err}
 	}
