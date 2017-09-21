@@ -331,7 +331,13 @@ func pkgsNotMain(pkgs []*Package) (res []*Package) {
 var pkgsFilter = func(pkgs []*Package) []*Package { return pkgs }
 
 func buildModeInit() {
-	_, gccgo := buildToolchain.(gccgoToolchain)
+
+		if buildContext.InstallSuffix != "" {
+			buildContext.InstallSuffix += "_"
+		}
+		buildContext.InstallSuffix += "appengine"
+		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
+		_, gccgo := buildToolchain.(gccgoToolchain)
 	var codegenArg string
 	platform := goos + "/" + goarch
 	switch buildBuildmode {
@@ -434,13 +440,7 @@ func buildModeInit() {
 }
 
 func runBuild(cmd *Command, args []string) {
-
-		if buildContext.InstallSuffix != "" {
-			buildContext.InstallSuffix += "_"
-		}
-		buildContext.InstallSuffix += "appengine"
-		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
-		instrumentInit()
+	instrumentInit()
 	buildModeInit()
 	var b builder
 	b.init()
@@ -579,13 +579,7 @@ func libname(args []string, pkgs []*Package) (string, error) {
 }
 
 func runInstall(cmd *Command, args []string) {
-
-		if buildContext.InstallSuffix != "" {
-			buildContext.InstallSuffix += "_"
-		}
-		buildContext.InstallSuffix += "appengine"
-		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
-		if gobin != "" && !filepath.IsAbs(gobin) {
+	if gobin != "" && !filepath.IsAbs(gobin) {
 		fatalf("cannot install, GOBIN must be an absolute path")
 	}
 

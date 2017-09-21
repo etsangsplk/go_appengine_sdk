@@ -319,7 +319,7 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 			for _, path := range f.ImportPaths {
 				// Check for invalid imports.
 				if !checkImport(path) {
-					return fmt.Errorf("parser: bad import %q in %s from GOPATH", path, f.Name)
+					return fmt.Errorf("parser: bad import %q in %s from GOPATH", path, filepath.Join(p.ImportPath, f.Name))
 				}
 				if isStandardPackage(path) {
 					continue
