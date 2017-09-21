@@ -81,10 +81,10 @@ func (m *MailServiceError) String() string { return proto.CompactTextString(m) }
 func (*MailServiceError) ProtoMessage()    {}
 
 type MailAttachment struct {
-	FileName         *string `protobuf:"bytes,1,req,name=FileName" json:"FileName,omitempty"`
-	Data             []byte  `protobuf:"bytes,2,req,name=Data" json:"Data,omitempty"`
-	ContentID        *string `protobuf:"bytes,3,opt,name=ContentID" json:"ContentID,omitempty"`
-	ContentIDSet     *bool   `protobuf:"varint,13,opt,name=ContentID_set" json:"ContentID_set,omitempty"`
+	FileName         *string `protobuf:"bytes,1,req,name=FileName,json=fileName" json:"FileName,omitempty"`
+	Data             []byte  `protobuf:"bytes,2,req,name=Data,json=data" json:"Data,omitempty"`
+	ContentID        *string `protobuf:"bytes,3,opt,name=ContentID,json=contentID" json:"ContentID,omitempty"`
+	ContentIDSet     *bool   `protobuf:"varint,13,opt,name=ContentID_set,json=contentIDSet" json:"ContentID_set,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -145,16 +145,16 @@ func (m *MailHeader) GetValue() string {
 }
 
 type MailMessage struct {
-	Sender           *string           `protobuf:"bytes,1,req,name=Sender" json:"Sender,omitempty"`
-	ReplyTo          *string           `protobuf:"bytes,2,opt,name=ReplyTo" json:"ReplyTo,omitempty"`
-	To               []string          `protobuf:"bytes,3,rep,name=To" json:"To,omitempty"`
-	Cc               []string          `protobuf:"bytes,4,rep,name=Cc" json:"Cc,omitempty"`
-	Bcc              []string          `protobuf:"bytes,5,rep,name=Bcc" json:"Bcc,omitempty"`
-	Subject          *string           `protobuf:"bytes,6,req,name=Subject" json:"Subject,omitempty"`
-	TextBody         *string           `protobuf:"bytes,7,opt,name=TextBody" json:"TextBody,omitempty"`
-	HtmlBody         *string           `protobuf:"bytes,8,opt,name=HtmlBody" json:"HtmlBody,omitempty"`
-	Attachment       []*MailAttachment `protobuf:"bytes,9,rep,name=Attachment" json:"Attachment,omitempty"`
-	Header           []*MailHeader     `protobuf:"bytes,10,rep,name=Header" json:"Header,omitempty"`
+	Sender           *string           `protobuf:"bytes,1,req,name=Sender,json=sender" json:"Sender,omitempty"`
+	ReplyTo          *string           `protobuf:"bytes,2,opt,name=ReplyTo,json=replyTo" json:"ReplyTo,omitempty"`
+	To               []string          `protobuf:"bytes,3,rep,name=To,json=to" json:"To,omitempty"`
+	Cc               []string          `protobuf:"bytes,4,rep,name=Cc,json=cc" json:"Cc,omitempty"`
+	Bcc              []string          `protobuf:"bytes,5,rep,name=Bcc,json=bcc" json:"Bcc,omitempty"`
+	Subject          *string           `protobuf:"bytes,6,req,name=Subject,json=subject" json:"Subject,omitempty"`
+	TextBody         *string           `protobuf:"bytes,7,opt,name=TextBody,json=textBody" json:"TextBody,omitempty"`
+	HtmlBody         *string           `protobuf:"bytes,8,opt,name=HtmlBody,json=htmlBody" json:"HtmlBody,omitempty"`
+	Attachment       []*MailAttachment `protobuf:"bytes,9,rep,name=Attachment,json=attachment" json:"Attachment,omitempty"`
+	Header           []*MailHeader     `protobuf:"bytes,10,rep,name=Header,json=header" json:"Header,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -233,5 +233,9 @@ func (m *MailMessage) GetHeader() []*MailHeader {
 }
 
 func init() {
+	proto.RegisterType((*MailServiceError)(nil), "appengine.MailServiceError")
+	proto.RegisterType((*MailAttachment)(nil), "appengine.MailAttachment")
+	proto.RegisterType((*MailHeader)(nil), "appengine.MailHeader")
+	proto.RegisterType((*MailMessage)(nil), "appengine.MailMessage")
 	proto.RegisterEnum("appengine.MailServiceError_ErrorCode", MailServiceError_ErrorCode_name, MailServiceError_ErrorCode_value)
 }

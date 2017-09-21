@@ -30,28 +30,28 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type Config struct {
-	AppId            []byte        `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	VersionId        []byte        `protobuf:"bytes,2,req,name=version_id" json:"version_id,omitempty"`
-	ApplicationRoot  []byte        `protobuf:"bytes,3,req,name=application_root" json:"application_root,omitempty"`
+	AppId            []byte        `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	VersionId        []byte        `protobuf:"bytes,2,req,name=version_id,json=versionId" json:"version_id,omitempty"`
+	ApplicationRoot  []byte        `protobuf:"bytes,3,req,name=application_root,json=applicationRoot" json:"application_root,omitempty"`
 	Threadsafe       *bool         `protobuf:"varint,4,opt,name=threadsafe,def=0" json:"threadsafe,omitempty"`
-	ApiHost          *string       `protobuf:"bytes,17,opt,name=api_host,def=localhost" json:"api_host,omitempty"`
-	ApiPort          *int32        `protobuf:"varint,5,req,name=api_port" json:"api_port,omitempty"`
+	ApiHost          *string       `protobuf:"bytes,17,opt,name=api_host,json=apiHost,def=localhost" json:"api_host,omitempty"`
+	ApiPort          *int32        `protobuf:"varint,5,req,name=api_port,json=apiPort" json:"api_port,omitempty"`
 	Libraries        []*Library    `protobuf:"bytes,6,rep,name=libraries" json:"libraries,omitempty"`
-	SkipFiles        *string       `protobuf:"bytes,7,opt,name=skip_files,def=^$" json:"skip_files,omitempty"`
-	StaticFiles      *string       `protobuf:"bytes,8,opt,name=static_files,def=^$" json:"static_files,omitempty"`
-	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config" json:"python_config,omitempty"`
-	PhpConfig        *PhpConfig    `protobuf:"bytes,9,opt,name=php_config" json:"php_config,omitempty"`
-	JavaConfig       *JavaConfig   `protobuf:"bytes,21,opt,name=java_config" json:"java_config,omitempty"`
-	CustomConfig     *CustomConfig `protobuf:"bytes,23,opt,name=custom_config" json:"custom_config,omitempty"`
+	SkipFiles        *string       `protobuf:"bytes,7,opt,name=skip_files,json=skipFiles,def=^$" json:"skip_files,omitempty"`
+	StaticFiles      *string       `protobuf:"bytes,8,opt,name=static_files,json=staticFiles,def=^$" json:"static_files,omitempty"`
+	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config,json=pythonConfig" json:"python_config,omitempty"`
+	PhpConfig        *PhpConfig    `protobuf:"bytes,9,opt,name=php_config,json=phpConfig" json:"php_config,omitempty"`
+	JavaConfig       *JavaConfig   `protobuf:"bytes,21,opt,name=java_config,json=javaConfig" json:"java_config,omitempty"`
+	CustomConfig     *CustomConfig `protobuf:"bytes,23,opt,name=custom_config,json=customConfig" json:"custom_config,omitempty"`
 	Environ          []*Environ    `protobuf:"bytes,10,rep,name=environ" json:"environ,omitempty"`
-	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config" json:"cloud_sql_config,omitempty"`
+	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config,json=cloudSqlConfig" json:"cloud_sql_config,omitempty"`
 	Datacenter       *string       `protobuf:"bytes,12,req,name=datacenter" json:"datacenter,omitempty"`
-	InstanceId       *string       `protobuf:"bytes,13,req,name=instance_id" json:"instance_id,omitempty"`
-	StderrLogLevel   *int64        `protobuf:"varint,15,opt,name=stderr_log_level,def=1" json:"stderr_log_level,omitempty"`
-	AuthDomain       *string       `protobuf:"bytes,16,req,name=auth_domain" json:"auth_domain,omitempty"`
-	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances" json:"max_instances,omitempty"`
-	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config" json:"vm_config,omitempty"`
-	ServerPort       *int32        `protobuf:"varint,20,opt,name=server_port" json:"server_port,omitempty"`
+	InstanceId       *string       `protobuf:"bytes,13,req,name=instance_id,json=instanceId" json:"instance_id,omitempty"`
+	StderrLogLevel   *int64        `protobuf:"varint,15,opt,name=stderr_log_level,json=stderrLogLevel,def=1" json:"stderr_log_level,omitempty"`
+	AuthDomain       *string       `protobuf:"bytes,16,req,name=auth_domain,json=authDomain" json:"auth_domain,omitempty"`
+	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances,json=maxInstances" json:"max_instances,omitempty"`
+	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config,json=vmConfig" json:"vm_config,omitempty"`
+	ServerPort       *int32        `protobuf:"varint,20,opt,name=server_port,json=serverPort" json:"server_port,omitempty"`
 	Vm               *bool         `protobuf:"varint,22,opt,name=vm,def=0" json:"vm,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
@@ -229,10 +229,10 @@ func (m *Config) GetVm() bool {
 }
 
 type PhpConfig struct {
-	PhpExecutablePath   []byte `protobuf:"bytes,1,opt,name=php_executable_path" json:"php_executable_path,omitempty"`
-	EnableDebugger      *bool  `protobuf:"varint,3,req,name=enable_debugger" json:"enable_debugger,omitempty"`
-	GaeExtensionPath    []byte `protobuf:"bytes,4,opt,name=gae_extension_path" json:"gae_extension_path,omitempty"`
-	XdebugExtensionPath []byte `protobuf:"bytes,5,opt,name=xdebug_extension_path" json:"xdebug_extension_path,omitempty"`
+	PhpExecutablePath   []byte `protobuf:"bytes,1,opt,name=php_executable_path,json=phpExecutablePath" json:"php_executable_path,omitempty"`
+	EnableDebugger      *bool  `protobuf:"varint,3,req,name=enable_debugger,json=enableDebugger" json:"enable_debugger,omitempty"`
+	GaeExtensionPath    []byte `protobuf:"bytes,4,opt,name=gae_extension_path,json=gaeExtensionPath" json:"gae_extension_path,omitempty"`
+	XdebugExtensionPath []byte `protobuf:"bytes,5,opt,name=xdebug_extension_path,json=xdebugExtensionPath" json:"xdebug_extension_path,omitempty"`
 	XXX_unrecognized    []byte `json:"-"`
 }
 
@@ -269,8 +269,8 @@ func (m *PhpConfig) GetXdebugExtensionPath() []byte {
 }
 
 type PythonConfig struct {
-	StartupScript    *string `protobuf:"bytes,1,opt,name=startup_script" json:"startup_script,omitempty"`
-	StartupArgs      *string `protobuf:"bytes,2,opt,name=startup_args" json:"startup_args,omitempty"`
+	StartupScript    *string `protobuf:"bytes,1,opt,name=startup_script,json=startupScript" json:"startup_script,omitempty"`
+	StartupArgs      *string `protobuf:"bytes,2,opt,name=startup_args,json=startupArgs" json:"startup_args,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -293,7 +293,7 @@ func (m *PythonConfig) GetStartupArgs() string {
 }
 
 type JavaConfig struct {
-	JvmArgs          []string `protobuf:"bytes,1,rep,name=jvm_args" json:"jvm_args,omitempty"`
+	JvmArgs          []string `protobuf:"bytes,1,rep,name=jvm_args,json=jvmArgs" json:"jvm_args,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -309,7 +309,8 @@ func (m *JavaConfig) GetJvmArgs() []string {
 }
 
 type CustomConfig struct {
-	CustomEntrypoint *string `protobuf:"bytes,1,opt,name=custom_entrypoint" json:"custom_entrypoint,omitempty"`
+	CustomEntrypoint *string `protobuf:"bytes,1,opt,name=custom_entrypoint,json=customEntrypoint" json:"custom_entrypoint,omitempty"`
+	Runtime          *string `protobuf:"bytes,2,opt,name=runtime" json:"runtime,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -324,12 +325,19 @@ func (m *CustomConfig) GetCustomEntrypoint() string {
 	return ""
 }
 
+func (m *CustomConfig) GetRuntime() string {
+	if m != nil && m.Runtime != nil {
+		return *m.Runtime
+	}
+	return ""
+}
+
 type CloudSQL struct {
-	MysqlHost        *string `protobuf:"bytes,1,req,name=mysql_host" json:"mysql_host,omitempty"`
-	MysqlPort        *int32  `protobuf:"varint,2,req,name=mysql_port" json:"mysql_port,omitempty"`
-	MysqlUser        *string `protobuf:"bytes,3,req,name=mysql_user" json:"mysql_user,omitempty"`
-	MysqlPassword    *string `protobuf:"bytes,4,req,name=mysql_password" json:"mysql_password,omitempty"`
-	MysqlSocket      *string `protobuf:"bytes,5,opt,name=mysql_socket" json:"mysql_socket,omitempty"`
+	MysqlHost        *string `protobuf:"bytes,1,req,name=mysql_host,json=mysqlHost" json:"mysql_host,omitempty"`
+	MysqlPort        *int32  `protobuf:"varint,2,req,name=mysql_port,json=mysqlPort" json:"mysql_port,omitempty"`
+	MysqlUser        *string `protobuf:"bytes,3,req,name=mysql_user,json=mysqlUser" json:"mysql_user,omitempty"`
+	MysqlPassword    *string `protobuf:"bytes,4,req,name=mysql_password,json=mysqlPassword" json:"mysql_password,omitempty"`
+	MysqlSocket      *string `protobuf:"bytes,5,opt,name=mysql_socket,json=mysqlSocket" json:"mysql_socket,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -421,8 +429,8 @@ func (m *Environ) GetValue() []byte {
 }
 
 type VMConfig struct {
-	DockerDaemonUrl  *string `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
-	EnableLogs       *bool   `protobuf:"varint,3,opt,name=enable_logs" json:"enable_logs,omitempty"`
+	DockerDaemonUrl  *string `protobuf:"bytes,1,opt,name=docker_daemon_url,json=dockerDaemonUrl" json:"docker_daemon_url,omitempty"`
+	EnableLogs       *bool   `protobuf:"varint,3,opt,name=enable_logs,json=enableLogs" json:"enable_logs,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -442,4 +450,16 @@ func (m *VMConfig) GetEnableLogs() bool {
 		return *m.EnableLogs
 	}
 	return false
+}
+
+func init() {
+	proto.RegisterType((*Config)(nil), "appengine.tools.devappserver2.Config")
+	proto.RegisterType((*PhpConfig)(nil), "appengine.tools.devappserver2.PhpConfig")
+	proto.RegisterType((*PythonConfig)(nil), "appengine.tools.devappserver2.PythonConfig")
+	proto.RegisterType((*JavaConfig)(nil), "appengine.tools.devappserver2.JavaConfig")
+	proto.RegisterType((*CustomConfig)(nil), "appengine.tools.devappserver2.CustomConfig")
+	proto.RegisterType((*CloudSQL)(nil), "appengine.tools.devappserver2.CloudSQL")
+	proto.RegisterType((*Library)(nil), "appengine.tools.devappserver2.Library")
+	proto.RegisterType((*Environ)(nil), "appengine.tools.devappserver2.Environ")
+	proto.RegisterType((*VMConfig)(nil), "appengine.tools.devappserver2.VMConfig")
 }

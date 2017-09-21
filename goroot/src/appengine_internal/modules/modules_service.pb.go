@@ -371,5 +371,22 @@ func (m *GetHostnameResponse) GetHostname() string {
 }
 
 func init() {
+	proto.RegisterType((*ModulesServiceError)(nil), "appengine.ModulesServiceError")
+	proto.RegisterType((*GetModulesRequest)(nil), "appengine.GetModulesRequest")
+	proto.RegisterType((*GetModulesResponse)(nil), "appengine.GetModulesResponse")
+	proto.RegisterType((*GetVersionsRequest)(nil), "appengine.GetVersionsRequest")
+	proto.RegisterType((*GetVersionsResponse)(nil), "appengine.GetVersionsResponse")
+	proto.RegisterType((*GetDefaultVersionRequest)(nil), "appengine.GetDefaultVersionRequest")
+	proto.RegisterType((*GetDefaultVersionResponse)(nil), "appengine.GetDefaultVersionResponse")
+	proto.RegisterType((*GetNumInstancesRequest)(nil), "appengine.GetNumInstancesRequest")
+	proto.RegisterType((*GetNumInstancesResponse)(nil), "appengine.GetNumInstancesResponse")
+	proto.RegisterType((*SetNumInstancesRequest)(nil), "appengine.SetNumInstancesRequest")
+	proto.RegisterType((*SetNumInstancesResponse)(nil), "appengine.SetNumInstancesResponse")
+	proto.RegisterType((*StartModuleRequest)(nil), "appengine.StartModuleRequest")
+	proto.RegisterType((*StartModuleResponse)(nil), "appengine.StartModuleResponse")
+	proto.RegisterType((*StopModuleRequest)(nil), "appengine.StopModuleRequest")
+	proto.RegisterType((*StopModuleResponse)(nil), "appengine.StopModuleResponse")
+	proto.RegisterType((*GetHostnameRequest)(nil), "appengine.GetHostnameRequest")
+	proto.RegisterType((*GetHostnameResponse)(nil), "appengine.GetHostnameResponse")
 	proto.RegisterEnum("appengine.ModulesServiceError_ErrorCode", ModulesServiceError_ErrorCode_name, ModulesServiceError_ErrorCode_value)
 }

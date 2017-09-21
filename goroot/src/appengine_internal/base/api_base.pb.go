@@ -130,3 +130,13 @@ type VoidProto struct {
 func (m *VoidProto) Reset()         { *m = VoidProto{} }
 func (m *VoidProto) String() string { return proto.CompactTextString(m) }
 func (*VoidProto) ProtoMessage()    {}
+
+func init() {
+	proto.RegisterType((*StringProto)(nil), "appengine.base.StringProto")
+	proto.RegisterType((*Integer32Proto)(nil), "appengine.base.Integer32Proto")
+	proto.RegisterType((*Integer64Proto)(nil), "appengine.base.Integer64Proto")
+	proto.RegisterType((*BoolProto)(nil), "appengine.base.BoolProto")
+	proto.RegisterType((*DoubleProto)(nil), "appengine.base.DoubleProto")
+	proto.RegisterType((*BytesProto)(nil), "appengine.base.BytesProto")
+	proto.RegisterType((*VoidProto)(nil), "appengine.base.VoidProto")
+}

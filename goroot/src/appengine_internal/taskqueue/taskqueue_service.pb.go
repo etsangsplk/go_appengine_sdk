@@ -294,7 +294,7 @@ func (x *TaskQueueQueryTasksResponse_Task_RequestMethod) UnmarshalJSON(data []by
 type Transaction struct {
 	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
 	App              *string `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
-	MarkChanges      *bool   `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	MarkChanges      *bool   `protobuf:"varint,3,opt,name=mark_changes,json=markChanges,def=0" json:"mark_changes,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -374,11 +374,11 @@ func (m *TaskPayload) ExtensionMap() map[int32]proto.Extension {
 }
 
 type TaskQueueRetryParameters struct {
-	RetryLimit       *int32   `protobuf:"varint,1,opt,name=retry_limit" json:"retry_limit,omitempty"`
-	AgeLimitSec      *int64   `protobuf:"varint,2,opt,name=age_limit_sec" json:"age_limit_sec,omitempty"`
-	MinBackoffSec    *float64 `protobuf:"fixed64,3,opt,name=min_backoff_sec,def=0.1" json:"min_backoff_sec,omitempty"`
-	MaxBackoffSec    *float64 `protobuf:"fixed64,4,opt,name=max_backoff_sec,def=3600" json:"max_backoff_sec,omitempty"`
-	MaxDoublings     *int32   `protobuf:"varint,5,opt,name=max_doublings,def=16" json:"max_doublings,omitempty"`
+	RetryLimit       *int32   `protobuf:"varint,1,opt,name=retry_limit,json=retryLimit" json:"retry_limit,omitempty"`
+	AgeLimitSec      *int64   `protobuf:"varint,2,opt,name=age_limit_sec,json=ageLimitSec" json:"age_limit_sec,omitempty"`
+	MinBackoffSec    *float64 `protobuf:"fixed64,3,opt,name=min_backoff_sec,json=minBackoffSec,def=0.1" json:"min_backoff_sec,omitempty"`
+	MaxBackoffSec    *float64 `protobuf:"fixed64,4,opt,name=max_backoff_sec,json=maxBackoffSec,def=3600" json:"max_backoff_sec,omitempty"`
+	MaxDoublings     *int32   `protobuf:"varint,5,opt,name=max_doublings,json=maxDoublings,def=16" json:"max_doublings,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -426,8 +426,8 @@ func (m *TaskQueueRetryParameters) GetMaxDoublings() int32 {
 }
 
 type TaskQueueAcl struct {
-	UserEmail        [][]byte `protobuf:"bytes,1,rep,name=user_email" json:"user_email,omitempty"`
-	WriterEmail      [][]byte `protobuf:"bytes,2,rep,name=writer_email" json:"writer_email,omitempty"`
+	UserEmail        [][]byte `protobuf:"bytes,1,rep,name=user_email,json=userEmail" json:"user_email,omitempty"`
+	WriterEmail      [][]byte `protobuf:"bytes,2,rep,name=writer_email,json=writerEmail" json:"writer_email,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -482,23 +482,23 @@ func (m *TaskQueueMode) String() string { return proto.CompactTextString(m) }
 func (*TaskQueueMode) ProtoMessage()    {}
 
 type TaskQueueAddRequest struct {
-	QueueName            []byte                             `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName             []byte                             `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec              *int64                             `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
+	QueueName            []byte                             `protobuf:"bytes,1,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	TaskName             []byte                             `protobuf:"bytes,2,req,name=task_name,json=taskName" json:"task_name,omitempty"`
+	EtaUsec              *int64                             `protobuf:"varint,3,req,name=eta_usec,json=etaUsec" json:"eta_usec,omitempty"`
 	Method               *TaskQueueAddRequest_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueAddRequest_RequestMethod,def=2" json:"method,omitempty"`
 	Url                  []byte                             `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	Header               []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep,name=Header" json:"header,omitempty"`
+	Header               []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep,name=Header,json=header" json:"header,omitempty"`
 	Body                 []byte                             `protobuf:"bytes,9,opt,name=body" json:"body,omitempty"`
 	Transaction          *Transaction                       `protobuf:"bytes,10,opt,name=transaction" json:"transaction,omitempty"`
-	DatastoreTransaction []byte                             `protobuf:"bytes,21,opt,name=datastore_transaction" json:"datastore_transaction,omitempty"`
-	AppId                []byte                             `protobuf:"bytes,11,opt,name=app_id" json:"app_id,omitempty"`
-	Crontimetable        *TaskQueueAddRequest_CronTimetable `protobuf:"group,12,opt,name=CronTimetable" json:"crontimetable,omitempty"`
+	DatastoreTransaction []byte                             `protobuf:"bytes,21,opt,name=datastore_transaction,json=datastoreTransaction" json:"datastore_transaction,omitempty"`
+	AppId                []byte                             `protobuf:"bytes,11,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	Crontimetable        *TaskQueueAddRequest_CronTimetable `protobuf:"group,12,opt,name=CronTimetable,json=crontimetable" json:"crontimetable,omitempty"`
 	Description          []byte                             `protobuf:"bytes,15,opt,name=description" json:"description,omitempty"`
 	Payload              *TaskPayload                       `protobuf:"bytes,16,opt,name=payload" json:"payload,omitempty"`
-	RetryParameters      *TaskQueueRetryParameters          `protobuf:"bytes,17,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
+	RetryParameters      *TaskQueueRetryParameters          `protobuf:"bytes,17,opt,name=retry_parameters,json=retryParameters" json:"retry_parameters,omitempty"`
 	Mode                 *TaskQueueMode_Mode                `protobuf:"varint,18,opt,name=mode,enum=appengine.TaskQueueMode_Mode" json:"mode,omitempty"`
 	Tag                  []byte                             `protobuf:"bytes,19,opt,name=tag" json:"tag,omitempty"`
-	CronRetryParameters  *TaskQueueRetryParameters          `protobuf:"bytes,20,opt,name=cron_retry_parameters" json:"cron_retry_parameters,omitempty"`
+	CronRetryParameters  *TaskQueueRetryParameters          `protobuf:"bytes,20,opt,name=cron_retry_parameters,json=cronRetryParameters" json:"cron_retry_parameters,omitempty"`
 	XXX_unrecognized     []byte                             `json:"-"`
 }
 
@@ -676,7 +676,7 @@ func (m *TaskQueueAddRequest_CronTimetable) GetTimezone() []byte {
 }
 
 type TaskQueueAddResponse struct {
-	ChosenTaskName   []byte `protobuf:"bytes,1,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
+	ChosenTaskName   []byte `protobuf:"bytes,1,opt,name=chosen_task_name,json=chosenTaskName" json:"chosen_task_name,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -692,7 +692,7 @@ func (m *TaskQueueAddResponse) GetChosenTaskName() []byte {
 }
 
 type TaskQueueBulkAddRequest struct {
-	AddRequest       []*TaskQueueAddRequest `protobuf:"bytes,1,rep,name=add_request" json:"add_request,omitempty"`
+	AddRequest       []*TaskQueueAddRequest `protobuf:"bytes,1,rep,name=add_request,json=addRequest" json:"add_request,omitempty"`
 	XXX_unrecognized []byte                 `json:"-"`
 }
 
@@ -708,7 +708,7 @@ func (m *TaskQueueBulkAddRequest) GetAddRequest() []*TaskQueueAddRequest {
 }
 
 type TaskQueueBulkAddResponse struct {
-	Taskresult       []*TaskQueueBulkAddResponse_TaskResult `protobuf:"group,1,rep,name=TaskResult" json:"taskresult,omitempty"`
+	Taskresult       []*TaskQueueBulkAddResponse_TaskResult `protobuf:"group,1,rep,name=TaskResult,json=taskresult" json:"taskresult,omitempty"`
 	XXX_unrecognized []byte                                 `json:"-"`
 }
 
@@ -725,7 +725,7 @@ func (m *TaskQueueBulkAddResponse) GetTaskresult() []*TaskQueueBulkAddResponse_T
 
 type TaskQueueBulkAddResponse_TaskResult struct {
 	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
-	ChosenTaskName   []byte                           `protobuf:"bytes,3,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
+	ChosenTaskName   []byte                           `protobuf:"bytes,3,opt,name=chosen_task_name,json=chosenTaskName" json:"chosen_task_name,omitempty"`
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
@@ -748,9 +748,9 @@ func (m *TaskQueueBulkAddResponse_TaskResult) GetChosenTaskName() []byte {
 }
 
 type TaskQueueDeleteRequest struct {
-	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName         [][]byte `protobuf:"bytes,2,rep,name=task_name" json:"task_name,omitempty"`
-	AppId            []byte   `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	TaskName         [][]byte `protobuf:"bytes,2,rep,name=task_name,json=taskName" json:"task_name,omitempty"`
+	AppId            []byte   `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -796,9 +796,9 @@ func (m *TaskQueueDeleteResponse) GetResult() []TaskQueueServiceError_ErrorCode 
 }
 
 type TaskQueueForceRunRequest struct {
-	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName         []byte `protobuf:"bytes,3,req,name=task_name" json:"task_name,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	TaskName         []byte `protobuf:"bytes,3,req,name=task_name,json=taskName" json:"task_name,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -844,16 +844,16 @@ func (m *TaskQueueForceRunResponse) GetResult() TaskQueueServiceError_ErrorCode 
 }
 
 type TaskQueueUpdateQueueRequest struct {
-	AppId                 []byte                    `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	BucketRefillPerSecond *float64                  `protobuf:"fixed64,3,req,name=bucket_refill_per_second" json:"bucket_refill_per_second,omitempty"`
-	BucketCapacity        *int32                    `protobuf:"varint,4,req,name=bucket_capacity" json:"bucket_capacity,omitempty"`
-	UserSpecifiedRate     *string                   `protobuf:"bytes,5,opt,name=user_specified_rate" json:"user_specified_rate,omitempty"`
-	RetryParameters       *TaskQueueRetryParameters `protobuf:"bytes,6,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
-	MaxConcurrentRequests *int32                    `protobuf:"varint,7,opt,name=max_concurrent_requests" json:"max_concurrent_requests,omitempty"`
+	AppId                 []byte                    `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	BucketRefillPerSecond *float64                  `protobuf:"fixed64,3,req,name=bucket_refill_per_second,json=bucketRefillPerSecond" json:"bucket_refill_per_second,omitempty"`
+	BucketCapacity        *int32                    `protobuf:"varint,4,req,name=bucket_capacity,json=bucketCapacity" json:"bucket_capacity,omitempty"`
+	UserSpecifiedRate     *string                   `protobuf:"bytes,5,opt,name=user_specified_rate,json=userSpecifiedRate" json:"user_specified_rate,omitempty"`
+	RetryParameters       *TaskQueueRetryParameters `protobuf:"bytes,6,opt,name=retry_parameters,json=retryParameters" json:"retry_parameters,omitempty"`
+	MaxConcurrentRequests *int32                    `protobuf:"varint,7,opt,name=max_concurrent_requests,json=maxConcurrentRequests" json:"max_concurrent_requests,omitempty"`
 	Mode                  *TaskQueueMode_Mode       `protobuf:"varint,8,opt,name=mode,enum=appengine.TaskQueueMode_Mode" json:"mode,omitempty"`
 	Acl                   *TaskQueueAcl             `protobuf:"bytes,9,opt,name=acl" json:"acl,omitempty"`
-	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,10,rep,name=header_override" json:"header_override,omitempty"`
+	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,10,rep,name=header_override,json=headerOverride" json:"header_override,omitempty"`
 	XXX_unrecognized      []byte                    `json:"-"`
 }
 
@@ -940,8 +940,8 @@ func (m *TaskQueueUpdateQueueResponse) String() string { return proto.CompactTex
 func (*TaskQueueUpdateQueueResponse) ProtoMessage()    {}
 
 type TaskQueueFetchQueuesRequest struct {
-	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	MaxRows          *int32 `protobuf:"varint,2,req,name=max_rows" json:"max_rows,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	MaxRows          *int32 `protobuf:"varint,2,req,name=max_rows,json=maxRows" json:"max_rows,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -964,7 +964,7 @@ func (m *TaskQueueFetchQueuesRequest) GetMaxRows() int32 {
 }
 
 type TaskQueueFetchQueuesResponse struct {
-	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep,name=Queue" json:"queue,omitempty"`
+	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep,name=Queue,json=queue" json:"queue,omitempty"`
 	XXX_unrecognized []byte                                `json:"-"`
 }
 
@@ -980,17 +980,17 @@ func (m *TaskQueueFetchQueuesResponse) GetQueue() []*TaskQueueFetchQueuesRespons
 }
 
 type TaskQueueFetchQueuesResponse_Queue struct {
-	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	BucketRefillPerSecond *float64                  `protobuf:"fixed64,3,req,name=bucket_refill_per_second" json:"bucket_refill_per_second,omitempty"`
-	BucketCapacity        *float64                  `protobuf:"fixed64,4,req,name=bucket_capacity" json:"bucket_capacity,omitempty"`
-	UserSpecifiedRate     *string                   `protobuf:"bytes,5,opt,name=user_specified_rate" json:"user_specified_rate,omitempty"`
+	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	BucketRefillPerSecond *float64                  `protobuf:"fixed64,3,req,name=bucket_refill_per_second,json=bucketRefillPerSecond" json:"bucket_refill_per_second,omitempty"`
+	BucketCapacity        *float64                  `protobuf:"fixed64,4,req,name=bucket_capacity,json=bucketCapacity" json:"bucket_capacity,omitempty"`
+	UserSpecifiedRate     *string                   `protobuf:"bytes,5,opt,name=user_specified_rate,json=userSpecifiedRate" json:"user_specified_rate,omitempty"`
 	Paused                *bool                     `protobuf:"varint,6,req,name=paused" json:"paused,omitempty"`
-	RetryParameters       *TaskQueueRetryParameters `protobuf:"bytes,7,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
-	MaxConcurrentRequests *int32                    `protobuf:"varint,8,opt,name=max_concurrent_requests" json:"max_concurrent_requests,omitempty"`
+	RetryParameters       *TaskQueueRetryParameters `protobuf:"bytes,7,opt,name=retry_parameters,json=retryParameters" json:"retry_parameters,omitempty"`
+	MaxConcurrentRequests *int32                    `protobuf:"varint,8,opt,name=max_concurrent_requests,json=maxConcurrentRequests" json:"max_concurrent_requests,omitempty"`
 	Mode                  *TaskQueueMode_Mode       `protobuf:"varint,9,opt,name=mode,enum=appengine.TaskQueueMode_Mode" json:"mode,omitempty"`
 	Acl                   *TaskQueueAcl             `protobuf:"bytes,10,opt,name=acl" json:"acl,omitempty"`
-	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,11,rep,name=header_override" json:"header_override,omitempty"`
-	CreatorName           *string                   `protobuf:"bytes,12,opt,name=creator_name,def=apphosting" json:"creator_name,omitempty"`
+	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,11,rep,name=header_override,json=headerOverride" json:"header_override,omitempty"`
+	CreatorName           *string                   `protobuf:"bytes,12,opt,name=creator_name,json=creatorName,def=apphosting" json:"creator_name,omitempty"`
 	XXX_unrecognized      []byte                    `json:"-"`
 }
 
@@ -1078,9 +1078,9 @@ func (m *TaskQueueFetchQueuesResponse_Queue) GetCreatorName() string {
 }
 
 type TaskQueueFetchQueueStatsRequest struct {
-	AppId            []byte   `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName        [][]byte `protobuf:"bytes,2,rep,name=queue_name" json:"queue_name,omitempty"`
-	MaxNumTasks      *int32   `protobuf:"varint,3,opt,name=max_num_tasks" json:"max_num_tasks,omitempty"`
+	AppId            []byte   `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        [][]byte `protobuf:"bytes,2,rep,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	MaxNumTasks      *int32   `protobuf:"varint,3,opt,name=max_num_tasks,json=maxNumTasks" json:"max_num_tasks,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -1110,11 +1110,11 @@ func (m *TaskQueueFetchQueueStatsRequest) GetMaxNumTasks() int32 {
 }
 
 type TaskQueueScannerQueueInfo struct {
-	ExecutedLastMinute      *int64   `protobuf:"varint,1,req,name=executed_last_minute" json:"executed_last_minute,omitempty"`
-	ExecutedLastHour        *int64   `protobuf:"varint,2,req,name=executed_last_hour" json:"executed_last_hour,omitempty"`
-	SamplingDurationSeconds *float64 `protobuf:"fixed64,3,req,name=sampling_duration_seconds" json:"sampling_duration_seconds,omitempty"`
-	RequestsInFlight        *int32   `protobuf:"varint,4,opt,name=requests_in_flight" json:"requests_in_flight,omitempty"`
-	EnforcedRate            *float64 `protobuf:"fixed64,5,opt,name=enforced_rate" json:"enforced_rate,omitempty"`
+	ExecutedLastMinute      *int64   `protobuf:"varint,1,req,name=executed_last_minute,json=executedLastMinute" json:"executed_last_minute,omitempty"`
+	ExecutedLastHour        *int64   `protobuf:"varint,2,req,name=executed_last_hour,json=executedLastHour" json:"executed_last_hour,omitempty"`
+	SamplingDurationSeconds *float64 `protobuf:"fixed64,3,req,name=sampling_duration_seconds,json=samplingDurationSeconds" json:"sampling_duration_seconds,omitempty"`
+	RequestsInFlight        *int32   `protobuf:"varint,4,opt,name=requests_in_flight,json=requestsInFlight" json:"requests_in_flight,omitempty"`
+	EnforcedRate            *float64 `protobuf:"fixed64,5,opt,name=enforced_rate,json=enforcedRate" json:"enforced_rate,omitempty"`
 	XXX_unrecognized        []byte   `json:"-"`
 }
 
@@ -1158,7 +1158,7 @@ func (m *TaskQueueScannerQueueInfo) GetEnforcedRate() float64 {
 }
 
 type TaskQueueFetchQueueStatsResponse struct {
-	Queuestats       []*TaskQueueFetchQueueStatsResponse_QueueStats `protobuf:"group,1,rep,name=QueueStats" json:"queuestats,omitempty"`
+	Queuestats       []*TaskQueueFetchQueueStatsResponse_QueueStats `protobuf:"group,1,rep,name=QueueStats,json=queuestats" json:"queuestats,omitempty"`
 	XXX_unrecognized []byte                                         `json:"-"`
 }
 
@@ -1174,9 +1174,9 @@ func (m *TaskQueueFetchQueueStatsResponse) GetQueuestats() []*TaskQueueFetchQueu
 }
 
 type TaskQueueFetchQueueStatsResponse_QueueStats struct {
-	NumTasks         *int32                     `protobuf:"varint,2,req,name=num_tasks" json:"num_tasks,omitempty"`
-	OldestEtaUsec    *int64                     `protobuf:"varint,3,req,name=oldest_eta_usec" json:"oldest_eta_usec,omitempty"`
-	ScannerInfo      *TaskQueueScannerQueueInfo `protobuf:"bytes,4,opt,name=scanner_info" json:"scanner_info,omitempty"`
+	NumTasks         *int32                     `protobuf:"varint,2,req,name=num_tasks,json=numTasks" json:"num_tasks,omitempty"`
+	OldestEtaUsec    *int64                     `protobuf:"varint,3,req,name=oldest_eta_usec,json=oldestEtaUsec" json:"oldest_eta_usec,omitempty"`
+	ScannerInfo      *TaskQueueScannerQueueInfo `protobuf:"bytes,4,opt,name=scanner_info,json=scannerInfo" json:"scanner_info,omitempty"`
 	XXX_unrecognized []byte                     `json:"-"`
 }
 
@@ -1210,8 +1210,8 @@ func (m *TaskQueueFetchQueueStatsResponse_QueueStats) GetScannerInfo() *TaskQueu
 }
 
 type TaskQueuePauseQueueRequest struct {
-	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
 	Pause            *bool  `protobuf:"varint,3,req,name=pause" json:"pause,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -1250,8 +1250,8 @@ func (m *TaskQueuePauseQueueResponse) String() string { return proto.CompactText
 func (*TaskQueuePauseQueueResponse) ProtoMessage()    {}
 
 type TaskQueuePurgeQueueRequest struct {
-	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1282,8 +1282,8 @@ func (m *TaskQueuePurgeQueueResponse) String() string { return proto.CompactText
 func (*TaskQueuePurgeQueueResponse) ProtoMessage()    {}
 
 type TaskQueueDeleteQueueRequest struct {
-	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1314,7 +1314,7 @@ func (m *TaskQueueDeleteQueueResponse) String() string { return proto.CompactTex
 func (*TaskQueueDeleteQueueResponse) ProtoMessage()    {}
 
 type TaskQueueDeleteGroupRequest struct {
-	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1338,12 +1338,12 @@ func (m *TaskQueueDeleteGroupResponse) String() string { return proto.CompactTex
 func (*TaskQueueDeleteGroupResponse) ProtoMessage()    {}
 
 type TaskQueueQueryTasksRequest struct {
-	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	StartTaskName    []byte `protobuf:"bytes,3,opt,name=start_task_name" json:"start_task_name,omitempty"`
-	StartEtaUsec     *int64 `protobuf:"varint,4,opt,name=start_eta_usec" json:"start_eta_usec,omitempty"`
-	StartTag         []byte `protobuf:"bytes,6,opt,name=start_tag" json:"start_tag,omitempty"`
-	MaxRows          *int32 `protobuf:"varint,5,opt,name=max_rows,def=1" json:"max_rows,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	StartTaskName    []byte `protobuf:"bytes,3,opt,name=start_task_name,json=startTaskName" json:"start_task_name,omitempty"`
+	StartEtaUsec     *int64 `protobuf:"varint,4,opt,name=start_eta_usec,json=startEtaUsec" json:"start_eta_usec,omitempty"`
+	StartTag         []byte `protobuf:"bytes,6,opt,name=start_tag,json=startTag" json:"start_tag,omitempty"`
+	MaxRows          *int32 `protobuf:"varint,5,opt,name=max_rows,json=maxRows,def=1" json:"max_rows,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1396,7 +1396,7 @@ func (m *TaskQueueQueryTasksRequest) GetMaxRows() int32 {
 }
 
 type TaskQueueQueryTasksResponse struct {
-	Task             []*TaskQueueQueryTasksResponse_Task `protobuf:"group,1,rep,name=Task" json:"task,omitempty"`
+	Task             []*TaskQueueQueryTasksResponse_Task `protobuf:"group,1,rep,name=Task,json=task" json:"task,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
@@ -1412,23 +1412,23 @@ func (m *TaskQueueQueryTasksResponse) GetTask() []*TaskQueueQueryTasksResponse_T
 }
 
 type TaskQueueQueryTasksResponse_Task struct {
-	TaskName         []byte                                          `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec          *int64                                          `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
+	TaskName         []byte                                          `protobuf:"bytes,2,req,name=task_name,json=taskName" json:"task_name,omitempty"`
+	EtaUsec          *int64                                          `protobuf:"varint,3,req,name=eta_usec,json=etaUsec" json:"eta_usec,omitempty"`
 	Url              []byte                                          `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
 	Method           *TaskQueueQueryTasksResponse_Task_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueQueryTasksResponse_Task_RequestMethod" json:"method,omitempty"`
-	RetryCount       *int32                                          `protobuf:"varint,6,opt,name=retry_count" json:"retry_count,omitempty"`
-	Header           []*TaskQueueQueryTasksResponse_Task_Header      `protobuf:"group,7,rep,name=Header" json:"header,omitempty"`
-	BodySize         *int32                                          `protobuf:"varint,10,opt,name=body_size" json:"body_size,omitempty"`
+	RetryCount       *int32                                          `protobuf:"varint,6,opt,name=retry_count,json=retryCount" json:"retry_count,omitempty"`
+	Header           []*TaskQueueQueryTasksResponse_Task_Header      `protobuf:"group,7,rep,name=Header,json=header" json:"header,omitempty"`
+	BodySize         *int32                                          `protobuf:"varint,10,opt,name=body_size,json=bodySize" json:"body_size,omitempty"`
 	Body             []byte                                          `protobuf:"bytes,11,opt,name=body" json:"body,omitempty"`
-	CreationTimeUsec *int64                                          `protobuf:"varint,12,req,name=creation_time_usec" json:"creation_time_usec,omitempty"`
-	Crontimetable    *TaskQueueQueryTasksResponse_Task_CronTimetable `protobuf:"group,13,opt,name=CronTimetable" json:"crontimetable,omitempty"`
-	Runlog           *TaskQueueQueryTasksResponse_Task_RunLog        `protobuf:"group,16,opt,name=RunLog" json:"runlog,omitempty"`
+	CreationTimeUsec *int64                                          `protobuf:"varint,12,req,name=creation_time_usec,json=creationTimeUsec" json:"creation_time_usec,omitempty"`
+	Crontimetable    *TaskQueueQueryTasksResponse_Task_CronTimetable `protobuf:"group,13,opt,name=CronTimetable,json=crontimetable" json:"crontimetable,omitempty"`
+	Runlog           *TaskQueueQueryTasksResponse_Task_RunLog        `protobuf:"group,16,opt,name=RunLog,json=runlog" json:"runlog,omitempty"`
 	Description      []byte                                          `protobuf:"bytes,21,opt,name=description" json:"description,omitempty"`
 	Payload          *TaskPayload                                    `protobuf:"bytes,22,opt,name=payload" json:"payload,omitempty"`
-	RetryParameters  *TaskQueueRetryParameters                       `protobuf:"bytes,23,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
-	FirstTryUsec     *int64                                          `protobuf:"varint,24,opt,name=first_try_usec" json:"first_try_usec,omitempty"`
+	RetryParameters  *TaskQueueRetryParameters                       `protobuf:"bytes,23,opt,name=retry_parameters,json=retryParameters" json:"retry_parameters,omitempty"`
+	FirstTryUsec     *int64                                          `protobuf:"varint,24,opt,name=first_try_usec,json=firstTryUsec" json:"first_try_usec,omitempty"`
 	Tag              []byte                                          `protobuf:"bytes,25,opt,name=tag" json:"tag,omitempty"`
-	ExecutionCount   *int32                                          `protobuf:"varint,26,opt,name=execution_count" json:"execution_count,omitempty"`
+	ExecutionCount   *int32                                          `protobuf:"varint,26,opt,name=execution_count,json=executionCount" json:"execution_count,omitempty"`
 	XXX_unrecognized []byte                                          `json:"-"`
 }
 
@@ -1610,11 +1610,11 @@ func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) GetTimezone() []byte {
 }
 
 type TaskQueueQueryTasksResponse_Task_RunLog struct {
-	DispatchedUsec   *int64  `protobuf:"varint,17,req,name=dispatched_usec" json:"dispatched_usec,omitempty"`
-	LagUsec          *int64  `protobuf:"varint,18,req,name=lag_usec" json:"lag_usec,omitempty"`
-	ElapsedUsec      *int64  `protobuf:"varint,19,req,name=elapsed_usec" json:"elapsed_usec,omitempty"`
-	ResponseCode     *int64  `protobuf:"varint,20,opt,name=response_code" json:"response_code,omitempty"`
-	RetryReason      *string `protobuf:"bytes,27,opt,name=retry_reason" json:"retry_reason,omitempty"`
+	DispatchedUsec   *int64  `protobuf:"varint,17,req,name=dispatched_usec,json=dispatchedUsec" json:"dispatched_usec,omitempty"`
+	LagUsec          *int64  `protobuf:"varint,18,req,name=lag_usec,json=lagUsec" json:"lag_usec,omitempty"`
+	ElapsedUsec      *int64  `protobuf:"varint,19,req,name=elapsed_usec,json=elapsedUsec" json:"elapsed_usec,omitempty"`
+	ResponseCode     *int64  `protobuf:"varint,20,opt,name=response_code,json=responseCode" json:"response_code,omitempty"`
+	RetryReason      *string `protobuf:"bytes,27,opt,name=retry_reason,json=retryReason" json:"retry_reason,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1660,9 +1660,9 @@ func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetRetryReason() string {
 }
 
 type TaskQueueFetchTaskRequest struct {
-	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
-	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName         []byte `protobuf:"bytes,3,req,name=task_name" json:"task_name,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	TaskName         []byte `protobuf:"bytes,3,req,name=task_name,json=taskName" json:"task_name,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1708,7 +1708,7 @@ func (m *TaskQueueFetchTaskResponse) GetTask() *TaskQueueQueryTasksResponse {
 }
 
 type TaskQueueUpdateStorageLimitRequest struct {
-	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
 	Limit            *int64 `protobuf:"varint,2,req,name=limit" json:"limit,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -1732,7 +1732,7 @@ func (m *TaskQueueUpdateStorageLimitRequest) GetLimit() int64 {
 }
 
 type TaskQueueUpdateStorageLimitResponse struct {
-	NewLimit         *int64 `protobuf:"varint,1,req,name=new_limit" json:"new_limit,omitempty"`
+	NewLimit         *int64 `protobuf:"varint,1,req,name=new_limit,json=newLimit" json:"new_limit,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1748,10 +1748,10 @@ func (m *TaskQueueUpdateStorageLimitResponse) GetNewLimit() int64 {
 }
 
 type TaskQueueQueryAndOwnTasksRequest struct {
-	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
-	LeaseSeconds     *float64 `protobuf:"fixed64,2,req,name=lease_seconds" json:"lease_seconds,omitempty"`
-	MaxTasks         *int64   `protobuf:"varint,3,req,name=max_tasks" json:"max_tasks,omitempty"`
-	GroupByTag       *bool    `protobuf:"varint,4,opt,name=group_by_tag" json:"group_by_tag,omitempty"`
+	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	LeaseSeconds     *float64 `protobuf:"fixed64,2,req,name=lease_seconds,json=leaseSeconds" json:"lease_seconds,omitempty"`
+	MaxTasks         *int64   `protobuf:"varint,3,req,name=max_tasks,json=maxTasks" json:"max_tasks,omitempty"`
+	GroupByTag       *bool    `protobuf:"varint,4,opt,name=group_by_tag,json=groupByTag" json:"group_by_tag,omitempty"`
 	Tag              []byte   `protobuf:"bytes,5,opt,name=tag" json:"tag,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
@@ -1796,7 +1796,7 @@ func (m *TaskQueueQueryAndOwnTasksRequest) GetTag() []byte {
 }
 
 type TaskQueueQueryAndOwnTasksResponse struct {
-	Task             []*TaskQueueQueryAndOwnTasksResponse_Task `protobuf:"group,1,rep,name=Task" json:"task,omitempty"`
+	Task             []*TaskQueueQueryAndOwnTasksResponse_Task `protobuf:"group,1,rep,name=Task,json=task" json:"task,omitempty"`
 	XXX_unrecognized []byte                                    `json:"-"`
 }
 
@@ -1812,9 +1812,9 @@ func (m *TaskQueueQueryAndOwnTasksResponse) GetTask() []*TaskQueueQueryAndOwnTas
 }
 
 type TaskQueueQueryAndOwnTasksResponse_Task struct {
-	TaskName         []byte `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec          *int64 `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
-	RetryCount       *int32 `protobuf:"varint,4,opt,name=retry_count" json:"retry_count,omitempty"`
+	TaskName         []byte `protobuf:"bytes,2,req,name=task_name,json=taskName" json:"task_name,omitempty"`
+	EtaUsec          *int64 `protobuf:"varint,3,req,name=eta_usec,json=etaUsec" json:"eta_usec,omitempty"`
+	RetryCount       *int32 `protobuf:"varint,4,opt,name=retry_count,json=retryCount" json:"retry_count,omitempty"`
 	Body             []byte `protobuf:"bytes,5,opt,name=body" json:"body,omitempty"`
 	Tag              []byte `protobuf:"bytes,6,opt,name=tag" json:"tag,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
@@ -1862,10 +1862,10 @@ func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetTag() []byte {
 }
 
 type TaskQueueModifyTaskLeaseRequest struct {
-	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName         []byte   `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec          *int64   `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
-	LeaseSeconds     *float64 `protobuf:"fixed64,4,req,name=lease_seconds" json:"lease_seconds,omitempty"`
+	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name,json=queueName" json:"queue_name,omitempty"`
+	TaskName         []byte   `protobuf:"bytes,2,req,name=task_name,json=taskName" json:"task_name,omitempty"`
+	EtaUsec          *int64   `protobuf:"varint,3,req,name=eta_usec,json=etaUsec" json:"eta_usec,omitempty"`
+	LeaseSeconds     *float64 `protobuf:"fixed64,4,req,name=lease_seconds,json=leaseSeconds" json:"lease_seconds,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -1902,7 +1902,7 @@ func (m *TaskQueueModifyTaskLeaseRequest) GetLeaseSeconds() float64 {
 }
 
 type TaskQueueModifyTaskLeaseResponse struct {
-	UpdatedEtaUsec   *int64 `protobuf:"varint,1,req,name=updated_eta_usec" json:"updated_eta_usec,omitempty"`
+	UpdatedEtaUsec   *int64 `protobuf:"varint,1,req,name=updated_eta_usec,json=updatedEtaUsec" json:"updated_eta_usec,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1918,6 +1918,56 @@ func (m *TaskQueueModifyTaskLeaseResponse) GetUpdatedEtaUsec() int64 {
 }
 
 func init() {
+	proto.RegisterType((*Transaction)(nil), "appengine.Transaction")
+	proto.RegisterType((*TaskQueueServiceError)(nil), "appengine.TaskQueueServiceError")
+	proto.RegisterType((*TaskPayload)(nil), "appengine.TaskPayload")
+	proto.RegisterType((*TaskQueueRetryParameters)(nil), "appengine.TaskQueueRetryParameters")
+	proto.RegisterType((*TaskQueueAcl)(nil), "appengine.TaskQueueAcl")
+	proto.RegisterType((*TaskQueueHttpHeader)(nil), "appengine.TaskQueueHttpHeader")
+	proto.RegisterType((*TaskQueueMode)(nil), "appengine.TaskQueueMode")
+	proto.RegisterType((*TaskQueueAddRequest)(nil), "appengine.TaskQueueAddRequest")
+	proto.RegisterType((*TaskQueueAddRequest_Header)(nil), "appengine.TaskQueueAddRequest.Header")
+	proto.RegisterType((*TaskQueueAddRequest_CronTimetable)(nil), "appengine.TaskQueueAddRequest.CronTimetable")
+	proto.RegisterType((*TaskQueueAddResponse)(nil), "appengine.TaskQueueAddResponse")
+	proto.RegisterType((*TaskQueueBulkAddRequest)(nil), "appengine.TaskQueueBulkAddRequest")
+	proto.RegisterType((*TaskQueueBulkAddResponse)(nil), "appengine.TaskQueueBulkAddResponse")
+	proto.RegisterType((*TaskQueueBulkAddResponse_TaskResult)(nil), "appengine.TaskQueueBulkAddResponse.TaskResult")
+	proto.RegisterType((*TaskQueueDeleteRequest)(nil), "appengine.TaskQueueDeleteRequest")
+	proto.RegisterType((*TaskQueueDeleteResponse)(nil), "appengine.TaskQueueDeleteResponse")
+	proto.RegisterType((*TaskQueueForceRunRequest)(nil), "appengine.TaskQueueForceRunRequest")
+	proto.RegisterType((*TaskQueueForceRunResponse)(nil), "appengine.TaskQueueForceRunResponse")
+	proto.RegisterType((*TaskQueueUpdateQueueRequest)(nil), "appengine.TaskQueueUpdateQueueRequest")
+	proto.RegisterType((*TaskQueueUpdateQueueResponse)(nil), "appengine.TaskQueueUpdateQueueResponse")
+	proto.RegisterType((*TaskQueueFetchQueuesRequest)(nil), "appengine.TaskQueueFetchQueuesRequest")
+	proto.RegisterType((*TaskQueueFetchQueuesResponse)(nil), "appengine.TaskQueueFetchQueuesResponse")
+	proto.RegisterType((*TaskQueueFetchQueuesResponse_Queue)(nil), "appengine.TaskQueueFetchQueuesResponse.Queue")
+	proto.RegisterType((*TaskQueueFetchQueueStatsRequest)(nil), "appengine.TaskQueueFetchQueueStatsRequest")
+	proto.RegisterType((*TaskQueueScannerQueueInfo)(nil), "appengine.TaskQueueScannerQueueInfo")
+	proto.RegisterType((*TaskQueueFetchQueueStatsResponse)(nil), "appengine.TaskQueueFetchQueueStatsResponse")
+	proto.RegisterType((*TaskQueueFetchQueueStatsResponse_QueueStats)(nil), "appengine.TaskQueueFetchQueueStatsResponse.QueueStats")
+	proto.RegisterType((*TaskQueuePauseQueueRequest)(nil), "appengine.TaskQueuePauseQueueRequest")
+	proto.RegisterType((*TaskQueuePauseQueueResponse)(nil), "appengine.TaskQueuePauseQueueResponse")
+	proto.RegisterType((*TaskQueuePurgeQueueRequest)(nil), "appengine.TaskQueuePurgeQueueRequest")
+	proto.RegisterType((*TaskQueuePurgeQueueResponse)(nil), "appengine.TaskQueuePurgeQueueResponse")
+	proto.RegisterType((*TaskQueueDeleteQueueRequest)(nil), "appengine.TaskQueueDeleteQueueRequest")
+	proto.RegisterType((*TaskQueueDeleteQueueResponse)(nil), "appengine.TaskQueueDeleteQueueResponse")
+	proto.RegisterType((*TaskQueueDeleteGroupRequest)(nil), "appengine.TaskQueueDeleteGroupRequest")
+	proto.RegisterType((*TaskQueueDeleteGroupResponse)(nil), "appengine.TaskQueueDeleteGroupResponse")
+	proto.RegisterType((*TaskQueueQueryTasksRequest)(nil), "appengine.TaskQueueQueryTasksRequest")
+	proto.RegisterType((*TaskQueueQueryTasksResponse)(nil), "appengine.TaskQueueQueryTasksResponse")
+	proto.RegisterType((*TaskQueueQueryTasksResponse_Task)(nil), "appengine.TaskQueueQueryTasksResponse.Task")
+	proto.RegisterType((*TaskQueueQueryTasksResponse_Task_Header)(nil), "appengine.TaskQueueQueryTasksResponse.Task.Header")
+	proto.RegisterType((*TaskQueueQueryTasksResponse_Task_CronTimetable)(nil), "appengine.TaskQueueQueryTasksResponse.Task.CronTimetable")
+	proto.RegisterType((*TaskQueueQueryTasksResponse_Task_RunLog)(nil), "appengine.TaskQueueQueryTasksResponse.Task.RunLog")
+	proto.RegisterType((*TaskQueueFetchTaskRequest)(nil), "appengine.TaskQueueFetchTaskRequest")
+	proto.RegisterType((*TaskQueueFetchTaskResponse)(nil), "appengine.TaskQueueFetchTaskResponse")
+	proto.RegisterType((*TaskQueueUpdateStorageLimitRequest)(nil), "appengine.TaskQueueUpdateStorageLimitRequest")
+	proto.RegisterType((*TaskQueueUpdateStorageLimitResponse)(nil), "appengine.TaskQueueUpdateStorageLimitResponse")
+	proto.RegisterType((*TaskQueueQueryAndOwnTasksRequest)(nil), "appengine.TaskQueueQueryAndOwnTasksRequest")
+	proto.RegisterType((*TaskQueueQueryAndOwnTasksResponse)(nil), "appengine.TaskQueueQueryAndOwnTasksResponse")
+	proto.RegisterType((*TaskQueueQueryAndOwnTasksResponse_Task)(nil), "appengine.TaskQueueQueryAndOwnTasksResponse.Task")
+	proto.RegisterType((*TaskQueueModifyTaskLeaseRequest)(nil), "appengine.TaskQueueModifyTaskLeaseRequest")
+	proto.RegisterType((*TaskQueueModifyTaskLeaseResponse)(nil), "appengine.TaskQueueModifyTaskLeaseResponse")
 	proto.RegisterEnum("appengine.TaskQueueServiceError_ErrorCode", TaskQueueServiceError_ErrorCode_name, TaskQueueServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.TaskQueueMode_Mode", TaskQueueMode_Mode_name, TaskQueueMode_Mode_value)
 	proto.RegisterEnum("appengine.TaskQueueAddRequest_RequestMethod", TaskQueueAddRequest_RequestMethod_name, TaskQueueAddRequest_RequestMethod_value)

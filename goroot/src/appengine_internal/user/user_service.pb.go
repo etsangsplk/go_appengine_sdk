@@ -83,9 +83,9 @@ func (m *UserServiceError) String() string { return proto.CompactTextString(m) }
 func (*UserServiceError) ProtoMessage()    {}
 
 type CreateLoginURLRequest struct {
-	DestinationUrl    *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
-	AuthDomain        *string `protobuf:"bytes,2,opt,name=auth_domain" json:"auth_domain,omitempty"`
-	FederatedIdentity *string `protobuf:"bytes,3,opt,name=federated_identity" json:"federated_identity,omitempty"`
+	DestinationUrl    *string `protobuf:"bytes,1,req,name=destination_url,json=destinationUrl" json:"destination_url,omitempty"`
+	AuthDomain        *string `protobuf:"bytes,2,opt,name=auth_domain,json=authDomain" json:"auth_domain,omitempty"`
+	FederatedIdentity *string `protobuf:"bytes,3,opt,name=federated_identity,json=federatedIdentity" json:"federated_identity,omitempty"`
 	XXX_unrecognized  []byte  `json:"-"`
 }
 
@@ -115,7 +115,7 @@ func (m *CreateLoginURLRequest) GetFederatedIdentity() string {
 }
 
 type CreateLoginURLResponse struct {
-	LoginUrl         *string `protobuf:"bytes,1,opt,name=login_url" json:"login_url,omitempty"`
+	LoginUrl         *string `protobuf:"bytes,1,opt,name=login_url,json=loginUrl" json:"login_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -131,8 +131,8 @@ func (m *CreateLoginURLResponse) GetLoginUrl() string {
 }
 
 type CreateLogoutURLRequest struct {
-	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
-	AuthDomain       *string `protobuf:"bytes,2,opt,name=auth_domain" json:"auth_domain,omitempty"`
+	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url,json=destinationUrl" json:"destination_url,omitempty"`
+	AuthDomain       *string `protobuf:"bytes,2,opt,name=auth_domain,json=authDomain" json:"auth_domain,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -155,7 +155,7 @@ func (m *CreateLogoutURLRequest) GetAuthDomain() string {
 }
 
 type CreateLogoutURLResponse struct {
-	LogoutUrl        *string `protobuf:"bytes,1,opt,name=logout_url" json:"logout_url,omitempty"`
+	LogoutUrl        *string `protobuf:"bytes,1,opt,name=logout_url,json=logoutUrl" json:"logout_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -173,7 +173,7 @@ func (m *CreateLogoutURLResponse) GetLogoutUrl() string {
 type GetOAuthUserRequest struct {
 	Scope                   *string  `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
 	Scopes                  []string `protobuf:"bytes,2,rep,name=scopes" json:"scopes,omitempty"`
-	RequestWriterPermission *bool    `protobuf:"varint,3,opt,name=request_writer_permission" json:"request_writer_permission,omitempty"`
+	RequestWriterPermission *bool    `protobuf:"varint,3,opt,name=request_writer_permission,json=requestWriterPermission" json:"request_writer_permission,omitempty"`
 	XXX_unrecognized        []byte   `json:"-"`
 }
 
@@ -204,13 +204,13 @@ func (m *GetOAuthUserRequest) GetRequestWriterPermission() bool {
 
 type GetOAuthUserResponse struct {
 	Email            *string  `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
-	UserId           *string  `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	AuthDomain       *string  `protobuf:"bytes,3,opt,name=auth_domain" json:"auth_domain,omitempty"`
-	UserOrganization *string  `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
-	IsAdmin          *bool    `protobuf:"varint,5,opt,name=is_admin" json:"is_admin,omitempty"`
-	ClientId         *string  `protobuf:"bytes,6,opt,name=client_id" json:"client_id,omitempty"`
+	UserId           *string  `protobuf:"bytes,2,opt,name=user_id,json=userId" json:"user_id,omitempty"`
+	AuthDomain       *string  `protobuf:"bytes,3,opt,name=auth_domain,json=authDomain" json:"auth_domain,omitempty"`
+	UserOrganization *string  `protobuf:"bytes,4,opt,name=user_organization,json=userOrganization" json:"user_organization,omitempty"`
+	IsAdmin          *bool    `protobuf:"varint,5,opt,name=is_admin,json=isAdmin" json:"is_admin,omitempty"`
+	ClientId         *string  `protobuf:"bytes,6,opt,name=client_id,json=clientId" json:"client_id,omitempty"`
 	Scopes           []string `protobuf:"bytes,7,rep,name=scopes" json:"scopes,omitempty"`
-	IsProjectWriter  *bool    `protobuf:"varint,8,opt,name=is_project_writer" json:"is_project_writer,omitempty"`
+	IsProjectWriter  *bool    `protobuf:"varint,8,opt,name=is_project_writer,json=isProjectWriter" json:"is_project_writer,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -283,7 +283,7 @@ func (m *CheckOAuthSignatureRequest) String() string { return proto.CompactTextS
 func (*CheckOAuthSignatureRequest) ProtoMessage()    {}
 
 type CheckOAuthSignatureResponse struct {
-	OauthConsumerKey *string `protobuf:"bytes,1,opt,name=oauth_consumer_key" json:"oauth_consumer_key,omitempty"`
+	OauthConsumerKey *string `protobuf:"bytes,1,opt,name=oauth_consumer_key,json=oauthConsumerKey" json:"oauth_consumer_key,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -299,5 +299,14 @@ func (m *CheckOAuthSignatureResponse) GetOauthConsumerKey() string {
 }
 
 func init() {
+	proto.RegisterType((*UserServiceError)(nil), "appengine.UserServiceError")
+	proto.RegisterType((*CreateLoginURLRequest)(nil), "appengine.CreateLoginURLRequest")
+	proto.RegisterType((*CreateLoginURLResponse)(nil), "appengine.CreateLoginURLResponse")
+	proto.RegisterType((*CreateLogoutURLRequest)(nil), "appengine.CreateLogoutURLRequest")
+	proto.RegisterType((*CreateLogoutURLResponse)(nil), "appengine.CreateLogoutURLResponse")
+	proto.RegisterType((*GetOAuthUserRequest)(nil), "appengine.GetOAuthUserRequest")
+	proto.RegisterType((*GetOAuthUserResponse)(nil), "appengine.GetOAuthUserResponse")
+	proto.RegisterType((*CheckOAuthSignatureRequest)(nil), "appengine.CheckOAuthSignatureRequest")
+	proto.RegisterType((*CheckOAuthSignatureResponse)(nil), "appengine.CheckOAuthSignatureResponse")
 	proto.RegisterEnum("appengine.UserServiceError_ErrorCode", UserServiceError_ErrorCode_name, UserServiceError_ErrorCode_value)
 }

@@ -561,10 +561,10 @@ func (*FileContentType) ProtoMessage()    {}
 
 type CreateRequest struct {
 	Filesystem            *string                      `protobuf:"bytes,1,req,name=filesystem" json:"filesystem,omitempty"`
-	ContentType           *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	ContentType           *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,json=contentType,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
 	Filename              *string                      `protobuf:"bytes,3,opt,name=filename,def=" json:"filename,omitempty"`
 	Parameters            []*CreateRequest_Parameter   `protobuf:"bytes,4,rep,name=parameters" json:"parameters,omitempty"`
-	ExpirationTimeSeconds *int64                       `protobuf:"varint,5,opt,name=expiration_time_seconds" json:"expiration_time_seconds,omitempty"`
+	ExpirationTimeSeconds *int64                       `protobuf:"varint,5,opt,name=expiration_time_seconds,json=expirationTimeSeconds" json:"expiration_time_seconds,omitempty"`
 	XXX_unrecognized      []byte                       `json:"-"`
 }
 
@@ -649,11 +649,11 @@ func (m *CreateResponse) GetFilename() string {
 
 type OpenRequest struct {
 	Filename             *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
-	ContentType          *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
-	OpenMode             *OpenRequest_OpenMode        `protobuf:"varint,3,req,name=open_mode,enum=files.OpenRequest_OpenMode" json:"open_mode,omitempty"`
-	ExclusiveLock        *bool                        `protobuf:"varint,4,opt,name=exclusive_lock,def=0" json:"exclusive_lock,omitempty"`
-	BufferedOutput       *bool                        `protobuf:"varint,5,opt,name=buffered_output,def=0" json:"buffered_output,omitempty"`
-	OpenLeaseTimeSeconds *int32                       `protobuf:"varint,6,opt,name=open_lease_time_seconds,def=30" json:"open_lease_time_seconds,omitempty"`
+	ContentType          *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,json=contentType,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	OpenMode             *OpenRequest_OpenMode        `protobuf:"varint,3,req,name=open_mode,json=openMode,enum=files.OpenRequest_OpenMode" json:"open_mode,omitempty"`
+	ExclusiveLock        *bool                        `protobuf:"varint,4,opt,name=exclusive_lock,json=exclusiveLock,def=0" json:"exclusive_lock,omitempty"`
+	BufferedOutput       *bool                        `protobuf:"varint,5,opt,name=buffered_output,json=bufferedOutput,def=0" json:"buffered_output,omitempty"`
+	OpenLeaseTimeSeconds *int32                       `protobuf:"varint,6,opt,name=open_lease_time_seconds,json=openLeaseTimeSeconds,def=30" json:"open_lease_time_seconds,omitempty"`
 	XXX_unrecognized     []byte                       `json:"-"`
 }
 
@@ -751,7 +751,7 @@ func (*CloseResponse) ProtoMessage()    {}
 
 type FileStat struct {
 	Filename         *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
-	ContentType      *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	ContentType      *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,json=contentType,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
 	Finalized        *bool                        `protobuf:"varint,3,req,name=finalized" json:"finalized,omitempty"`
 	Length           *int64                       `protobuf:"varint,4,opt,name=length" json:"length,omitempty"`
 	Ctime            *int64                       `protobuf:"varint,5,opt,name=ctime" json:"ctime,omitempty"`
@@ -807,7 +807,7 @@ func (m *FileStat) GetMtime() int64 {
 
 type StatRequest struct {
 	Filename         *string `protobuf:"bytes,1,opt,name=filename" json:"filename,omitempty"`
-	FileGlob         *string `protobuf:"bytes,2,opt,name=file_glob" json:"file_glob,omitempty"`
+	FileGlob         *string `protobuf:"bytes,2,opt,name=file_glob,json=fileGlob" json:"file_glob,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -831,7 +831,7 @@ func (m *StatRequest) GetFileGlob() string {
 
 type StatResponse struct {
 	Stat             []*FileStat `protobuf:"bytes,1,rep,name=stat" json:"stat,omitempty"`
-	MoreFilesFound   *bool       `protobuf:"varint,2,req,name=more_files_found,def=0" json:"more_files_found,omitempty"`
+	MoreFilesFound   *bool       `protobuf:"varint,2,req,name=more_files_found,json=moreFilesFound,def=0" json:"more_files_found,omitempty"`
 	XXX_unrecognized []byte      `json:"-"`
 }
 
@@ -858,7 +858,7 @@ func (m *StatResponse) GetMoreFilesFound() bool {
 type AppendRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,req,name=data" json:"data,omitempty"`
-	SequenceKey      *string `protobuf:"bytes,3,opt,name=sequence_key" json:"sequence_key,omitempty"`
+	SequenceKey      *string `protobuf:"bytes,3,opt,name=sequence_key,json=sequenceKey" json:"sequence_key,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -922,7 +922,7 @@ func (*DeleteResponse) ProtoMessage()    {}
 type ReadRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	Pos              *int64  `protobuf:"varint,2,req,name=pos" json:"pos,omitempty"`
-	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
+	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes,json=maxBytes" json:"max_bytes,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -969,9 +969,9 @@ func (m *ReadResponse) GetData() []byte {
 
 type ReadKeyValueRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
-	StartKey         []byte  `protobuf:"bytes,2,req,name=start_key" json:"start_key,omitempty"`
-	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
-	ValuePos         *int64  `protobuf:"varint,4,opt,name=value_pos" json:"value_pos,omitempty"`
+	StartKey         []byte  `protobuf:"bytes,2,req,name=start_key,json=startKey" json:"start_key,omitempty"`
+	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes,json=maxBytes" json:"max_bytes,omitempty"`
+	ValuePos         *int64  `protobuf:"varint,4,opt,name=value_pos,json=valuePos" json:"value_pos,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1009,8 +1009,8 @@ func (m *ReadKeyValueRequest) GetValuePos() int64 {
 
 type ReadKeyValueResponse struct {
 	Data             []*ReadKeyValueResponse_KeyValue `protobuf:"bytes,1,rep,name=data" json:"data,omitempty"`
-	NextKey          []byte                           `protobuf:"bytes,2,opt,name=next_key" json:"next_key,omitempty"`
-	TruncatedValue   *bool                            `protobuf:"varint,3,opt,name=truncated_value" json:"truncated_value,omitempty"`
+	NextKey          []byte                           `protobuf:"bytes,2,opt,name=next_key,json=nextKey" json:"next_key,omitempty"`
+	TruncatedValue   *bool                            `protobuf:"varint,3,opt,name=truncated_value,json=truncatedValue" json:"truncated_value,omitempty"`
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
@@ -1124,10 +1124,10 @@ func (m *ShuffleOutputSpecification) GetPath() []string {
 }
 
 type ShuffleRequest struct {
-	ShuffleName      *string                      `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
+	ShuffleName      *string                      `protobuf:"bytes,1,req,name=shuffle_name,json=shuffleName" json:"shuffle_name,omitempty"`
 	Input            []*ShuffleInputSpecification `protobuf:"bytes,2,rep,name=input" json:"input,omitempty"`
 	Output           *ShuffleOutputSpecification  `protobuf:"bytes,3,req,name=output" json:"output,omitempty"`
-	ShuffleSizeBytes *int64                       `protobuf:"varint,4,req,name=shuffle_size_bytes" json:"shuffle_size_bytes,omitempty"`
+	ShuffleSizeBytes *int64                       `protobuf:"varint,4,req,name=shuffle_size_bytes,json=shuffleSizeBytes" json:"shuffle_size_bytes,omitempty"`
 	Callback         *ShuffleRequest_Callback     `protobuf:"bytes,5,req,name=callback" json:"callback,omitempty"`
 	XXX_unrecognized []byte                       `json:"-"`
 }
@@ -1173,7 +1173,7 @@ func (m *ShuffleRequest) GetCallback() *ShuffleRequest_Callback {
 
 type ShuffleRequest_Callback struct {
 	Url              *string `protobuf:"bytes,1,req,name=url" json:"url,omitempty"`
-	AppVersionId     *string `protobuf:"bytes,2,opt,name=app_version_id" json:"app_version_id,omitempty"`
+	AppVersionId     *string `protobuf:"bytes,2,opt,name=app_version_id,json=appVersionId" json:"app_version_id,omitempty"`
 	Method           *string `protobuf:"bytes,3,opt,name=method,def=POST" json:"method,omitempty"`
 	Queue            *string `protobuf:"bytes,4,opt,name=queue,def=default" json:"queue,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -1223,7 +1223,7 @@ func (m *ShuffleResponse) String() string { return proto.CompactTextString(m) }
 func (*ShuffleResponse) ProtoMessage()    {}
 
 type GetShuffleStatusRequest struct {
-	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
+	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name,json=shuffleName" json:"shuffle_name,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1272,7 +1272,7 @@ func (*GetCapabilitiesRequest) ProtoMessage()    {}
 
 type GetCapabilitiesResponse struct {
 	Filesystem       []string `protobuf:"bytes,1,rep,name=filesystem" json:"filesystem,omitempty"`
-	ShuffleAvailable *bool    `protobuf:"varint,2,req,name=shuffle_available" json:"shuffle_available,omitempty"`
+	ShuffleAvailable *bool    `protobuf:"varint,2,req,name=shuffle_available,json=shuffleAvailable" json:"shuffle_available,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -1327,7 +1327,7 @@ func (m *GetDefaultGsBucketNameRequest) String() string { return proto.CompactTe
 func (*GetDefaultGsBucketNameRequest) ProtoMessage()    {}
 
 type GetDefaultGsBucketNameResponse struct {
-	DefaultGsBucketName *string `protobuf:"bytes,1,opt,name=default_gs_bucket_name" json:"default_gs_bucket_name,omitempty"`
+	DefaultGsBucketName *string `protobuf:"bytes,1,opt,name=default_gs_bucket_name,json=defaultGsBucketName" json:"default_gs_bucket_name,omitempty"`
 	XXX_unrecognized    []byte  `json:"-"`
 }
 
@@ -1345,7 +1345,7 @@ func (m *GetDefaultGsBucketNameResponse) GetDefaultGsBucketName() string {
 type ListDirRequest struct {
 	Path             *string `protobuf:"bytes,1,req,name=path" json:"path,omitempty"`
 	Marker           *string `protobuf:"bytes,2,opt,name=marker" json:"marker,omitempty"`
-	MaxKeys          *int64  `protobuf:"varint,3,opt,name=max_keys" json:"max_keys,omitempty"`
+	MaxKeys          *int64  `protobuf:"varint,3,opt,name=max_keys,json=maxKeys" json:"max_keys,omitempty"`
 	Prefix           *string `protobuf:"bytes,4,opt,name=prefix" json:"prefix,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -1399,6 +1399,52 @@ func (m *ListDirResponse) GetFilenames() []string {
 }
 
 func init() {
+	proto.RegisterType((*StringProto)(nil), "files.StringProto")
+	proto.RegisterType((*Integer32Proto)(nil), "files.Integer32Proto")
+	proto.RegisterType((*Integer64Proto)(nil), "files.Integer64Proto")
+	proto.RegisterType((*BoolProto)(nil), "files.BoolProto")
+	proto.RegisterType((*DoubleProto)(nil), "files.DoubleProto")
+	proto.RegisterType((*BytesProto)(nil), "files.BytesProto")
+	proto.RegisterType((*VoidProto)(nil), "files.VoidProto")
+	proto.RegisterType((*FileServiceErrors)(nil), "files.FileServiceErrors")
+	proto.RegisterType((*KeyValue)(nil), "files.KeyValue")
+	proto.RegisterType((*KeyValues)(nil), "files.KeyValues")
+	proto.RegisterType((*FileContentType)(nil), "files.FileContentType")
+	proto.RegisterType((*CreateRequest)(nil), "files.CreateRequest")
+	proto.RegisterType((*CreateRequest_Parameter)(nil), "files.CreateRequest.Parameter")
+	proto.RegisterType((*CreateResponse)(nil), "files.CreateResponse")
+	proto.RegisterType((*OpenRequest)(nil), "files.OpenRequest")
+	proto.RegisterType((*OpenResponse)(nil), "files.OpenResponse")
+	proto.RegisterType((*CloseRequest)(nil), "files.CloseRequest")
+	proto.RegisterType((*CloseResponse)(nil), "files.CloseResponse")
+	proto.RegisterType((*FileStat)(nil), "files.FileStat")
+	proto.RegisterType((*StatRequest)(nil), "files.StatRequest")
+	proto.RegisterType((*StatResponse)(nil), "files.StatResponse")
+	proto.RegisterType((*AppendRequest)(nil), "files.AppendRequest")
+	proto.RegisterType((*AppendResponse)(nil), "files.AppendResponse")
+	proto.RegisterType((*DeleteRequest)(nil), "files.DeleteRequest")
+	proto.RegisterType((*DeleteResponse)(nil), "files.DeleteResponse")
+	proto.RegisterType((*ReadRequest)(nil), "files.ReadRequest")
+	proto.RegisterType((*ReadResponse)(nil), "files.ReadResponse")
+	proto.RegisterType((*ReadKeyValueRequest)(nil), "files.ReadKeyValueRequest")
+	proto.RegisterType((*ReadKeyValueResponse)(nil), "files.ReadKeyValueResponse")
+	proto.RegisterType((*ReadKeyValueResponse_KeyValue)(nil), "files.ReadKeyValueResponse.KeyValue")
+	proto.RegisterType((*ShuffleEnums)(nil), "files.ShuffleEnums")
+	proto.RegisterType((*ShuffleInputSpecification)(nil), "files.ShuffleInputSpecification")
+	proto.RegisterType((*ShuffleOutputSpecification)(nil), "files.ShuffleOutputSpecification")
+	proto.RegisterType((*ShuffleRequest)(nil), "files.ShuffleRequest")
+	proto.RegisterType((*ShuffleRequest_Callback)(nil), "files.ShuffleRequest.Callback")
+	proto.RegisterType((*ShuffleResponse)(nil), "files.ShuffleResponse")
+	proto.RegisterType((*GetShuffleStatusRequest)(nil), "files.GetShuffleStatusRequest")
+	proto.RegisterType((*GetShuffleStatusResponse)(nil), "files.GetShuffleStatusResponse")
+	proto.RegisterType((*GetCapabilitiesRequest)(nil), "files.GetCapabilitiesRequest")
+	proto.RegisterType((*GetCapabilitiesResponse)(nil), "files.GetCapabilitiesResponse")
+	proto.RegisterType((*FinalizeRequest)(nil), "files.FinalizeRequest")
+	proto.RegisterType((*FinalizeResponse)(nil), "files.FinalizeResponse")
+	proto.RegisterType((*GetDefaultGsBucketNameRequest)(nil), "files.GetDefaultGsBucketNameRequest")
+	proto.RegisterType((*GetDefaultGsBucketNameResponse)(nil), "files.GetDefaultGsBucketNameResponse")
+	proto.RegisterType((*ListDirRequest)(nil), "files.ListDirRequest")
+	proto.RegisterType((*ListDirResponse)(nil), "files.ListDirResponse")
 	proto.RegisterEnum("files.FileServiceErrors_ErrorCode", FileServiceErrors_ErrorCode_name, FileServiceErrors_ErrorCode_value)
 	proto.RegisterEnum("files.FileContentType_ContentType", FileContentType_ContentType_name, FileContentType_ContentType_value)
 	proto.RegisterEnum("files.OpenRequest_OpenMode", OpenRequest_OpenMode_name, OpenRequest_OpenMode_value)
