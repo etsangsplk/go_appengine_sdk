@@ -16,10 +16,12 @@ It has these top-level messages:
 package appengine
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
 var _ = math.Inf
 
 type CapabilityConfig_Status int32
@@ -67,6 +69,7 @@ func (x *CapabilityConfig_Status) UnmarshalJSON(data []byte) error {
 type IsEnabledResponse_SummaryStatus int32
 
 const (
+	IsEnabledResponse_DEFAULT          IsEnabledResponse_SummaryStatus = 0
 	IsEnabledResponse_ENABLED          IsEnabledResponse_SummaryStatus = 1
 	IsEnabledResponse_SCHEDULED_FUTURE IsEnabledResponse_SummaryStatus = 2
 	IsEnabledResponse_SCHEDULED_NOW    IsEnabledResponse_SummaryStatus = 3
@@ -75,6 +78,7 @@ const (
 )
 
 var IsEnabledResponse_SummaryStatus_name = map[int32]string{
+	0: "DEFAULT",
 	1: "ENABLED",
 	2: "SCHEDULED_FUTURE",
 	3: "SCHEDULED_NOW",
@@ -82,6 +86,7 @@ var IsEnabledResponse_SummaryStatus_name = map[int32]string{
 	5: "UNKNOWN",
 }
 var IsEnabledResponse_SummaryStatus_value = map[string]int32{
+	"DEFAULT":          0,
 	"ENABLED":          1,
 	"SCHEDULED_FUTURE": 2,
 	"SCHEDULED_NOW":    3,
@@ -243,7 +248,7 @@ func (m *IsEnabledResponse) GetSummaryStatus() IsEnabledResponse_SummaryStatus {
 	if m != nil && m.SummaryStatus != nil {
 		return *m.SummaryStatus
 	}
-	return IsEnabledResponse_ENABLED
+	return IsEnabledResponse_DEFAULT
 }
 
 func (m *IsEnabledResponse) GetTimeUntilScheduled() int64 {

@@ -26,10 +26,12 @@ It has these top-level messages:
 package appengine
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
 var _ = math.Inf
 
 type LogServiceError_ErrorCode int32
@@ -538,6 +540,7 @@ func (m *RequestLog) GetServerName() []byte {
 
 type LogModuleVersion struct {
 	ModuleId         *string `protobuf:"bytes,1,opt,name=module_id,def=default" json:"module_id,omitempty"`
+	ModuleIdSet      *bool   `protobuf:"varint,101,opt,name=module_id_set" json:"module_id_set,omitempty"`
 	VersionId        *string `protobuf:"bytes,2,opt,name=version_id" json:"version_id,omitempty"`
 	VersionIdSet     *bool   `protobuf:"varint,102,opt,name=version_id_set" json:"version_id_set,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -554,6 +557,13 @@ func (m *LogModuleVersion) GetModuleId() string {
 		return *m.ModuleId
 	}
 	return Default_LogModuleVersion_ModuleId
+}
+
+func (m *LogModuleVersion) GetModuleIdSet() bool {
+	if m != nil && m.ModuleIdSet != nil {
+		return *m.ModuleIdSet
+	}
+	return false
 }
 
 func (m *LogModuleVersion) GetVersionId() string {
@@ -891,16 +901,17 @@ func (m *LogUsageRecord) GetRecords() int32 {
 }
 
 type LogUsageRequest struct {
-	AppId            *string  `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	VersionId        []string `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
-	StartTime        *int32   `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
-	EndTime          *int32   `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
-	ResolutionHours  *uint32  `protobuf:"varint,5,opt,name=resolution_hours,def=1" json:"resolution_hours,omitempty"`
-	CombineVersions  *bool    `protobuf:"varint,6,opt,name=combine_versions" json:"combine_versions,omitempty"`
-	UsageVersion     *int32   `protobuf:"varint,7,opt,name=usage_version" json:"usage_version,omitempty"`
-	UsageVersionSet  *bool    `protobuf:"varint,107,opt,name=usage_version_set" json:"usage_version_set,omitempty"`
-	VersionsOnly     *bool    `protobuf:"varint,8,opt,name=versions_only" json:"versions_only,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	AppId              *string  `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	VersionId          []string `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
+	StartTime          *int32   `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
+	EndTime            *int32   `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
+	ResolutionHours    *uint32  `protobuf:"varint,5,opt,name=resolution_hours,def=1" json:"resolution_hours,omitempty"`
+	ResolutionHoursSet *bool    `protobuf:"varint,105,opt,name=resolution_hours_set" json:"resolution_hours_set,omitempty"`
+	CombineVersions    *bool    `protobuf:"varint,6,opt,name=combine_versions" json:"combine_versions,omitempty"`
+	UsageVersion       *int32   `protobuf:"varint,7,opt,name=usage_version" json:"usage_version,omitempty"`
+	UsageVersionSet    *bool    `protobuf:"varint,107,opt,name=usage_version_set" json:"usage_version_set,omitempty"`
+	VersionsOnly       *bool    `protobuf:"varint,8,opt,name=versions_only" json:"versions_only,omitempty"`
+	XXX_unrecognized   []byte   `json:"-"`
 }
 
 func (m *LogUsageRequest) Reset()         { *m = LogUsageRequest{} }
@@ -942,6 +953,13 @@ func (m *LogUsageRequest) GetResolutionHours() uint32 {
 		return *m.ResolutionHours
 	}
 	return Default_LogUsageRequest_ResolutionHours
+}
+
+func (m *LogUsageRequest) GetResolutionHoursSet() bool {
+	if m != nil && m.ResolutionHoursSet != nil {
+		return *m.ResolutionHoursSet
+	}
+	return false
 }
 
 func (m *LogUsageRequest) GetCombineVersions() bool {
