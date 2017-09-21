@@ -707,7 +707,6 @@ class _EntityValidator(object):
       _assert_condition(property_name in allowed_property_map,
                         'The %s entity property "%s" is not allowed.'
                         % (entity_name, property_name))
-      value = entity.properties[property_name]
       hasser = 'hasField(\'%s_value\')' % allowed_property_map[property_name]
       _assert_condition(
           value.HasField('%s_value' % allowed_property_map[property_name]),
@@ -750,9 +749,7 @@ class _EntityValidator(object):
                          <= datastore_pbs.MAX_INDEXED_BLOB_BYTES),
                         ('Indexed blob value has more than %d permitted '
                          'bytes.' % datastore_pbs.MAX_INDEXED_BLOB_BYTES))
-    elif value.HasField('entity_value'):
-      _assert_condition(value.meaning,
-                        'Entity value is indexed.')
+
 
   def validate_property_name(self, constraint, property_name):
     """Validates a property name.

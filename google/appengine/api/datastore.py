@@ -1056,11 +1056,18 @@ class Entity(dict):
       properties = datastore_types.ToPropertyPb(name, values)
       if not isinstance(properties, list):
         properties = [properties]
+      if not isinstance(values, list):
+        values = [values]
 
-      for prop in properties:
-        if ((prop.has_meaning() and
-             prop.meaning() in datastore_types._RAW_PROPERTY_MEANINGS) or
-            name in self.unindexed_properties()):
+      if not values:
+
+        assert len(properties) == 1, ('An empty list should '
+                                      'only generate one property.')
+        pb.property_list().append(properties[0])
+        continue
+
+      for value, prop in zip(values, properties):
+        if self._IsUnindexedProperty(value, prop):
           pb.raw_property_list().append(prop)
         else:
           pb.property_list().append(prop)
@@ -1071,6 +1078,22 @@ class Entity(dict):
           'Too many indexed properties for entity %r.' % self.key())
 
     return pb
+
+  def _IsUnindexedProperty(self, value, prop):
+    """Determines whether the given property is indexed or not.
+
+    Args:
+      value: Python value of the property
+      prop: Corresponding Property message
+
+    Returns:
+      True if the property is unindexed.
+    """
+    return ((prop.has_meaning() and
+             prop.meaning() in datastore_types._RAW_PROPERTY_MEANINGS) or
+            prop.name() in self.unindexed_properties() or
+            (value and isinstance(value, datastore_types.EmbeddedEntity) and
+             not value.IsIndexed()))
 
   @staticmethod
   def FromPb(pb, validate_reserved_properties=True,
@@ -1145,16 +1168,22 @@ class Entity(dict):
 
     temporary_values = {}
 
-    for prop_list in (pb.property_list(), pb.raw_property_list()):
+    for is_indexed, prop_list in (
+        (True, pb.property_list()), (False, pb.raw_property_list())):
       for prop in prop_list:
         if prop.meaning() == entity_pb.Property.INDEX_VALUE:
           e.__projection = True
         try:
           value = datastore_types.FromPropertyPb(prop)
+
+
+          if isinstance(value, datastore_types.EmbeddedEntity) and is_indexed:
+            value._indexed = True
+
         except (AssertionError, AttributeError, TypeError, ValueError), e:
           raise datastore_errors.Error(
-            'Property %s is corrupt in the datastore:\n%s' %
-            (prop.name(), traceback.format_exc()))
+              'Property %s is corrupt in the datastore:\n%s' %
+              (prop.name(), traceback.format_exc()))
 
         multiple = prop.multiple()
         if multiple:
@@ -1166,8 +1195,8 @@ class Entity(dict):
           temporary_values[name] = value
         elif not multiple or not isinstance(cur_value, list):
           raise datastore_errors.Error(
-            'Property %s is corrupt in the datastore; it has multiple '
-            'values, but is not marked as multiply valued.' % name)
+              'Property %s is corrupt in the datastore; it has multiple '
+              'values, but is not marked as multiply valued.' % name)
         else:
           cur_value.extend(value)
 
@@ -1763,7 +1792,6 @@ class Query(dict):
     if isinstance(value, tuple):
       value = list(value)
 
-    datastore_types.ValidateProperty(' ', value)
     match = self._CheckFilter(filter, value)
     property = match.group(1)
     operator = match.group(3)
@@ -1791,7 +1819,6 @@ class Query(dict):
     BadPropertyError. If the value is not a supported type, raises
     BadValueError.
     """
-    datastore_types.ValidateProperty(' ', value)
     self._CheckFilter(filter, value)
     return dict.setdefault(self, filter, value)
 
@@ -1854,6 +1881,9 @@ class Query(dict):
 
     property = match.group(1)
     operator = match.group(3)
+
+    datastore_types.ValidateProperty(property, values)
+
     if operator is None:
       operator = '='
 
@@ -1861,7 +1891,8 @@ class Query(dict):
       values = list(values)
     elif not isinstance(values, list):
       values = [values]
-    if isinstance(values[0], datastore_types._RAW_PROPERTY_TYPES):
+    if isinstance(values[0],
+                  datastore_types._PROPERTY_TYPES_FORBIDDEN_IN_FILTERS):
       raise datastore_errors.BadValueError(
         'Filtering on %s properties is not supported.' % typename(values[0]))
 

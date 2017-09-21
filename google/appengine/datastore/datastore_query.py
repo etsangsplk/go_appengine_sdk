@@ -130,10 +130,7 @@ def _make_key_value_map(entity, property_names):
   value_map = dict((name, []) for name in property_names)
 
 
-  for prop in entity.property_list():
-    if prop.name() in value_map:
-      value_map[prop.name()].append(
-          datastore_types.PropertyValueToKeyValue(prop.value()))
+  _extract_property_names(entity, value_map)
 
 
   if datastore_types.KEY_SPECIAL_PROPERTY in value_map:
@@ -142,6 +139,19 @@ def _make_key_value_map(entity, property_names):
 
   return value_map
 
+def _extract_property_names(entity, value_map, prefix=''):
+  """Extracts key values from the given entity and its entity values."""
+  for prop in entity.property_list():
+    new_prefix = prop.name() if not prefix else prefix + '.' + prop.name()
+    if new_prefix in value_map:
+      value_map[new_prefix].append(
+          datastore_types.PropertyValueToKeyValue(prop.value()))
+    elif prop.meaning() == entity_pb.Property.ENTITY_PROTO:
+
+      if any(x for x in value_map if x.startswith(new_prefix + '.')):
+        subentity = entity_pb.EntityProto()
+        subentity.MergePartialFromString(prop.value().stringvalue())
+        _extract_property_names(subentity, value_map, new_prefix)
 
 class _PropertyComponent(_BaseComponent):
   """A component that operates on a specific set of properties."""
@@ -2886,6 +2896,11 @@ class Batch(object):
     if batch.more_results == googledatastore.QueryResultBatch.NOT_FINISHED:
       self.__more_results = True
       self.__datastore_cursor = self.__end_cursor or self.__skipped_cursor
+
+
+      if self.__datastore_cursor == self.__start_cursor:
+        raise datastore_errors.Timeout(
+            'The query was not able to make progress.')
     else:
       self._end()
     self.__results = self._process_v1_results(batch.entity_results)
