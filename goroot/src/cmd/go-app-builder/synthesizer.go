@@ -38,15 +38,7 @@ var mainTemplate = template.Must(template.New("main").Parse(
 	`package main
 
 import (
-	{{with .InternalPkg}}
-	internal {{printf "%q" .}}
-	{{else}}
-	"io"
-	"log"
-	"net/http"
-	"net/url"
-	"os"
-	{{end}}
+	internal "appengine_internal"
 
 	// Top-level app packages
 	{{range .RootPackages}}
@@ -55,36 +47,8 @@ import (
 )
 
 func main() {
-	{{if .InternalPkg}}
 	internal.Main()
-	{{else}}
-	installHealthChecker()
-	port := "8080"
-	if s := os.Getenv("PORT"); s != "" {
-		port = s
-	}
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatalf("http.ListenAndServe: %v", err)
-	}
-	{{end}}
 }
-
-{{if not .InternalPkg}}
-func installHealthChecker() {
-	const healthPath = "/_ah/health"
-	hreq := &http.Request{
-		Method: "GET",
-		URL: &url.URL{
-			Path: healthPath,
-		},
-	}
-	if _, pat := http.DefaultServeMux.Handler(hreq); pat != healthPath {
-		http.HandleFunc(healthPath, func(w http.ResponseWriter, r *http.Request) {
-			io.WriteString(w, "ok")
-		})
-	}
-}
-{{end}}
 `))
 
 var extraImportsTemplate = template.Must(template.New("extraImports").Parse(

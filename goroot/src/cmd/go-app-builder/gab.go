@@ -39,12 +39,6 @@ import (
 )
 
 const (
-	// go15 indicates that we're building using the 1.5 (or later) toolchain, which has
-	// different compiler/linker binary names uses different output file
-	// extensions.
-	// It may be set to true by the toolchain build.sh script.
-	// TODO: delete this flag once 1.4 is no longer used.
-	go15 = false
 	// Root packages are those packages that are part of the app and have init functions.
 	// To avoid importing huge numbers of these packages from main directly, a tree of
 	// packages is constructed, with the main package as its root, and the root packages
@@ -76,7 +70,7 @@ var (
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
 	verbose         = flag.Bool("v", false, "Noisy output.")
-	vm              = flag.Bool("vm", false, "Whether to build for Managed VMs (implies -unsafe).")
+	vm              = flag.Bool("vm", false, "DEPRECATED flag, always ignored.")
 	workDir         = flag.String("work_dir", "/tmp", "Directory to use for intermediate and output files.")
 )
 
@@ -171,13 +165,8 @@ func main() {
 		return
 	}
 
-	gTimer.name = *arch + "g"
-	lTimer.name = *arch + "l"
-
-	if go15 {
-		gTimer.name = "compile"
-		lTimer.name = "link"
-	}
+	gTimer.name = "compile"
+	lTimer.name = "link"
 
 	err = buildApp(app)
 	log.Printf("go-app-builder: build timing: %v, %v", &gTimer, &lTimer)
@@ -250,15 +239,11 @@ func buildApp(app *App) error {
 	goRootSearchPath := filepath.Join(*goRoot, "pkg", runtime.GOOS+"_"+runtime.GOARCH)
 
 	// Compile phase.
-	compPath := toolPath(*arch + "g")
-	if go15 {
-		compPath = toolPath("compile")
-	}
 	c := &compiler{
 		app:              app,
 		mainFile:         mainFile,
 		goRootSearchPath: goRootSearchPath,
-		compiler:         compPath,
+		compiler:         toolPath("compile"),
 		gopack:           toolPath("pack"),
 		env:              env,
 	}
@@ -319,16 +304,10 @@ func buildApp(app *App) error {
 	}
 
 	// Link phase.
-	linker := toolPath(*arch + "l")
-	ext := "." + *arch
-	if go15 {
-		linker = toolPath("link")
-		ext = ".a"
-	}
-	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ext
+	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ".a"
 	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
-		linker,
+		toolPath("link"),
 		"-L", goRootSearchPath,
 		"-L", *workDir,
 		"-o", binaryFile,
@@ -337,7 +316,7 @@ func buildApp(app *App) error {
 		// force the binary to be statically linked, disable dwarf generation, and strip binary
 		args = append(args, "-d", "-w", "-s")
 	}
-	if !*unsafe && !*vm {
+	if !*unsafe {
 		// reject unsafe code
 		args = append(args, "-u")
 	}
@@ -389,11 +368,7 @@ func (c *compiler) removeFiles() {
 }
 
 func (c *compiler) compile(i int, pkg *Package) error {
-	ext := "." + *arch
-	if go15 {
-		ext = ".a"
-	}
-	objectFile := filepath.Join(*workDir, pkg.ImportPath) + ext
+	objectFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
 	objectDir, _ := filepath.Split(objectFile)
 	if err := os.MkdirAll(objectDir, 0750); err != nil {
 		return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
@@ -403,11 +378,9 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		"-I", c.goRootSearchPath,
 		"-I", *workDir,
 		"-o", objectFile,
+		"-pack",
 	}
-	if go15 {
-		args = append(args, "-pack")
-	}
-	if !*unsafe && !*vm {
+	if !*unsafe {
 		// reject unsafe code
 		args = append(args, "-u")
 	}
@@ -474,6 +447,7 @@ func (c *compiler) compile(i int, pkg *Package) error {
 	stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
 	args = append(args, "-trimpath", stripDir)
 
+	sort.Strings(files) // Ensure files in lexical order.
 	args = append(args, files...)
 	c.removeLater(objectFile)
 	if err := gTimer.run(args, c.env); err != nil {
