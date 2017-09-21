@@ -5,9 +5,12 @@
 // Package blobstore provides a client for App Engine's persistent blob
 // storage service.
 //
-// NOTE: The Files API was deprecated on June 11, 2013 (v1.8.1) and will
-// be shut down soon, at which point these functions will no longer
-// work.  Use Google Cloud Storage instead (https://cloud.google.com/storage/).
+// Important: The Files API was deprecated on June 11, 2013 (v1.8.1) and will
+// be shut down soon, at which point the Create function and the Writer object
+// and its methods will no longer work. Instead, use
+// Google Cloud Storage (https://cloud.google.com/storage/). For shutdown
+// timetable details, see Files API Service Turndown
+// (https:/cloud.google.com/appengine/docs/deprecations/files_api).
 package blobstore
 
 import (
@@ -268,9 +271,13 @@ func NewReader(c appengine.Context, blobKey appengine.BlobKey) Reader {
 
 const writeBufferSize = 256 * 1024
 
-// Writer is used for writing blobs. Blobs aren't fully written until
-// Close is called, at which point the key can be retrieved by calling
-// the Key method.
+// Writer is used for writing blobs.
+//
+// Deprecated: use the Google Cloud Storage API instead. See
+// google.golang.org/cloud/storage.
+//
+// Blobs aren't fully written until Close is called, at which point the key can
+// be retrieved by calling the Key method.
 type Writer struct {
 	c        appengine.Context
 	filename string
@@ -298,11 +305,15 @@ const blobstoreFileDirectory = "/blobstore/"
 // been finalized.
 const creationHandlePrefix = "writable:"
 
-// Create begins creating a new blob. The provided mimeType if non-empty
-// is stored in the blob's BlobInfo in datastore, else defaults to
-// application/octet-stream. The returned Writer should be written to,
-// then closed, and then its Key method can be called to retrieve the
-// newly-created blob key if there were no errors.
+// Create begins creating a new blob.
+//
+// Deprecated: use the Google Cloud Storage API instead; see
+// google.golang.org/cloud/storage.
+//
+// The provided mimeType if non-empty is stored in the blob's BlobInfo in
+// datastore, else defaults to application/octet-stream. The returned Writer
+// should be written to, then closed, and then its Key method can be called to
+// retrieve the newly-created blob key if there were no errors.
 func Create(c appengine.Context, mimeType string) (*Writer, error) {
 	c, _ = appengine.Namespace(c, "") // Blobstore is always in the empty string namespace
 	if mimeType == "" {

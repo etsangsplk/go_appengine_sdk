@@ -141,7 +141,7 @@ func validIndexNameOrDocID(s string) bool {
 }
 
 var (
-	fieldNameRE = regexp.MustCompile(`^[A-Z][A-Za-z0-9_]*$`)
+	fieldNameRE = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*$`)
 	languageRE  = regexp.MustCompile(`^[a-z]{2}$`)
 )
 
@@ -885,7 +885,7 @@ func saveDoc(src interface{}) (*pb.Document, error) {
 	case FieldLoadSaver:
 		fields, err = x.Save()
 	default:
-		fields, err = SaveStruct(src)
+		fields, meta, err = saveStructWithMeta(src)
 	}
 	if err != nil {
 		return nil, err
@@ -1045,16 +1045,17 @@ func loadDoc(dst interface{}, src *pb.Document, exprs []*pb.Field) (err error) {
 		}
 		fields = append(fields, exprFields...)
 	}
+	meta := &DocumentMetadata{
+		Rank:   int(src.GetOrderId()),
+		Facets: facets,
+	}
 	switch x := dst.(type) {
 	case FieldMetadataLoadSaver:
-		return x.Load(fields, &DocumentMetadata{
-			Rank:   int(src.GetOrderId()),
-			Facets: facets,
-		})
+		return x.Load(fields, meta)
 	case FieldLoadSaver:
 		return x.Load(fields)
 	default:
-		return LoadStruct(dst, fields)
+		return loadStructWithMeta(dst, fields, meta)
 	}
 }
 
