@@ -11,7 +11,7 @@ var cmdDeploy = &Command{
 	Short:     "deploys your application to App Engine",
 	Long: `
 Deploy uploads your application files to Google App Engine, and then compiles
-and lauches your application.
+and launches your application.
 
 The argument to this command should be your application's root directory or a
 single package which contains an app.yaml file. If you are using the Modules

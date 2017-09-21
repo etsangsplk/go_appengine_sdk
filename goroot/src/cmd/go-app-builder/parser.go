@@ -5,7 +5,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"go/ast"
 	"go/build"
@@ -31,6 +30,7 @@ type App struct {
 	Files        []*File    // the complete set of source files for this app
 	Packages     []*Package // the packages
 	RootPackages []*Package // the subset of packages with init functions
+	HasMain      bool       // whether the app has a user-defined main package
 
 	PackageIndex map[string]*Package // index from import path to package object
 }
@@ -43,7 +43,7 @@ type Package struct {
 	SrcDir       string     // the source location of the files, always set
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
-	HasMain      bool       // whether the file has internal.Main
+	IsMain       bool       // whether the package is main
 	Dupe         bool       // whether the package is a duplicate
 	Synthetic    bool       // whether the package is a synthetic main or import tree package
 
@@ -67,7 +67,8 @@ type File struct {
 	PackageName string   // the package this file declares itself to be
 	ImportPaths []string // import paths
 	HasInit     bool     // whether the file has an init function
-	HasMain     bool     // whether the file has internal.Main
+	HasMain     bool     // whether the file defines a main.main function
+	callsAEMain bool     // whether the main function, if it exists, calls appengine.Main
 }
 
 func (f *File) String() string {
@@ -181,7 +182,12 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 			}
 			app.Files = append(app.Files, file)
 			pkgFiles[dir] = append(pkgFiles[dir], file)
+
+			if file.HasMain {
+				app.HasMain = true
+			}
 		}
+
 	}
 
 	allowedDupes := make(map[string]bool)
@@ -195,18 +201,19 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 	for dirname, files := range pkgFiles {
 		imp := filepath.ToSlash(dirname)
 		if dirname == "." {
-			// top-level package; generate random package name
-			rng := rand.New(rand.NewSource(time.Now().Unix()))
-			imp = fmt.Sprintf("main%05d", rng.Intn(1e5))
+			if app.HasMain {
+				imp = "main"
+			} else {
+				// top-level package; generate random package name for main.
+				rng := rand.New(rand.NewSource(time.Now().Unix()))
+				imp = fmt.Sprintf("main%05d", rng.Intn(1e5))
+			}
 		}
 
 		p := &Package{
 			ImportPath: imp,
 			Files:      files,
 			SrcDir:     filepath.Join(baseDir, dirname),
-		}
-		if p.ImportPath == "main" {
-			return nil, errors.New("top-level main package is forbidden")
 		}
 		if isStandardPackage(p.ImportPath) {
 			if !allowedDupes[p.ImportPath] {
@@ -215,18 +222,29 @@ func ParseFiles(baseDir string, filenames []string, ignoreReleaseTags bool) (*Ap
 			p.Dupe = true
 		}
 		for _, f := range files {
+			if f.HasMain {
+				p.IsMain = true
+			}
 			if f.HasInit {
 				p.HasInit = true
 			}
-			if f.HasMain {
-				p.HasMain = true
-			}
 		}
 		app.Packages = append(app.Packages, p)
+		app.PackageIndex[p.ImportPath] = p
 		if p.HasInit {
 			app.RootPackages = append(app.RootPackages, p)
 		}
-		app.PackageIndex[p.ImportPath] = p
+
+		if p.IsMain {
+			if dirname != "." {
+				return nil, fmt.Errorf("package main must be the top-level package")
+			}
+			for _, f := range files {
+				if f.HasMain && !f.callsAEMain {
+					return nil, fmt.Errorf("parser: found a top level package main with function main, but main does not call appengine.Main(); see https://godoc.org/google.golang.org/appengine#Main for more information")
+				}
+			}
+		}
 	}
 
 	if *goPath != "" {
@@ -354,23 +372,17 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 				}
 
 				files := make([]*File, 0, len(pkg.GoFiles))
-				pkgHasMain := false
 				for _, f := range pkg.GoFiles {
 					if noBuild != nil && noBuild.MatchString(filepath.Join(path, f)) {
 						continue
 					}
-					hasMain := false
 					files = append(files, &File{
 						Name:        f,
 						PackageName: pkg.Name,
 						// NOTE: This is inaccurate, but it is sufficient to
 						// record all the package imports for each file.
 						ImportPaths: pkg.Imports,
-						HasMain:     hasMain,
 					})
-					if hasMain {
-						pkgHasMain = true
-					}
 				}
 				if len(files) == 0 {
 					return fmt.Errorf("package %s required, but all its files were excluded by nobuild_files", path)
@@ -380,7 +392,6 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 					Files:      files,
 					BaseDir:    pkg.Dir,
 					SrcDir:     pkg.Dir,
-					HasMain:    pkgHasMain,
 				}
 				app.Packages = append(app.Packages, p)
 				app.PackageIndex[path] = p
@@ -394,16 +405,43 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 // Such a function must be called "init", not have a receiver, and have no arguments or return types.
 func isInit(f *ast.FuncDecl) bool { return isNiladic(f, "init") }
 
-// isMain returns whether the given function declaration is a Main function.
-// Such a function must be called "Main", not have a receiver, and have no arguments or return types.
-func isMain(f *ast.FuncDecl) bool { return isNiladic(f, "Main") }
+// isMain returns whether the given function declaration is a main function.
+// Such a function must be called "main", not have a receiver, and have no arguments or return types.
+func isMain(f *ast.FuncDecl) bool { return isNiladic(f, "main") }
+
+// callsAppEngineMain returns whether or not the given function calls
+// appengine.Main(). This is required in user-provided main() functions.
+func callsAppEngineMain(fset *token.FileSet, f *ast.FuncDecl) bool {
+	for _, expr := range f.Body.List {
+		expStmt, ok := expr.(*ast.ExprStmt)
+		if !ok {
+			continue
+		}
+		callExpr, ok := expStmt.X.(*ast.CallExpr)
+		if !ok {
+			continue
+		}
+		selExpr, ok := callExpr.Fun.(*ast.SelectorExpr)
+		if !ok {
+			continue
+		}
+		selX, ok := selExpr.X.(*ast.Ident)
+		if !ok {
+			continue
+		}
+		if selX.Name == "appengine" && selExpr.Sel.Name == "Main" {
+			return true
+		}
+	}
+	return false
+}
 
 func isNiladic(f *ast.FuncDecl, name string) bool {
 	ft := f.Type
 	return f.Name.Name == name && f.Recv == nil && ft.Params.NumFields() == 0 && ft.Results.NumFields() == 0
 }
 
-func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, hasMain bool, err error) {
+func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, err error) {
 	fullName := filepath.Join(baseDir, filename)
 	var src []byte
 	src, err = ioutil.ReadFile(fullName)
@@ -417,7 +455,7 @@ func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, ha
 
 // parseFile parses a single Go source file into a *File.
 func parseFile(baseDir, filename string) (*File, error) {
-	file, fset, hasMain, err := readFile(baseDir, filename)
+	file, fset, err := readFile(baseDir, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -426,6 +464,8 @@ func parseFile(baseDir, filename string) (*File, error) {
 	// Determine whether the file has an init function at the same time.
 	var imports []string
 	hasInit := false
+	hasMain := false
+	callsAEMain := false
 	for _, decl := range file.Decls {
 		if genDecl, ok := decl.(*ast.GenDecl); ok && genDecl.Tok == token.IMPORT {
 			for _, spec := range genDecl.Specs {
@@ -445,6 +485,10 @@ func parseFile(baseDir, filename string) (*File, error) {
 			if isInit(funcDecl) {
 				hasInit = true
 			}
+			if file.Name.Name == "main" && isMain(funcDecl) {
+				hasMain = true
+				callsAEMain = callsAppEngineMain(fset, funcDecl)
+			}
 		}
 	}
 
@@ -461,6 +505,7 @@ func parseFile(baseDir, filename string) (*File, error) {
 		ImportPaths: imports,
 		HasInit:     hasInit,
 		HasMain:     hasMain,
+		callsAEMain: callsAEMain,
 	}, nil
 }
 
@@ -868,4 +913,8 @@ func init() {
 	// Add some App Engine-specific entries to the unkeyed literal whitelist.
 	whitelist.UnkeyedLiteral["appengine/datastore.PropertyList"] = true
 	whitelist.UnkeyedLiteral["appengine.MultiError"] = true
+
+	// TODO: Figure out why this isn't getting picked up by the
+	// whitelist in third_party/go/vet/whitelist anymore.
+	whitelist.UnkeyedLiteral["net.IP"] = true
 }

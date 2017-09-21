@@ -3,6 +3,18 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 20160927 - September 2016
+=================================
+This release is based on Go 1.6.3 with the systime patch for MacOS Sierra from
+Go 1.7 applied. For patch details, see:
+https://go-review.googlesource.com/#/c/25400
+
+Version 1.9.41 - July 2016
+=========================
+dev_appserver:
+  - Incremental rebuilds have been significantly sped up by
+    caching and re-using build products.
+
 Version 1.9.40 - June 2016
 ==========================
 No changes.

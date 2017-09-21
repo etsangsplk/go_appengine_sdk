@@ -26,8 +26,6 @@ It has these top-level messages:
 	MergedNamespaceStats
 	MemcacheHotKey
 	MemcacheStatsResponse
-	MemcacheGrabTailRequest
-	MemcacheGrabTailResponse
 */
 package appengine
 
@@ -352,12 +350,8 @@ func (m *MemcacheServiceError) String() string { return proto.CompactTextString(
 func (*MemcacheServiceError) ProtoMessage()    {}
 
 type AppOverride struct {
-	AppId                    *string `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
-	NumMemcachegBackends     *int32  `protobuf:"varint,2,opt,name=num_memcacheg_backends,json=numMemcachegBackends" json:"num_memcacheg_backends,omitempty"`
-	IgnoreShardlock          *bool   `protobuf:"varint,3,opt,name=ignore_shardlock,json=ignoreShardlock" json:"ignore_shardlock,omitempty"`
-	MemcachePoolHint         *string `protobuf:"bytes,4,opt,name=memcache_pool_hint,json=memcachePoolHint" json:"memcache_pool_hint,omitempty"`
-	MemcacheShardingStrategy []byte  `protobuf:"bytes,5,opt,name=memcache_sharding_strategy,json=memcacheShardingStrategy" json:"memcache_sharding_strategy,omitempty"`
-	XXX_unrecognized         []byte  `json:"-"`
+	AppId            *string `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *AppOverride) Reset()         { *m = AppOverride{} }
@@ -369,34 +363,6 @@ func (m *AppOverride) GetAppId() string {
 		return *m.AppId
 	}
 	return ""
-}
-
-func (m *AppOverride) GetNumMemcachegBackends() int32 {
-	if m != nil && m.NumMemcachegBackends != nil {
-		return *m.NumMemcachegBackends
-	}
-	return 0
-}
-
-func (m *AppOverride) GetIgnoreShardlock() bool {
-	if m != nil && m.IgnoreShardlock != nil {
-		return *m.IgnoreShardlock
-	}
-	return false
-}
-
-func (m *AppOverride) GetMemcachePoolHint() string {
-	if m != nil && m.MemcachePoolHint != nil {
-		return *m.MemcachePoolHint
-	}
-	return ""
-}
-
-func (m *AppOverride) GetMemcacheShardingStrategy() []byte {
-	if m != nil {
-		return m.MemcacheShardingStrategy
-	}
-	return nil
 }
 
 type MemcacheGetRequest struct {
@@ -1001,78 +967,6 @@ func (m *MemcacheStatsResponse) GetStats() *MergedNamespaceStats {
 	return nil
 }
 
-type MemcacheGrabTailRequest struct {
-	ItemCount        *int32       `protobuf:"varint,1,req,name=item_count,json=itemCount" json:"item_count,omitempty"`
-	NameSpace        *string      `protobuf:"bytes,2,opt,name=name_space,json=nameSpace,def=" json:"name_space,omitempty"`
-	Override         *AppOverride `protobuf:"bytes,3,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
-}
-
-func (m *MemcacheGrabTailRequest) Reset()         { *m = MemcacheGrabTailRequest{} }
-func (m *MemcacheGrabTailRequest) String() string { return proto.CompactTextString(m) }
-func (*MemcacheGrabTailRequest) ProtoMessage()    {}
-
-func (m *MemcacheGrabTailRequest) GetItemCount() int32 {
-	if m != nil && m.ItemCount != nil {
-		return *m.ItemCount
-	}
-	return 0
-}
-
-func (m *MemcacheGrabTailRequest) GetNameSpace() string {
-	if m != nil && m.NameSpace != nil {
-		return *m.NameSpace
-	}
-	return ""
-}
-
-func (m *MemcacheGrabTailRequest) GetOverride() *AppOverride {
-	if m != nil {
-		return m.Override
-	}
-	return nil
-}
-
-type MemcacheGrabTailResponse struct {
-	Item             []*MemcacheGrabTailResponse_Item `protobuf:"group,1,rep,name=Item,json=item" json:"item,omitempty"`
-	XXX_unrecognized []byte                           `json:"-"`
-}
-
-func (m *MemcacheGrabTailResponse) Reset()         { *m = MemcacheGrabTailResponse{} }
-func (m *MemcacheGrabTailResponse) String() string { return proto.CompactTextString(m) }
-func (*MemcacheGrabTailResponse) ProtoMessage()    {}
-
-func (m *MemcacheGrabTailResponse) GetItem() []*MemcacheGrabTailResponse_Item {
-	if m != nil {
-		return m.Item
-	}
-	return nil
-}
-
-type MemcacheGrabTailResponse_Item struct {
-	Value            []byte  `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	Flags            *uint32 `protobuf:"fixed32,3,opt,name=flags" json:"flags,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *MemcacheGrabTailResponse_Item) Reset()         { *m = MemcacheGrabTailResponse_Item{} }
-func (m *MemcacheGrabTailResponse_Item) String() string { return proto.CompactTextString(m) }
-func (*MemcacheGrabTailResponse_Item) ProtoMessage()    {}
-
-func (m *MemcacheGrabTailResponse_Item) GetValue() []byte {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-func (m *MemcacheGrabTailResponse_Item) GetFlags() uint32 {
-	if m != nil && m.Flags != nil {
-		return *m.Flags
-	}
-	return 0
-}
-
 func init() {
 	proto.RegisterType((*MemcacheServiceError)(nil), "appengine.MemcacheServiceError")
 	proto.RegisterType((*AppOverride)(nil), "appengine.AppOverride")
@@ -1095,9 +989,6 @@ func init() {
 	proto.RegisterType((*MergedNamespaceStats)(nil), "appengine.MergedNamespaceStats")
 	proto.RegisterType((*MemcacheHotKey)(nil), "appengine.MemcacheHotKey")
 	proto.RegisterType((*MemcacheStatsResponse)(nil), "appengine.MemcacheStatsResponse")
-	proto.RegisterType((*MemcacheGrabTailRequest)(nil), "appengine.MemcacheGrabTailRequest")
-	proto.RegisterType((*MemcacheGrabTailResponse)(nil), "appengine.MemcacheGrabTailResponse")
-	proto.RegisterType((*MemcacheGrabTailResponse_Item)(nil), "appengine.MemcacheGrabTailResponse.Item")
 	proto.RegisterEnum("appengine.MemcacheServiceError_ErrorCode", MemcacheServiceError_ErrorCode_name, MemcacheServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.MemcacheGetResponse_GetStatusCode", MemcacheGetResponse_GetStatusCode_name, MemcacheGetResponse_GetStatusCode_value)
 	proto.RegisterEnum("appengine.MemcacheSetRequest_SetPolicy", MemcacheSetRequest_SetPolicy_name, MemcacheSetRequest_SetPolicy_value)
