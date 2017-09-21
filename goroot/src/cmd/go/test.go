@@ -365,13 +365,7 @@ var testMainDeps = map[string]bool{
 }
 
 func runTest(cmd *Command, args []string) {
-
-		if buildContext.InstallSuffix != "" {
-			buildContext.InstallSuffix += "_"
-		}
-		buildContext.InstallSuffix += "appengine"
-		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
-		var pkgArgs []string
+	var pkgArgs []string
 	pkgArgs, testArgs = testFlags(args)
 
 	findExecCmd() // initialize cached result
