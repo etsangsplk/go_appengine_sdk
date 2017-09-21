@@ -2,6 +2,6 @@
 
 package runtime
 
-const defaultGoroot = `/private/var/folders/_p/kg4yw61n28n3fbxld9sxm6lm0064sj/T/appengine/go_appengine/goroot`
-const theVersion = `go1.4.2 (appengine-1.9.33)`
+const defaultGoroot = `/private/var/folders/00/1_z98000h01000cxqpysvccm005bx5/T/appengine/go_appengine/goroot`
+const theVersion = `go1.4.2 (appengine-1.9.34)`
 var buildVersion = theVersion
