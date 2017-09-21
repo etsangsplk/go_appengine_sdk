@@ -31,6 +31,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -44,6 +45,10 @@ const (
 	// maxRootPackageTreeImportsPerFile is the maximum number of imports that are part of
 	// this tree in any single file.
 	maxRootPackageTreeImportsPerFile = 20
+
+	// The default minor API version to use when parsing the user's App.
+	// Currently set to support Go 1.6.
+	defaultMinorVersion = 6
 )
 
 var (
@@ -56,6 +61,8 @@ var (
 	gcFlags         = flag.String("gcflags", "", "Comma-separated list of extra compiler flags.")
 	goPath          = flag.String("gopath", os.Getenv("GOPATH"), "Location of extra packages.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
+	help            = flag.Bool("help", false, "Display help documentation.")
+	incremental     = flag.Bool("incremental_rebuild", false, "Allow re-use of previous build products during build.")
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")
@@ -96,9 +103,36 @@ func fullArch(c string) string {
 	return "amd64"
 }
 
+// Extracts the minor version (x) from an API version string if it is of the form "go1.x".
+func minorVersion(apiVersion string) (v int, ok bool) {
+	if !strings.HasPrefix(apiVersion, "go1.") {
+		return 0, false
+	}
+	v, err := strconv.Atoi(apiVersion[4:])
+	return v, err == nil
+}
+
+func releaseTags(apiVersion string) []string {
+	v, ok := minorVersion(apiVersion)
+	if !ok {
+		v = defaultMinorVersion
+	}
+
+	var tags []string
+	for i := 1; i <= v; i++ {
+		tags = append(tags, fmt.Sprintf("go1.%d", i))
+	}
+	return tags
+}
+
 func main() {
 	flag.Usage = usage
 	flag.Parse()
+
+	if *help {
+		flag.Usage()
+		os.Exit(0)
+	}
 	if flag.NArg() == 0 {
 		flag.Usage()
 		os.Exit(1)
@@ -119,11 +153,22 @@ func main() {
 	// upload with a later version of Go.
 	ignoreReleaseTags := *printExtras
 
-	app, err := ParseFiles(*appBase, flag.Args(), ignoreReleaseTags)
+	// go/build.Import relies on baseDir being absolute to correctly
+	// evaluate vendored dependencies. appcfg.py passes it as a relative
+	// path.
+	baseDir := *appBase
+	baseDir, err := filepath.Abs(baseDir)
+	if err != nil {
+		log.Fatalf("go-app-builder: unable to resolve %q: %v", *appBase, err)
+	}
+
+	app, err := ParseFiles(baseDir, flag.Args(), ignoreReleaseTags)
 	if err != nil {
 		if errl, ok := err.(scanner.ErrorList); ok {
 			log.Printf("go-app-builder: Failed parsing input (%d error%s)", len(errl), plural(len(errl), "s"))
 			for _, err := range errl {
+				// Trim the baseDir from error names.
+				err.Pos.Filename = rel(baseDir, err.Pos.Filename)
 				log.Println(err)
 			}
 			os.Exit(1)
@@ -142,16 +187,21 @@ func main() {
 
 	gTimer.name = "compile"
 	lTimer.name = "link"
+	sTimer.name = "skip"
 
 	err = buildApp(app)
-	log.Printf("go-app-builder: build timing: %v, %v", &gTimer, &lTimer)
+	if *incremental {
+		log.Printf("go-app-builder: build timing: %v, %v, %v", &sTimer, &gTimer, &lTimer)
+	} else {
+		log.Printf("go-app-builder: build timing: %v, %v", &gTimer, &lTimer)
+	}
 	if err != nil {
 		log.Fatalf("go-app-builder: %v", err)
 	}
 }
 
 // Timers that are manipulated in buildApp.
-var gTimer, lTimer timer // manipulated in buildApp
+var gTimer, lTimer, sTimer timer // manipulated in buildApp
 
 func plural(n int, suffix string) string {
 	if n == 1 {
@@ -342,6 +392,7 @@ func (c *compiler) removeFiles() {
 
 func (c *compiler) compile(i int, pkg *Package) error {
 	objectFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
+	hashFile := filepath.Join(*workDir, pkg.ImportPath) + ".hash"
 	objectDir, _ := filepath.Split(objectFile)
 	if err := os.MkdirAll(objectDir, 0750); err != nil {
 		return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
@@ -422,9 +473,39 @@ func (c *compiler) compile(i int, pkg *Package) error {
 
 	sort.Strings(files) // Ensure files in lexical order.
 	args = append(args, files...)
-	c.removeLater(objectFile)
+
+	// If we're allowing incremental builds, calculate the hash (skip synthetic packages).
+	if *incremental && !pkg.Synthetic {
+		start := time.Now()
+		match, hash, err := checkHash(files, pkg.Dependencies, hashFile)
+		if err != nil {
+			return err
+		}
+		sTimer.add(time.Since(start)) // Always include the amount of time spent hashing.
+		pkg.hash = hash
+		if match {
+			sTimer.inc() // Only increment the skip count on a match.
+			if *verbose {
+				log.Printf("Skipped compile for %q (%x)", pkg.ImportPath, hash)
+			}
+			if _, err := os.Stat(objectFile); err != nil {
+				// This is purely a sanity check.
+				return fmt.Errorf("object file %q missing: %v", objectFile, err)
+			}
+			return nil
+		}
+	} else {
+		c.removeLater(objectFile) // For non-incremental we don't need the object file again.
+	}
+
+	// Run the actual compilation.
 	if err := gTimer.run(args, c.env); err != nil {
 		return err
+	}
+
+	// Store the hash, if any (ignore errors).
+	if pkg.hash != nil {
+		ioutil.WriteFile(hashFile, pkg.hash, 0644)
 	}
 
 	return nil
@@ -467,6 +548,18 @@ func (t *timer) run(args, env []string) error {
 	return err
 }
 
+func (t *timer) inc() {
+	t.mu.Lock()
+	t.n++
+	t.mu.Unlock()
+}
+
+func (t *timer) add(d time.Duration) {
+	t.mu.Lock()
+	t.total += d
+	t.mu.Unlock()
+}
+
 func (t *timer) String() string {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -489,6 +582,47 @@ func printExtraFiles(w io.Writer, app *App) {
 			fmt.Fprintf(w, "%s|%s\n", rel, dst)
 		}
 	}
+}
+
+// checkHash calculates the hash for a given package and checks if the previous build
+// used the same hash.
+func checkHash(srcs []string, deps []*Package, hashFile string) (match bool, hash []byte, err error) {
+	hash, err = hashPackage(srcs, deps)
+	if err != nil {
+		return false, nil, err
+	}
+	// Read the hash file, but ignore errors.
+	prev, err := ioutil.ReadFile(hashFile)
+	if err != nil {
+		return false, hash, nil
+	}
+	return string(hash) == string(prev), hash, nil
+}
+
+// hashPackage calculates the hash of a package's source files and its dependencies.
+// It assumes the hash has already been calculated for all deps, and that srcs are
+// sorted (to ensure deterministic output).
+func hashPackage(srcs []string, deps []*Package) ([]byte, error) {
+	h := sha1.New()
+	// Hash all source file content.
+	for _, src := range srcs {
+		file, err := os.Open(src)
+		if err != nil {
+			return nil, fmt.Errorf("go-app-builder: os.Open(%q): %v", src, err)
+		}
+		n, err := io.Copy(h, file)
+		file.Close()
+		if err != nil {
+			return nil, fmt.Errorf("go-app-builder: io.Copy(%q): %v", src, err)
+		}
+		fmt.Fprintf(h, "%s %d\n", src, n)
+	}
+	// Hash the dependencies too.
+	sort.Sort(byImportPath(deps)) // be deterministic
+	for _, dep := range deps {
+		fmt.Fprintf(h, "%s %x\n", dep.ImportPath, dep.hash)
+	}
+	return h.Sum(nil), nil
 }
 
 func printExtraFilesHash(w io.Writer, app *App) {
@@ -520,6 +654,14 @@ func toolPath(x string) string {
 		ext = ".exe"
 	}
 	return filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x+ext)
+}
+
+func rel(base, path string) string {
+	rel, err := filepath.Rel(base, path)
+	if err != nil {
+		return path
+	}
+	return rel
 }
 
 func usage() {

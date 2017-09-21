@@ -72,7 +72,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.ProtoPackageIsVersion1
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type Scope_Type int32
 
@@ -2253,14 +2255,14 @@ func (m *SearchResult) GetCursor() string {
 }
 
 type SearchResponse struct {
-	Result           []*SearchResult           `protobuf:"bytes,1,rep,name=result" json:"result,omitempty"`
-	MatchedCount     *int64                    `protobuf:"varint,2,req,name=matched_count,json=matchedCount" json:"matched_count,omitempty"`
-	Status           *RequestStatus            `protobuf:"bytes,3,req,name=status" json:"status,omitempty"`
-	Cursor           *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
-	FacetResult      []*FacetResult            `protobuf:"bytes,5,rep,name=facet_result,json=facetResult" json:"facet_result,omitempty"`
-	DocsScored       *int32                    `protobuf:"varint,6,opt,name=docs_scored,json=docsScored" json:"docs_scored,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Result                       []*SearchResult `protobuf:"bytes,1,rep,name=result" json:"result,omitempty"`
+	MatchedCount                 *int64          `protobuf:"varint,2,req,name=matched_count,json=matchedCount" json:"matched_count,omitempty"`
+	Status                       *RequestStatus  `protobuf:"bytes,3,req,name=status" json:"status,omitempty"`
+	Cursor                       *string         `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
+	FacetResult                  []*FacetResult  `protobuf:"bytes,5,rep,name=facet_result,json=facetResult" json:"facet_result,omitempty"`
+	DocsScored                   *int32          `protobuf:"varint,6,opt,name=docs_scored,json=docsScored" json:"docs_scored,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *SearchResponse) Reset()         { *m = SearchResponse{} }
@@ -2273,12 +2275,6 @@ var extRange_SearchResponse = []proto.ExtensionRange{
 
 func (*SearchResponse) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_SearchResponse
-}
-func (m *SearchResponse) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *SearchResponse) GetResult() []*SearchResult {

@@ -56,7 +56,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.ProtoPackageIsVersion1
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type RemoteSocketServiceError_ErrorCode int32
 
@@ -1102,11 +1104,11 @@ func (m *CreateSocketRequest) GetPool() string {
 }
 
 type CreateSocketReply struct {
-	SocketDescriptor *string                   `protobuf:"bytes,1,opt,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
-	ServerAddress    *AddressPort              `protobuf:"bytes,3,opt,name=server_address,json=serverAddress" json:"server_address,omitempty"`
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,4,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	SocketDescriptor             *string      `protobuf:"bytes,1,opt,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	ServerAddress                *AddressPort `protobuf:"bytes,3,opt,name=server_address,json=serverAddress" json:"server_address,omitempty"`
+	ProxyExternalIp              *AddressPort `protobuf:"bytes,4,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *CreateSocketReply) Reset()         { *m = CreateSocketReply{} }
@@ -1119,12 +1121,6 @@ var extRange_CreateSocketReply = []proto.ExtensionRange{
 
 func (*CreateSocketReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_CreateSocketReply
-}
-func (m *CreateSocketReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *CreateSocketReply) GetSocketDescriptor() string {
@@ -1173,9 +1169,9 @@ func (m *BindRequest) GetProxyExternalIp() *AddressPort {
 }
 
 type BindReply struct {
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	ProxyExternalIp              *AddressPort `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *BindReply) Reset()         { *m = BindReply{} }
@@ -1188,12 +1184,6 @@ var extRange_BindReply = []proto.ExtensionRange{
 
 func (*BindReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_BindReply
-}
-func (m *BindReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *BindReply) GetProxyExternalIp() *AddressPort {
@@ -1220,9 +1210,9 @@ func (m *GetSocketNameRequest) GetSocketDescriptor() string {
 }
 
 type GetSocketNameReply struct {
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,2,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	ProxyExternalIp              *AddressPort `protobuf:"bytes,2,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *GetSocketNameReply) Reset()         { *m = GetSocketNameReply{} }
@@ -1235,12 +1225,6 @@ var extRange_GetSocketNameReply = []proto.ExtensionRange{
 
 func (*GetSocketNameReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_GetSocketNameReply
-}
-func (m *GetSocketNameReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *GetSocketNameReply) GetProxyExternalIp() *AddressPort {
@@ -1267,9 +1251,9 @@ func (m *GetPeerNameRequest) GetSocketDescriptor() string {
 }
 
 type GetPeerNameReply struct {
-	PeerIp           *AddressPort              `protobuf:"bytes,2,opt,name=peer_ip,json=peerIp" json:"peer_ip,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	PeerIp                       *AddressPort `protobuf:"bytes,2,opt,name=peer_ip,json=peerIp" json:"peer_ip,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *GetPeerNameReply) Reset()         { *m = GetPeerNameReply{} }
@@ -1282,12 +1266,6 @@ var extRange_GetPeerNameReply = []proto.ExtensionRange{
 
 func (*GetPeerNameReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_GetPeerNameReply
-}
-func (m *GetPeerNameReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *GetPeerNameReply) GetPeerIp() *AddressPort {
@@ -1354,8 +1332,8 @@ func (m *SetSocketOptionsRequest) GetOptions() []*SocketOption {
 }
 
 type SetSocketOptionsReply struct {
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *SetSocketOptionsReply) Reset()         { *m = SetSocketOptionsReply{} }
@@ -1368,12 +1346,6 @@ var extRange_SetSocketOptionsReply = []proto.ExtensionRange{
 
 func (*SetSocketOptionsReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_SetSocketOptionsReply
-}
-func (m *SetSocketOptionsReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 type GetSocketOptionsRequest struct {
@@ -1401,9 +1373,9 @@ func (m *GetSocketOptionsRequest) GetOptions() []*SocketOption {
 }
 
 type GetSocketOptionsReply struct {
-	Options          []*SocketOption           `protobuf:"bytes,2,rep,name=options" json:"options,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Options                      []*SocketOption `protobuf:"bytes,2,rep,name=options" json:"options,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *GetSocketOptionsReply) Reset()         { *m = GetSocketOptionsReply{} }
@@ -1416,12 +1388,6 @@ var extRange_GetSocketOptionsReply = []proto.ExtensionRange{
 
 func (*GetSocketOptionsReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_GetSocketOptionsReply
-}
-func (m *GetSocketOptionsReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *GetSocketOptionsReply) GetOptions() []*SocketOption {
@@ -1466,9 +1432,9 @@ func (m *ConnectRequest) GetTimeoutSeconds() float64 {
 }
 
 type ConnectReply struct {
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	ProxyExternalIp              *AddressPort `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *ConnectReply) Reset()         { *m = ConnectReply{} }
@@ -1481,12 +1447,6 @@ var extRange_ConnectReply = []proto.ExtensionRange{
 
 func (*ConnectReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_ConnectReply
-}
-func (m *ConnectReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *ConnectReply) GetProxyExternalIp() *AddressPort {
@@ -1521,8 +1481,8 @@ func (m *ListenRequest) GetBacklog() int32 {
 }
 
 type ListenReply struct {
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *ListenReply) Reset()         { *m = ListenReply{} }
@@ -1535,12 +1495,6 @@ var extRange_ListenReply = []proto.ExtensionRange{
 
 func (*ListenReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_ListenReply
-}
-func (m *ListenReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 type AcceptRequest struct {
@@ -1570,10 +1524,10 @@ func (m *AcceptRequest) GetTimeoutSeconds() float64 {
 }
 
 type AcceptReply struct {
-	NewSocketDescriptor []byte                    `protobuf:"bytes,2,opt,name=new_socket_descriptor,json=newSocketDescriptor" json:"new_socket_descriptor,omitempty"`
-	RemoteAddress       *AddressPort              `protobuf:"bytes,3,opt,name=remote_address,json=remoteAddress" json:"remote_address,omitempty"`
-	XXX_extensions      map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized    []byte                    `json:"-"`
+	NewSocketDescriptor          []byte       `protobuf:"bytes,2,opt,name=new_socket_descriptor,json=newSocketDescriptor" json:"new_socket_descriptor,omitempty"`
+	RemoteAddress                *AddressPort `protobuf:"bytes,3,opt,name=remote_address,json=remoteAddress" json:"remote_address,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *AcceptReply) Reset()         { *m = AcceptReply{} }
@@ -1586,12 +1540,6 @@ var extRange_AcceptReply = []proto.ExtensionRange{
 
 func (*AcceptReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_AcceptReply
-}
-func (m *AcceptReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *AcceptReply) GetNewSocketDescriptor() []byte {
@@ -1641,8 +1589,8 @@ func (m *ShutDownRequest) GetSendOffset() int64 {
 }
 
 type ShutDownReply struct {
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *ShutDownReply) Reset()         { *m = ShutDownReply{} }
@@ -1655,12 +1603,6 @@ var extRange_ShutDownReply = []proto.ExtensionRange{
 
 func (*ShutDownReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_ShutDownReply
-}
-func (m *ShutDownReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 type CloseRequest struct {
@@ -1690,8 +1632,8 @@ func (m *CloseRequest) GetSendOffset() int64 {
 }
 
 type CloseReply struct {
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *CloseReply) Reset()         { *m = CloseReply{} }
@@ -1704,12 +1646,6 @@ var extRange_CloseReply = []proto.ExtensionRange{
 
 func (*CloseReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_CloseReply
-}
-func (m *CloseReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 type SendRequest struct {
@@ -1772,9 +1708,9 @@ func (m *SendRequest) GetTimeoutSeconds() float64 {
 }
 
 type SendReply struct {
-	DataSent         *int32                    `protobuf:"varint,1,opt,name=data_sent,json=dataSent" json:"data_sent,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	DataSent                     *int32 `protobuf:"varint,1,opt,name=data_sent,json=dataSent" json:"data_sent,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *SendReply) Reset()         { *m = SendReply{} }
@@ -1787,12 +1723,6 @@ var extRange_SendReply = []proto.ExtensionRange{
 
 func (*SendReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_SendReply
-}
-func (m *SendReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *SendReply) GetDataSent() int32 {
@@ -1846,12 +1776,12 @@ func (m *ReceiveRequest) GetTimeoutSeconds() float64 {
 }
 
 type ReceiveReply struct {
-	StreamOffset     *int64                    `protobuf:"varint,2,opt,name=stream_offset,json=streamOffset" json:"stream_offset,omitempty"`
-	Data             []byte                    `protobuf:"bytes,3,opt,name=data" json:"data,omitempty"`
-	ReceivedFrom     *AddressPort              `protobuf:"bytes,4,opt,name=received_from,json=receivedFrom" json:"received_from,omitempty"`
-	BufferSize       *int32                    `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize" json:"buffer_size,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	StreamOffset                 *int64       `protobuf:"varint,2,opt,name=stream_offset,json=streamOffset" json:"stream_offset,omitempty"`
+	Data                         []byte       `protobuf:"bytes,3,opt,name=data" json:"data,omitempty"`
+	ReceivedFrom                 *AddressPort `protobuf:"bytes,4,opt,name=received_from,json=receivedFrom" json:"received_from,omitempty"`
+	BufferSize                   *int32       `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize" json:"buffer_size,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *ReceiveReply) Reset()         { *m = ReceiveReply{} }
@@ -1864,12 +1794,6 @@ var extRange_ReceiveReply = []proto.ExtensionRange{
 
 func (*ReceiveReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_ReceiveReply
-}
-func (m *ReceiveReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *ReceiveReply) GetStreamOffset() int64 {
@@ -1959,9 +1883,9 @@ func (m *PollRequest) GetTimeoutSeconds() float64 {
 }
 
 type PollReply struct {
-	Events           []*PollEvent              `protobuf:"bytes,2,rep,name=events" json:"events,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Events                       []*PollEvent `protobuf:"bytes,2,rep,name=events" json:"events,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *PollReply) Reset()         { *m = PollReply{} }
@@ -1974,12 +1898,6 @@ var extRange_PollReply = []proto.ExtensionRange{
 
 func (*PollReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_PollReply
-}
-func (m *PollReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *PollReply) GetEvents() []*PollEvent {
@@ -2014,11 +1932,11 @@ func (m *ResolveRequest) GetAddressFamilies() []CreateSocketRequest_SocketFamily
 }
 
 type ResolveReply struct {
-	PackedAddress    [][]byte                  `protobuf:"bytes,2,rep,name=packed_address,json=packedAddress" json:"packed_address,omitempty"`
-	CanonicalName    *string                   `protobuf:"bytes,3,opt,name=canonical_name,json=canonicalName" json:"canonical_name,omitempty"`
-	Aliases          []string                  `protobuf:"bytes,4,rep,name=aliases" json:"aliases,omitempty"`
-	XXX_extensions   map[int32]proto.Extension `json:"-"`
-	XXX_unrecognized []byte                    `json:"-"`
+	PackedAddress                [][]byte `protobuf:"bytes,2,rep,name=packed_address,json=packedAddress" json:"packed_address,omitempty"`
+	CanonicalName                *string  `protobuf:"bytes,3,opt,name=canonical_name,json=canonicalName" json:"canonical_name,omitempty"`
+	Aliases                      []string `protobuf:"bytes,4,rep,name=aliases" json:"aliases,omitempty"`
+	proto.XXX_InternalExtensions `json:"-"`
+	XXX_unrecognized             []byte `json:"-"`
 }
 
 func (m *ResolveReply) Reset()         { *m = ResolveReply{} }
@@ -2031,12 +1949,6 @@ var extRange_ResolveReply = []proto.ExtensionRange{
 
 func (*ResolveReply) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_ResolveReply
-}
-func (m *ResolveReply) ExtensionMap() map[int32]proto.Extension {
-	if m.XXX_extensions == nil {
-		m.XXX_extensions = make(map[int32]proto.Extension)
-	}
-	return m.XXX_extensions
 }
 
 func (m *ResolveReply) GetPackedAddress() [][]byte {

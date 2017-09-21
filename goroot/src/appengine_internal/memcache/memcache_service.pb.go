@@ -42,7 +42,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.ProtoPackageIsVersion1
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type MemcacheServiceError_ErrorCode int32
 
@@ -89,6 +91,51 @@ func (x *MemcacheServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type MemcacheGetResponse_GetStatusCode int32
+
+const (
+	MemcacheGetResponse_HIT               MemcacheGetResponse_GetStatusCode = 1
+	MemcacheGetResponse_MISS              MemcacheGetResponse_GetStatusCode = 2
+	MemcacheGetResponse_TRUNCATED         MemcacheGetResponse_GetStatusCode = 3
+	MemcacheGetResponse_DEADLINE_EXCEEDED MemcacheGetResponse_GetStatusCode = 4
+	MemcacheGetResponse_UNREACHABLE       MemcacheGetResponse_GetStatusCode = 5
+	MemcacheGetResponse_OTHER_ERROR       MemcacheGetResponse_GetStatusCode = 6
+)
+
+var MemcacheGetResponse_GetStatusCode_name = map[int32]string{
+	1: "HIT",
+	2: "MISS",
+	3: "TRUNCATED",
+	4: "DEADLINE_EXCEEDED",
+	5: "UNREACHABLE",
+	6: "OTHER_ERROR",
+}
+var MemcacheGetResponse_GetStatusCode_value = map[string]int32{
+	"HIT":               1,
+	"MISS":              2,
+	"TRUNCATED":         3,
+	"DEADLINE_EXCEEDED": 4,
+	"UNREACHABLE":       5,
+	"OTHER_ERROR":       6,
+}
+
+func (x MemcacheGetResponse_GetStatusCode) Enum() *MemcacheGetResponse_GetStatusCode {
+	p := new(MemcacheGetResponse_GetStatusCode)
+	*p = x
+	return p
+}
+func (x MemcacheGetResponse_GetStatusCode) String() string {
+	return proto.EnumName(MemcacheGetResponse_GetStatusCode_name, int32(x))
+}
+func (x *MemcacheGetResponse_GetStatusCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheGetResponse_GetStatusCode_value, data, "MemcacheGetResponse_GetStatusCode")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheGetResponse_GetStatusCode(value)
+	return nil
+}
+
 type MemcacheSetRequest_SetPolicy int32
 
 const (
@@ -131,10 +178,13 @@ func (x *MemcacheSetRequest_SetPolicy) UnmarshalJSON(data []byte) error {
 type MemcacheSetResponse_SetStatusCode int32
 
 const (
-	MemcacheSetResponse_STORED     MemcacheSetResponse_SetStatusCode = 1
-	MemcacheSetResponse_NOT_STORED MemcacheSetResponse_SetStatusCode = 2
-	MemcacheSetResponse_ERROR      MemcacheSetResponse_SetStatusCode = 3
-	MemcacheSetResponse_EXISTS     MemcacheSetResponse_SetStatusCode = 4
+	MemcacheSetResponse_STORED            MemcacheSetResponse_SetStatusCode = 1
+	MemcacheSetResponse_NOT_STORED        MemcacheSetResponse_SetStatusCode = 2
+	MemcacheSetResponse_ERROR             MemcacheSetResponse_SetStatusCode = 3
+	MemcacheSetResponse_EXISTS            MemcacheSetResponse_SetStatusCode = 4
+	MemcacheSetResponse_DEADLINE_EXCEEDED MemcacheSetResponse_SetStatusCode = 5
+	MemcacheSetResponse_UNREACHABLE       MemcacheSetResponse_SetStatusCode = 6
+	MemcacheSetResponse_OTHER_ERROR       MemcacheSetResponse_SetStatusCode = 7
 )
 
 var MemcacheSetResponse_SetStatusCode_name = map[int32]string{
@@ -142,12 +192,18 @@ var MemcacheSetResponse_SetStatusCode_name = map[int32]string{
 	2: "NOT_STORED",
 	3: "ERROR",
 	4: "EXISTS",
+	5: "DEADLINE_EXCEEDED",
+	6: "UNREACHABLE",
+	7: "OTHER_ERROR",
 }
 var MemcacheSetResponse_SetStatusCode_value = map[string]int32{
-	"STORED":     1,
-	"NOT_STORED": 2,
-	"ERROR":      3,
-	"EXISTS":     4,
+	"STORED":            1,
+	"NOT_STORED":        2,
+	"ERROR":             3,
+	"EXISTS":            4,
+	"DEADLINE_EXCEEDED": 5,
+	"UNREACHABLE":       6,
+	"OTHER_ERROR":       7,
 }
 
 func (x MemcacheSetResponse_SetStatusCode) Enum() *MemcacheSetResponse_SetStatusCode {
@@ -170,17 +226,26 @@ func (x *MemcacheSetResponse_SetStatusCode) UnmarshalJSON(data []byte) error {
 type MemcacheDeleteResponse_DeleteStatusCode int32
 
 const (
-	MemcacheDeleteResponse_DELETED   MemcacheDeleteResponse_DeleteStatusCode = 1
-	MemcacheDeleteResponse_NOT_FOUND MemcacheDeleteResponse_DeleteStatusCode = 2
+	MemcacheDeleteResponse_DELETED           MemcacheDeleteResponse_DeleteStatusCode = 1
+	MemcacheDeleteResponse_NOT_FOUND         MemcacheDeleteResponse_DeleteStatusCode = 2
+	MemcacheDeleteResponse_DEADLINE_EXCEEDED MemcacheDeleteResponse_DeleteStatusCode = 3
+	MemcacheDeleteResponse_UNREACHABLE       MemcacheDeleteResponse_DeleteStatusCode = 4
+	MemcacheDeleteResponse_OTHER_ERROR       MemcacheDeleteResponse_DeleteStatusCode = 5
 )
 
 var MemcacheDeleteResponse_DeleteStatusCode_name = map[int32]string{
 	1: "DELETED",
 	2: "NOT_FOUND",
+	3: "DEADLINE_EXCEEDED",
+	4: "UNREACHABLE",
+	5: "OTHER_ERROR",
 }
 var MemcacheDeleteResponse_DeleteStatusCode_value = map[string]int32{
-	"DELETED":   1,
-	"NOT_FOUND": 2,
+	"DELETED":           1,
+	"NOT_FOUND":         2,
+	"DEADLINE_EXCEEDED": 3,
+	"UNREACHABLE":       4,
+	"OTHER_ERROR":       5,
 }
 
 func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_DeleteStatusCode {
@@ -236,20 +301,29 @@ func (x *MemcacheIncrementRequest_Direction) UnmarshalJSON(data []byte) error {
 type MemcacheIncrementResponse_IncrementStatusCode int32
 
 const (
-	MemcacheIncrementResponse_OK          MemcacheIncrementResponse_IncrementStatusCode = 1
-	MemcacheIncrementResponse_NOT_CHANGED MemcacheIncrementResponse_IncrementStatusCode = 2
-	MemcacheIncrementResponse_ERROR       MemcacheIncrementResponse_IncrementStatusCode = 3
+	MemcacheIncrementResponse_OK                MemcacheIncrementResponse_IncrementStatusCode = 1
+	MemcacheIncrementResponse_NOT_CHANGED       MemcacheIncrementResponse_IncrementStatusCode = 2
+	MemcacheIncrementResponse_ERROR             MemcacheIncrementResponse_IncrementStatusCode = 3
+	MemcacheIncrementResponse_DEADLINE_EXCEEDED MemcacheIncrementResponse_IncrementStatusCode = 4
+	MemcacheIncrementResponse_UNREACHABLE       MemcacheIncrementResponse_IncrementStatusCode = 5
+	MemcacheIncrementResponse_OTHER_ERROR       MemcacheIncrementResponse_IncrementStatusCode = 6
 )
 
 var MemcacheIncrementResponse_IncrementStatusCode_name = map[int32]string{
 	1: "OK",
 	2: "NOT_CHANGED",
 	3: "ERROR",
+	4: "DEADLINE_EXCEEDED",
+	5: "UNREACHABLE",
+	6: "OTHER_ERROR",
 }
 var MemcacheIncrementResponse_IncrementStatusCode_value = map[string]int32{
-	"OK":          1,
-	"NOT_CHANGED": 2,
-	"ERROR":       3,
+	"OK":                1,
+	"NOT_CHANGED":       2,
+	"ERROR":             3,
+	"DEADLINE_EXCEEDED": 4,
+	"UNREACHABLE":       5,
+	"OTHER_ERROR":       6,
 }
 
 func (x MemcacheIncrementResponse_IncrementStatusCode) Enum() *MemcacheIncrementResponse_IncrementStatusCode {
@@ -366,8 +440,9 @@ func (m *MemcacheGetRequest) GetOverride() *AppOverride {
 }
 
 type MemcacheGetResponse struct {
-	Item             []*MemcacheGetResponse_Item `protobuf:"group,1,rep,name=Item,json=item" json:"item,omitempty"`
-	XXX_unrecognized []byte                      `json:"-"`
+	Item             []*MemcacheGetResponse_Item         `protobuf:"group,1,rep,name=Item,json=item" json:"item,omitempty"`
+	GetStatus        []MemcacheGetResponse_GetStatusCode `protobuf:"varint,7,rep,name=get_status,json=getStatus,enum=appengine.MemcacheGetResponse_GetStatusCode" json:"get_status,omitempty"`
+	XXX_unrecognized []byte                              `json:"-"`
 }
 
 func (m *MemcacheGetResponse) Reset()         { *m = MemcacheGetResponse{} }
@@ -377,6 +452,13 @@ func (*MemcacheGetResponse) ProtoMessage()    {}
 func (m *MemcacheGetResponse) GetItem() []*MemcacheGetResponse_Item {
 	if m != nil {
 		return m.Item
+	}
+	return nil
+}
+
+func (m *MemcacheGetResponse) GetGetStatus() []MemcacheGetResponse_GetStatusCode {
+	if m != nil {
+		return m.GetStatus
 	}
 	return nil
 }
@@ -1017,6 +1099,7 @@ func init() {
 	proto.RegisterType((*MemcacheGrabTailResponse)(nil), "appengine.MemcacheGrabTailResponse")
 	proto.RegisterType((*MemcacheGrabTailResponse_Item)(nil), "appengine.MemcacheGrabTailResponse.Item")
 	proto.RegisterEnum("appengine.MemcacheServiceError_ErrorCode", MemcacheServiceError_ErrorCode_name, MemcacheServiceError_ErrorCode_value)
+	proto.RegisterEnum("appengine.MemcacheGetResponse_GetStatusCode", MemcacheGetResponse_GetStatusCode_name, MemcacheGetResponse_GetStatusCode_value)
 	proto.RegisterEnum("appengine.MemcacheSetRequest_SetPolicy", MemcacheSetRequest_SetPolicy_name, MemcacheSetRequest_SetPolicy_value)
 	proto.RegisterEnum("appengine.MemcacheSetResponse_SetStatusCode", MemcacheSetResponse_SetStatusCode_name, MemcacheSetResponse_SetStatusCode_value)
 	proto.RegisterEnum("appengine.MemcacheDeleteResponse_DeleteStatusCode", MemcacheDeleteResponse_DeleteStatusCode_name, MemcacheDeleteResponse_DeleteStatusCode_value)
