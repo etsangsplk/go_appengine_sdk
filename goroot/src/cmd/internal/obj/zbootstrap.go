@@ -4,12 +4,12 @@ package obj
 
 import "runtime"
 
-const defaultGOROOT = `/private/var/folders/9y/ppk2fnqj5lscwqw_l6lhdrx8005bt1/T/appengine/go_appengine/goroot`
+const defaultGOROOT = `/tmp/go_sdk797450225/appengine/go_appengine/goroot`
 const defaultGO386 = `sse2`
 const defaultGOARM = `7`
 const defaultGOOS = runtime.GOOS
 const defaultGOARCH = runtime.GOARCH
 const defaultGO_EXTLINK_ENABLED = ``
-const version = `go1.6.3 (appengine-1.9.48)`
+const version = `1.6.3 (appengine-1.9.53)`
 const stackGuardMultiplier = 1
 const goexperiment = ``
