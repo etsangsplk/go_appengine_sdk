@@ -276,25 +276,25 @@ func (*ImagesServiceTransform) ProtoMessage()    {}
 
 type Transform struct {
 	Width            *int32   `protobuf:"varint,1,opt,name=width" json:"width,omitempty"`
-	WidthSet         *bool    `protobuf:"varint,101,opt,name=width_set" json:"width_set,omitempty"`
+	WidthSet         *bool    `protobuf:"varint,101,opt,name=width_set,json=widthSet" json:"width_set,omitempty"`
 	Height           *int32   `protobuf:"varint,2,opt,name=height" json:"height,omitempty"`
-	HeightSet        *bool    `protobuf:"varint,102,opt,name=height_set" json:"height_set,omitempty"`
-	CropToFit        *bool    `protobuf:"varint,11,opt,name=crop_to_fit" json:"crop_to_fit,omitempty"`
-	CropOffsetX      *float32 `protobuf:"fixed32,12,opt,name=crop_offset_x,def=0.5" json:"crop_offset_x,omitempty"`
-	CropOffsetXSet   *bool    `protobuf:"varint,112,opt,name=crop_offset_x_set" json:"crop_offset_x_set,omitempty"`
-	CropOffsetY      *float32 `protobuf:"fixed32,13,opt,name=crop_offset_y,def=0.5" json:"crop_offset_y,omitempty"`
-	CropOffsetYSet   *bool    `protobuf:"varint,113,opt,name=crop_offset_y_set" json:"crop_offset_y_set,omitempty"`
+	HeightSet        *bool    `protobuf:"varint,102,opt,name=height_set,json=heightSet" json:"height_set,omitempty"`
+	CropToFit        *bool    `protobuf:"varint,11,opt,name=crop_to_fit,json=cropToFit" json:"crop_to_fit,omitempty"`
+	CropOffsetX      *float32 `protobuf:"fixed32,12,opt,name=crop_offset_x,json=cropOffsetX,def=0.5" json:"crop_offset_x,omitempty"`
+	CropOffsetXSet   *bool    `protobuf:"varint,112,opt,name=crop_offset_x_set,json=cropOffsetXSet" json:"crop_offset_x_set,omitempty"`
+	CropOffsetY      *float32 `protobuf:"fixed32,13,opt,name=crop_offset_y,json=cropOffsetY,def=0.5" json:"crop_offset_y,omitempty"`
+	CropOffsetYSet   *bool    `protobuf:"varint,113,opt,name=crop_offset_y_set,json=cropOffsetYSet" json:"crop_offset_y_set,omitempty"`
 	Rotate           *int32   `protobuf:"varint,3,opt,name=rotate" json:"rotate,omitempty"`
-	HorizontalFlip   *bool    `protobuf:"varint,4,opt,name=horizontal_flip" json:"horizontal_flip,omitempty"`
-	VerticalFlip     *bool    `protobuf:"varint,5,opt,name=vertical_flip" json:"vertical_flip,omitempty"`
-	CropLeftX        *float32 `protobuf:"fixed32,6,opt,name=crop_left_x" json:"crop_left_x,omitempty"`
-	CropTopY         *float32 `protobuf:"fixed32,7,opt,name=crop_top_y" json:"crop_top_y,omitempty"`
-	CropRightX       *float32 `protobuf:"fixed32,8,opt,name=crop_right_x,def=1" json:"crop_right_x,omitempty"`
-	CropRightXSet    *bool    `protobuf:"varint,108,opt,name=crop_right_x_set" json:"crop_right_x_set,omitempty"`
-	CropBottomY      *float32 `protobuf:"fixed32,9,opt,name=crop_bottom_y,def=1" json:"crop_bottom_y,omitempty"`
-	CropBottomYSet   *bool    `protobuf:"varint,109,opt,name=crop_bottom_y_set" json:"crop_bottom_y_set,omitempty"`
+	HorizontalFlip   *bool    `protobuf:"varint,4,opt,name=horizontal_flip,json=horizontalFlip" json:"horizontal_flip,omitempty"`
+	VerticalFlip     *bool    `protobuf:"varint,5,opt,name=vertical_flip,json=verticalFlip" json:"vertical_flip,omitempty"`
+	CropLeftX        *float32 `protobuf:"fixed32,6,opt,name=crop_left_x,json=cropLeftX" json:"crop_left_x,omitempty"`
+	CropTopY         *float32 `protobuf:"fixed32,7,opt,name=crop_top_y,json=cropTopY" json:"crop_top_y,omitempty"`
+	CropRightX       *float32 `protobuf:"fixed32,8,opt,name=crop_right_x,json=cropRightX,def=1" json:"crop_right_x,omitempty"`
+	CropRightXSet    *bool    `protobuf:"varint,108,opt,name=crop_right_x_set,json=cropRightXSet" json:"crop_right_x_set,omitempty"`
+	CropBottomY      *float32 `protobuf:"fixed32,9,opt,name=crop_bottom_y,json=cropBottomY,def=1" json:"crop_bottom_y,omitempty"`
+	CropBottomYSet   *bool    `protobuf:"varint,109,opt,name=crop_bottom_y_set,json=cropBottomYSet" json:"crop_bottom_y_set,omitempty"`
 	Autolevels       *bool    `protobuf:"varint,10,opt,name=autolevels" json:"autolevels,omitempty"`
-	AllowStretch     *bool    `protobuf:"varint,14,opt,name=allow_stretch" json:"allow_stretch,omitempty"`
+	AllowStretch     *bool    `protobuf:"varint,14,opt,name=allow_stretch,json=allowStretch" json:"allow_stretch,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -449,8 +449,8 @@ func (m *Transform) GetAllowStretch() bool {
 
 type ImageData struct {
 	Content          []byte  `protobuf:"bytes,1,req,name=content" json:"content,omitempty"`
-	BlobKey          *string `protobuf:"bytes,2,opt,name=blob_key" json:"blob_key,omitempty"`
-	BlobKeySet       *bool   `protobuf:"varint,102,opt,name=blob_key_set" json:"blob_key_set,omitempty"`
+	BlobKey          *string `protobuf:"bytes,2,opt,name=blob_key,json=blobKey" json:"blob_key,omitempty"`
+	BlobKeySet       *bool   `protobuf:"varint,102,opt,name=blob_key_set,json=blobKeySet" json:"blob_key_set,omitempty"`
 	Width            *int32  `protobuf:"varint,3,opt,name=width" json:"width,omitempty"`
 	Height           *int32  `protobuf:"varint,4,opt,name=height" json:"height,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -496,11 +496,11 @@ func (m *ImageData) GetHeight() int32 {
 }
 
 type InputSettings struct {
-	CorrectExifOrientation        *InputSettings_ORIENTATION_CORRECTION_TYPE `protobuf:"varint,1,opt,name=correct_exif_orientation,enum=appengine.InputSettings_ORIENTATION_CORRECTION_TYPE" json:"correct_exif_orientation,omitempty"`
-	CorrectExifOrientationSet     *bool                                      `protobuf:"varint,101,opt,name=correct_exif_orientation_set" json:"correct_exif_orientation_set,omitempty"`
-	ParseMetadata                 *bool                                      `protobuf:"varint,2,opt,name=parse_metadata" json:"parse_metadata,omitempty"`
-	TransparentSubstitutionRgb    *int32                                     `protobuf:"varint,3,opt,name=transparent_substitution_rgb" json:"transparent_substitution_rgb,omitempty"`
-	TransparentSubstitutionRgbSet *bool                                      `protobuf:"varint,103,opt,name=transparent_substitution_rgb_set" json:"transparent_substitution_rgb_set,omitempty"`
+	CorrectExifOrientation        *InputSettings_ORIENTATION_CORRECTION_TYPE `protobuf:"varint,1,opt,name=correct_exif_orientation,json=correctExifOrientation,enum=appengine.InputSettings_ORIENTATION_CORRECTION_TYPE" json:"correct_exif_orientation,omitempty"`
+	CorrectExifOrientationSet     *bool                                      `protobuf:"varint,101,opt,name=correct_exif_orientation_set,json=correctExifOrientationSet" json:"correct_exif_orientation_set,omitempty"`
+	ParseMetadata                 *bool                                      `protobuf:"varint,2,opt,name=parse_metadata,json=parseMetadata" json:"parse_metadata,omitempty"`
+	TransparentSubstitutionRgb    *int32                                     `protobuf:"varint,3,opt,name=transparent_substitution_rgb,json=transparentSubstitutionRgb" json:"transparent_substitution_rgb,omitempty"`
+	TransparentSubstitutionRgbSet *bool                                      `protobuf:"varint,103,opt,name=transparent_substitution_rgb_set,json=transparentSubstitutionRgbSet" json:"transparent_substitution_rgb_set,omitempty"`
 	XXX_unrecognized              []byte                                     `json:"-"`
 }
 
@@ -544,7 +544,7 @@ func (m *InputSettings) GetTransparentSubstitutionRgbSet() bool {
 }
 
 type OutputSettings struct {
-	MimeType         *OutputSettings_MIME_TYPE `protobuf:"varint,1,opt,name=mime_type,enum=appengine.OutputSettings_MIME_TYPE" json:"mime_type,omitempty"`
+	MimeType         *OutputSettings_MIME_TYPE `protobuf:"varint,1,opt,name=mime_type,json=mimeType,enum=appengine.OutputSettings_MIME_TYPE" json:"mime_type,omitempty"`
 	Quality          *int32                    `protobuf:"varint,2,opt,name=quality" json:"quality,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -609,7 +609,7 @@ func (m *ImagesTransformRequest) GetInput() *InputSettings {
 
 type ImagesTransformResponse struct {
 	Image            *ImageData `protobuf:"bytes,1,req,name=image" json:"image,omitempty"`
-	SourceMetadata   *string    `protobuf:"bytes,2,opt,name=source_metadata" json:"source_metadata,omitempty"`
+	SourceMetadata   *string    `protobuf:"bytes,2,opt,name=source_metadata,json=sourceMetadata" json:"source_metadata,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -632,9 +632,9 @@ func (m *ImagesTransformResponse) GetSourceMetadata() string {
 }
 
 type CompositeImageOptions struct {
-	SourceIndex      *int32                        `protobuf:"varint,1,req,name=source_index" json:"source_index,omitempty"`
-	XOffset          *int32                        `protobuf:"varint,2,req,name=x_offset" json:"x_offset,omitempty"`
-	YOffset          *int32                        `protobuf:"varint,3,req,name=y_offset" json:"y_offset,omitempty"`
+	SourceIndex      *int32                        `protobuf:"varint,1,req,name=source_index,json=sourceIndex" json:"source_index,omitempty"`
+	XOffset          *int32                        `protobuf:"varint,2,req,name=x_offset,json=xOffset" json:"x_offset,omitempty"`
+	YOffset          *int32                        `protobuf:"varint,3,req,name=y_offset,json=yOffset" json:"y_offset,omitempty"`
 	Opacity          *float32                      `protobuf:"fixed32,4,req,name=opacity" json:"opacity,omitempty"`
 	Anchor           *CompositeImageOptions_ANCHOR `protobuf:"varint,5,req,name=anchor,enum=appengine.CompositeImageOptions_ANCHOR" json:"anchor,omitempty"`
 	XXX_unrecognized []byte                        `json:"-"`
@@ -684,7 +684,7 @@ type ImagesCanvas struct {
 	Height           *int32          `protobuf:"varint,2,req,name=height" json:"height,omitempty"`
 	Output           *OutputSettings `protobuf:"bytes,3,req,name=output" json:"output,omitempty"`
 	Color            *int32          `protobuf:"varint,4,opt,name=color,def=-1" json:"color,omitempty"`
-	ColorSet         *bool           `protobuf:"varint,104,opt,name=color_set" json:"color_set,omitempty"`
+	ColorSet         *bool           `protobuf:"varint,104,opt,name=color_set,json=colorSet" json:"color_set,omitempty"`
 	XXX_unrecognized []byte          `json:"-"`
 }
 
@@ -842,8 +842,8 @@ func (m *ImagesHistogramResponse) GetHistogram() *ImagesHistogram {
 }
 
 type ImagesGetUrlBaseRequest struct {
-	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
-	CreateSecureUrl  *bool   `protobuf:"varint,2,opt,name=create_secure_url" json:"create_secure_url,omitempty"`
+	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key,json=blobKey" json:"blob_key,omitempty"`
+	CreateSecureUrl  *bool   `protobuf:"varint,2,opt,name=create_secure_url,json=createSecureUrl" json:"create_secure_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -882,7 +882,7 @@ func (m *ImagesGetUrlBaseResponse) GetUrl() string {
 }
 
 type ImagesDeleteUrlBaseRequest struct {
-	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
+	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key,json=blobKey" json:"blob_key,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -906,6 +906,25 @@ func (m *ImagesDeleteUrlBaseResponse) String() string { return proto.CompactText
 func (*ImagesDeleteUrlBaseResponse) ProtoMessage()    {}
 
 func init() {
+	proto.RegisterType((*ImagesServiceError)(nil), "appengine.ImagesServiceError")
+	proto.RegisterType((*ImagesServiceTransform)(nil), "appengine.ImagesServiceTransform")
+	proto.RegisterType((*Transform)(nil), "appengine.Transform")
+	proto.RegisterType((*ImageData)(nil), "appengine.ImageData")
+	proto.RegisterType((*InputSettings)(nil), "appengine.InputSettings")
+	proto.RegisterType((*OutputSettings)(nil), "appengine.OutputSettings")
+	proto.RegisterType((*ImagesTransformRequest)(nil), "appengine.ImagesTransformRequest")
+	proto.RegisterType((*ImagesTransformResponse)(nil), "appengine.ImagesTransformResponse")
+	proto.RegisterType((*CompositeImageOptions)(nil), "appengine.CompositeImageOptions")
+	proto.RegisterType((*ImagesCanvas)(nil), "appengine.ImagesCanvas")
+	proto.RegisterType((*ImagesCompositeRequest)(nil), "appengine.ImagesCompositeRequest")
+	proto.RegisterType((*ImagesCompositeResponse)(nil), "appengine.ImagesCompositeResponse")
+	proto.RegisterType((*ImagesHistogramRequest)(nil), "appengine.ImagesHistogramRequest")
+	proto.RegisterType((*ImagesHistogram)(nil), "appengine.ImagesHistogram")
+	proto.RegisterType((*ImagesHistogramResponse)(nil), "appengine.ImagesHistogramResponse")
+	proto.RegisterType((*ImagesGetUrlBaseRequest)(nil), "appengine.ImagesGetUrlBaseRequest")
+	proto.RegisterType((*ImagesGetUrlBaseResponse)(nil), "appengine.ImagesGetUrlBaseResponse")
+	proto.RegisterType((*ImagesDeleteUrlBaseRequest)(nil), "appengine.ImagesDeleteUrlBaseRequest")
+	proto.RegisterType((*ImagesDeleteUrlBaseResponse)(nil), "appengine.ImagesDeleteUrlBaseResponse")
 	proto.RegisterEnum("appengine.ImagesServiceError_ErrorCode", ImagesServiceError_ErrorCode_name, ImagesServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.ImagesServiceTransform_Type", ImagesServiceTransform_Type_name, ImagesServiceTransform_Type_value)
 	proto.RegisterEnum("appengine.InputSettings_ORIENTATION_CORRECTION_TYPE", InputSettings_ORIENTATION_CORRECTION_TYPE_name, InputSettings_ORIENTATION_CORRECTION_TYPE_value)

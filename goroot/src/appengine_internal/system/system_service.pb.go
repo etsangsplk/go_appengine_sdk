@@ -170,7 +170,7 @@ func (m *StartBackgroundRequestRequest) String() string { return proto.CompactTe
 func (*StartBackgroundRequestRequest) ProtoMessage()    {}
 
 type StartBackgroundRequestResponse struct {
-	RequestId        *string `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
+	RequestId        *string `protobuf:"bytes,1,opt,name=request_id,json=requestId" json:"request_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -186,5 +186,11 @@ func (m *StartBackgroundRequestResponse) GetRequestId() string {
 }
 
 func init() {
+	proto.RegisterType((*SystemServiceError)(nil), "appengine.SystemServiceError")
+	proto.RegisterType((*SystemStat)(nil), "appengine.SystemStat")
+	proto.RegisterType((*GetSystemStatsRequest)(nil), "appengine.GetSystemStatsRequest")
+	proto.RegisterType((*GetSystemStatsResponse)(nil), "appengine.GetSystemStatsResponse")
+	proto.RegisterType((*StartBackgroundRequestRequest)(nil), "appengine.StartBackgroundRequestRequest")
+	proto.RegisterType((*StartBackgroundRequestResponse)(nil), "appengine.StartBackgroundRequestResponse")
 	proto.RegisterEnum("appengine.SystemServiceError_ErrorCode", SystemServiceError_ErrorCode_name, SystemServiceError_ErrorCode_value)
 }

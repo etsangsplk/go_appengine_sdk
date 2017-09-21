@@ -95,7 +95,7 @@ func (m *AppIdentityServiceError) String() string { return proto.CompactTextStri
 func (*AppIdentityServiceError) ProtoMessage()    {}
 
 type SignForAppRequest struct {
-	BytesToSign      []byte `protobuf:"bytes,1,opt,name=bytes_to_sign" json:"bytes_to_sign,omitempty"`
+	BytesToSign      []byte `protobuf:"bytes,1,opt,name=bytes_to_sign,json=bytesToSign" json:"bytes_to_sign,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -111,8 +111,8 @@ func (m *SignForAppRequest) GetBytesToSign() []byte {
 }
 
 type SignForAppResponse struct {
-	KeyName          *string `protobuf:"bytes,1,opt,name=key_name" json:"key_name,omitempty"`
-	SignatureBytes   []byte  `protobuf:"bytes,2,opt,name=signature_bytes" json:"signature_bytes,omitempty"`
+	KeyName          *string `protobuf:"bytes,1,opt,name=key_name,json=keyName" json:"key_name,omitempty"`
+	SignatureBytes   []byte  `protobuf:"bytes,2,opt,name=signature_bytes,json=signatureBytes" json:"signature_bytes,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -143,8 +143,8 @@ func (m *GetPublicCertificateForAppRequest) String() string { return proto.Compa
 func (*GetPublicCertificateForAppRequest) ProtoMessage()    {}
 
 type PublicCertificate struct {
-	KeyName            *string `protobuf:"bytes,1,opt,name=key_name" json:"key_name,omitempty"`
-	X509CertificatePem *string `protobuf:"bytes,2,opt,name=x509_certificate_pem" json:"x509_certificate_pem,omitempty"`
+	KeyName            *string `protobuf:"bytes,1,opt,name=key_name,json=keyName" json:"key_name,omitempty"`
+	X509CertificatePem *string `protobuf:"bytes,2,opt,name=x509_certificate_pem,json=x509CertificatePem" json:"x509_certificate_pem,omitempty"`
 	XXX_unrecognized   []byte  `json:"-"`
 }
 
@@ -167,8 +167,8 @@ func (m *PublicCertificate) GetX509CertificatePem() string {
 }
 
 type GetPublicCertificateForAppResponse struct {
-	PublicCertificateList      []*PublicCertificate `protobuf:"bytes,1,rep,name=public_certificate_list" json:"public_certificate_list,omitempty"`
-	MaxClientCacheTimeInSecond *int64               `protobuf:"varint,2,opt,name=max_client_cache_time_in_second" json:"max_client_cache_time_in_second,omitempty"`
+	PublicCertificateList      []*PublicCertificate `protobuf:"bytes,1,rep,name=public_certificate_list,json=publicCertificateList" json:"public_certificate_list,omitempty"`
+	MaxClientCacheTimeInSecond *int64               `protobuf:"varint,2,opt,name=max_client_cache_time_in_second,json=maxClientCacheTimeInSecond" json:"max_client_cache_time_in_second,omitempty"`
 	XXX_unrecognized           []byte               `json:"-"`
 }
 
@@ -199,7 +199,7 @@ func (m *GetServiceAccountNameRequest) String() string { return proto.CompactTex
 func (*GetServiceAccountNameRequest) ProtoMessage()    {}
 
 type GetServiceAccountNameResponse struct {
-	ServiceAccountName *string `protobuf:"bytes,1,opt,name=service_account_name" json:"service_account_name,omitempty"`
+	ServiceAccountName *string `protobuf:"bytes,1,opt,name=service_account_name,json=serviceAccountName" json:"service_account_name,omitempty"`
 	XXX_unrecognized   []byte  `json:"-"`
 }
 
@@ -216,8 +216,8 @@ func (m *GetServiceAccountNameResponse) GetServiceAccountName() string {
 
 type GetAccessTokenRequest struct {
 	Scope              []string `protobuf:"bytes,1,rep,name=scope" json:"scope,omitempty"`
-	ServiceAccountId   *int64   `protobuf:"varint,2,opt,name=service_account_id" json:"service_account_id,omitempty"`
-	ServiceAccountName *string  `protobuf:"bytes,3,opt,name=service_account_name" json:"service_account_name,omitempty"`
+	ServiceAccountId   *int64   `protobuf:"varint,2,opt,name=service_account_id,json=serviceAccountId" json:"service_account_id,omitempty"`
+	ServiceAccountName *string  `protobuf:"bytes,3,opt,name=service_account_name,json=serviceAccountName" json:"service_account_name,omitempty"`
 	XXX_unrecognized   []byte   `json:"-"`
 }
 
@@ -247,8 +247,8 @@ func (m *GetAccessTokenRequest) GetServiceAccountName() string {
 }
 
 type GetAccessTokenResponse struct {
-	AccessToken      *string `protobuf:"bytes,1,opt,name=access_token" json:"access_token,omitempty"`
-	ExpirationTime   *int64  `protobuf:"varint,2,opt,name=expiration_time" json:"expiration_time,omitempty"`
+	AccessToken      *string `protobuf:"bytes,1,opt,name=access_token,json=accessToken" json:"access_token,omitempty"`
+	ExpirationTime   *int64  `protobuf:"varint,2,opt,name=expiration_time,json=expirationTime" json:"expiration_time,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -279,7 +279,7 @@ func (m *GetDefaultGcsBucketNameRequest) String() string { return proto.CompactT
 func (*GetDefaultGcsBucketNameRequest) ProtoMessage()    {}
 
 type GetDefaultGcsBucketNameResponse struct {
-	DefaultGcsBucketName *string `protobuf:"bytes,1,opt,name=default_gcs_bucket_name" json:"default_gcs_bucket_name,omitempty"`
+	DefaultGcsBucketName *string `protobuf:"bytes,1,opt,name=default_gcs_bucket_name,json=defaultGcsBucketName" json:"default_gcs_bucket_name,omitempty"`
 	XXX_unrecognized     []byte  `json:"-"`
 }
 
@@ -295,5 +295,17 @@ func (m *GetDefaultGcsBucketNameResponse) GetDefaultGcsBucketName() string {
 }
 
 func init() {
+	proto.RegisterType((*AppIdentityServiceError)(nil), "appengine.AppIdentityServiceError")
+	proto.RegisterType((*SignForAppRequest)(nil), "appengine.SignForAppRequest")
+	proto.RegisterType((*SignForAppResponse)(nil), "appengine.SignForAppResponse")
+	proto.RegisterType((*GetPublicCertificateForAppRequest)(nil), "appengine.GetPublicCertificateForAppRequest")
+	proto.RegisterType((*PublicCertificate)(nil), "appengine.PublicCertificate")
+	proto.RegisterType((*GetPublicCertificateForAppResponse)(nil), "appengine.GetPublicCertificateForAppResponse")
+	proto.RegisterType((*GetServiceAccountNameRequest)(nil), "appengine.GetServiceAccountNameRequest")
+	proto.RegisterType((*GetServiceAccountNameResponse)(nil), "appengine.GetServiceAccountNameResponse")
+	proto.RegisterType((*GetAccessTokenRequest)(nil), "appengine.GetAccessTokenRequest")
+	proto.RegisterType((*GetAccessTokenResponse)(nil), "appengine.GetAccessTokenResponse")
+	proto.RegisterType((*GetDefaultGcsBucketNameRequest)(nil), "appengine.GetDefaultGcsBucketNameRequest")
+	proto.RegisterType((*GetDefaultGcsBucketNameResponse)(nil), "appengine.GetDefaultGcsBucketNameResponse")
 	proto.RegisterEnum("appengine.AppIdentityServiceError_ErrorCode", AppIdentityServiceError_ErrorCode_name, AppIdentityServiceError_ErrorCode_value)
 }

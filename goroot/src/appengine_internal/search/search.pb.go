@@ -616,7 +616,7 @@ func (m *Scope) GetValue() string {
 type Entry struct {
 	Scope            *Scope            `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
 	Permission       *Entry_Permission `protobuf:"varint,2,opt,name=permission,enum=search.Entry_Permission" json:"permission,omitempty"`
-	DisplayName      *string           `protobuf:"bytes,3,opt,name=display_name" json:"display_name,omitempty"`
+	DisplayName      *string           `protobuf:"bytes,3,opt,name=display_name,json=displayName" json:"display_name,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -672,8 +672,8 @@ func (m *AccessControlList) GetEntries() []*Entry {
 type FieldValue struct {
 	Type             *FieldValue_ContentType `protobuf:"varint,1,opt,name=type,enum=search.FieldValue_ContentType,def=0" json:"type,omitempty"`
 	Language         *string                 `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
-	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value" json:"string_value,omitempty"`
-	Geo              *FieldValue_Geo         `protobuf:"group,4,opt,name=Geo" json:"geo,omitempty"`
+	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value,json=stringValue" json:"string_value,omitempty"`
+	Geo              *FieldValue_Geo         `protobuf:"group,4,opt,name=Geo,json=geo" json:"geo,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -785,10 +785,10 @@ func (m *FieldTypes) GetType() []FieldValue_ContentType {
 }
 
 type IndexShardSettings struct {
-	PrevNumShards            []int32 `protobuf:"varint,1,rep,name=prev_num_shards" json:"prev_num_shards,omitempty"`
-	NumShards                *int32  `protobuf:"varint,2,req,name=num_shards,def=1" json:"num_shards,omitempty"`
-	PrevNumShardsSearchFalse []int32 `protobuf:"varint,3,rep,name=prev_num_shards_search_false" json:"prev_num_shards_search_false,omitempty"`
-	LocalReplica             *string `protobuf:"bytes,4,opt,name=local_replica,def=" json:"local_replica,omitempty"`
+	PrevNumShards            []int32 `protobuf:"varint,1,rep,name=prev_num_shards,json=prevNumShards" json:"prev_num_shards,omitempty"`
+	NumShards                *int32  `protobuf:"varint,2,req,name=num_shards,json=numShards,def=1" json:"num_shards,omitempty"`
+	PrevNumShardsSearchFalse []int32 `protobuf:"varint,3,rep,name=prev_num_shards_search_false,json=prevNumShardsSearchFalse" json:"prev_num_shards_search_false,omitempty"`
+	LocalReplica             *string `protobuf:"bytes,4,opt,name=local_replica,json=localReplica,def=" json:"local_replica,omitempty"`
 	XXX_unrecognized         []byte  `json:"-"`
 }
 
@@ -828,7 +828,7 @@ func (m *IndexShardSettings) GetLocalReplica() string {
 
 type FacetValue struct {
 	Type             *FacetValue_ContentType `protobuf:"varint,1,opt,name=type,enum=search.FacetValue_ContentType,def=2" json:"type,omitempty"`
-	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value" json:"string_value,omitempty"`
+	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value,json=stringValue" json:"string_value,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -878,7 +878,7 @@ func (m *Facet) GetValue() *FacetValue {
 
 type DocumentMetadata struct {
 	Version            *int64 `protobuf:"varint,1,opt,name=version" json:"version,omitempty"`
-	CommittedStVersion *int64 `protobuf:"varint,2,opt,name=committed_st_version" json:"committed_st_version,omitempty"`
+	CommittedStVersion *int64 `protobuf:"varint,2,opt,name=committed_st_version,json=committedStVersion" json:"committed_st_version,omitempty"`
 	XXX_unrecognized   []byte `json:"-"`
 }
 
@@ -904,7 +904,7 @@ type Document struct {
 	Id               *string           `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	Language         *string           `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
 	Field            []*Field          `protobuf:"bytes,3,rep,name=field" json:"field,omitempty"`
-	OrderId          *int32            `protobuf:"varint,4,opt,name=order_id" json:"order_id,omitempty"`
+	OrderId          *int32            `protobuf:"varint,4,opt,name=order_id,json=orderId" json:"order_id,omitempty"`
 	Storage          *Document_Storage `protobuf:"varint,5,opt,name=storage,enum=search.Document_Storage,def=0" json:"storage,omitempty"`
 	Facet            []*Facet          `protobuf:"bytes,8,rep,name=facet" json:"facet,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
@@ -969,8 +969,8 @@ func (*SearchServiceError) ProtoMessage()    {}
 
 type RequestStatus struct {
 	Code             *SearchServiceError_ErrorCode `protobuf:"varint,1,req,name=code,enum=search.SearchServiceError_ErrorCode" json:"code,omitempty"`
-	ErrorDetail      *string                       `protobuf:"bytes,2,opt,name=error_detail" json:"error_detail,omitempty"`
-	CanonicalCode    *int32                        `protobuf:"varint,3,opt,name=canonical_code" json:"canonical_code,omitempty"`
+	ErrorDetail      *string                       `protobuf:"bytes,2,opt,name=error_detail,json=errorDetail" json:"error_detail,omitempty"`
+	CanonicalCode    *int32                        `protobuf:"varint,3,opt,name=canonical_code,json=canonicalCode" json:"canonical_code,omitempty"`
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
@@ -1060,11 +1060,11 @@ func (m *IndexSpec) GetMode() IndexSpec_Mode {
 }
 
 type IndexMetadata struct {
-	IndexSpec        *IndexSpec                `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec        *IndexSpec                `protobuf:"bytes,1,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	Field            []*FieldTypes             `protobuf:"bytes,2,rep,name=field" json:"field,omitempty"`
 	Storage          *IndexMetadata_Storage    `protobuf:"bytes,3,opt,name=storage" json:"storage,omitempty"`
-	IndexState       *IndexMetadata_IndexState `protobuf:"varint,4,opt,name=index_state,enum=search.IndexMetadata_IndexState,def=0" json:"index_state,omitempty"`
-	IndexDeleteTime  *int64                    `protobuf:"varint,5,opt,name=index_delete_time" json:"index_delete_time,omitempty"`
+	IndexState       *IndexMetadata_IndexState `protobuf:"varint,4,opt,name=index_state,json=indexState,enum=search.IndexMetadata_IndexState,def=0" json:"index_state,omitempty"`
+	IndexDeleteTime  *int64                    `protobuf:"varint,5,opt,name=index_delete_time,json=indexDeleteTime" json:"index_delete_time,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
@@ -1110,7 +1110,7 @@ func (m *IndexMetadata) GetIndexDeleteTime() int64 {
 }
 
 type IndexMetadata_Storage struct {
-	AmountUsed       *int64 `protobuf:"varint,1,opt,name=amount_used" json:"amount_used,omitempty"`
+	AmountUsed       *int64 `protobuf:"varint,1,opt,name=amount_used,json=amountUsed" json:"amount_used,omitempty"`
 	Limit            *int64 `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -1136,7 +1136,7 @@ func (m *IndexMetadata_Storage) GetLimit() int64 {
 type IndexDocumentParams struct {
 	Document         []*Document                    `protobuf:"bytes,1,rep,name=document" json:"document,omitempty"`
 	Freshness        *IndexDocumentParams_Freshness `protobuf:"varint,2,opt,name=freshness,enum=search.IndexDocumentParams_Freshness,def=0" json:"freshness,omitempty"`
-	IndexSpec        *IndexSpec                     `protobuf:"bytes,3,req,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec        *IndexSpec                     `protobuf:"bytes,3,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	XXX_unrecognized []byte                         `json:"-"`
 }
 
@@ -1169,7 +1169,7 @@ func (m *IndexDocumentParams) GetIndexSpec() *IndexSpec {
 
 type IndexDocumentRequest struct {
 	Params           *IndexDocumentParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte               `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte               `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte               `json:"-"`
 }
 
@@ -1193,7 +1193,7 @@ func (m *IndexDocumentRequest) GetAppId() []byte {
 
 type IndexDocumentResponse struct {
 	Status           []*RequestStatus `protobuf:"bytes,1,rep,name=status" json:"status,omitempty"`
-	DocId            []string         `protobuf:"bytes,2,rep,name=doc_id" json:"doc_id,omitempty"`
+	DocId            []string         `protobuf:"bytes,2,rep,name=doc_id,json=docId" json:"doc_id,omitempty"`
 	XXX_unrecognized []byte           `json:"-"`
 }
 
@@ -1216,8 +1216,8 @@ func (m *IndexDocumentResponse) GetDocId() []string {
 }
 
 type DeleteDocumentParams struct {
-	DocId            []string   `protobuf:"bytes,1,rep,name=doc_id" json:"doc_id,omitempty"`
-	IndexSpec        *IndexSpec `protobuf:"bytes,2,req,name=index_spec" json:"index_spec,omitempty"`
+	DocId            []string   `protobuf:"bytes,1,rep,name=doc_id,json=docId" json:"doc_id,omitempty"`
+	IndexSpec        *IndexSpec `protobuf:"bytes,2,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -1241,7 +1241,7 @@ func (m *DeleteDocumentParams) GetIndexSpec() *IndexSpec {
 
 type DeleteDocumentRequest struct {
 	Params           *DeleteDocumentParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte                `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte                `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte                `json:"-"`
 }
 
@@ -1280,11 +1280,11 @@ func (m *DeleteDocumentResponse) GetStatus() []*RequestStatus {
 }
 
 type ListDocumentsParams struct {
-	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
-	StartDocId       *string    `protobuf:"bytes,2,opt,name=start_doc_id" json:"start_doc_id,omitempty"`
-	IncludeStartDoc  *bool      `protobuf:"varint,3,opt,name=include_start_doc,def=1" json:"include_start_doc,omitempty"`
+	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
+	StartDocId       *string    `protobuf:"bytes,2,opt,name=start_doc_id,json=startDocId" json:"start_doc_id,omitempty"`
+	IncludeStartDoc  *bool      `protobuf:"varint,3,opt,name=include_start_doc,json=includeStartDoc,def=1" json:"include_start_doc,omitempty"`
 	Limit            *int32     `protobuf:"varint,4,opt,name=limit,def=100" json:"limit,omitempty"`
-	KeysOnly         *bool      `protobuf:"varint,5,opt,name=keys_only" json:"keys_only,omitempty"`
+	KeysOnly         *bool      `protobuf:"varint,5,opt,name=keys_only,json=keysOnly" json:"keys_only,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -1332,7 +1332,7 @@ func (m *ListDocumentsParams) GetKeysOnly() bool {
 
 type ListDocumentsRequest struct {
 	Params           *ListDocumentsParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte               `protobuf:"bytes,2,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte               `protobuf:"bytes,2,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte               `json:"-"`
 }
 
@@ -1379,7 +1379,7 @@ func (m *ListDocumentsResponse) GetDocument() []*Document {
 }
 
 type DeleteIndexParams struct {
-	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -1396,7 +1396,7 @@ func (m *DeleteIndexParams) GetIndexSpec() *IndexSpec {
 
 type DeleteIndexRequest struct {
 	Params           *DeleteIndexParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte             `protobuf:"bytes,2,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte             `protobuf:"bytes,2,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte             `json:"-"`
 }
 
@@ -1435,7 +1435,7 @@ func (m *DeleteIndexResponse) GetStatus() *RequestStatus {
 }
 
 type CancelDeleteIndexParams struct {
-	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec        *IndexSpec `protobuf:"bytes,1,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -1452,7 +1452,7 @@ func (m *CancelDeleteIndexParams) GetIndexSpec() *IndexSpec {
 
 type CancelDeleteIndexRequest struct {
 	Params           *CancelDeleteIndexParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte                   `protobuf:"bytes,2,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte                   `protobuf:"bytes,2,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
@@ -1491,12 +1491,12 @@ func (m *CancelDeleteIndexResponse) GetStatus() *RequestStatus {
 }
 
 type ListIndexesParams struct {
-	FetchSchema       *bool             `protobuf:"varint,1,opt,name=fetch_schema" json:"fetch_schema,omitempty"`
+	FetchSchema       *bool             `protobuf:"varint,1,opt,name=fetch_schema,json=fetchSchema" json:"fetch_schema,omitempty"`
 	Limit             *int32            `protobuf:"varint,2,opt,name=limit,def=20" json:"limit,omitempty"`
 	Namespace         *string           `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
-	StartIndexName    *string           `protobuf:"bytes,4,opt,name=start_index_name" json:"start_index_name,omitempty"`
-	IncludeStartIndex *bool             `protobuf:"varint,5,opt,name=include_start_index,def=1" json:"include_start_index,omitempty"`
-	IndexNamePrefix   *string           `protobuf:"bytes,6,opt,name=index_name_prefix" json:"index_name_prefix,omitempty"`
+	StartIndexName    *string           `protobuf:"bytes,4,opt,name=start_index_name,json=startIndexName" json:"start_index_name,omitempty"`
+	IncludeStartIndex *bool             `protobuf:"varint,5,opt,name=include_start_index,json=includeStartIndex,def=1" json:"include_start_index,omitempty"`
+	IndexNamePrefix   *string           `protobuf:"bytes,6,opt,name=index_name_prefix,json=indexNamePrefix" json:"index_name_prefix,omitempty"`
 	Offset            *int32            `protobuf:"varint,7,opt,name=offset" json:"offset,omitempty"`
 	Source            *IndexSpec_Source `protobuf:"varint,8,opt,name=source,enum=search.IndexSpec_Source,def=0" json:"source,omitempty"`
 	XXX_unrecognized  []byte            `json:"-"`
@@ -1568,7 +1568,7 @@ func (m *ListIndexesParams) GetSource() IndexSpec_Source {
 
 type ListIndexesRequest struct {
 	Params           *ListIndexesParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte             `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte             `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte             `json:"-"`
 }
 
@@ -1592,7 +1592,7 @@ func (m *ListIndexesRequest) GetAppId() []byte {
 
 type ListIndexesResponse struct {
 	Status           *RequestStatus   `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
-	IndexMetadata    []*IndexMetadata `protobuf:"bytes,2,rep,name=index_metadata" json:"index_metadata,omitempty"`
+	IndexMetadata    []*IndexMetadata `protobuf:"bytes,2,rep,name=index_metadata,json=indexMetadata" json:"index_metadata,omitempty"`
 	XXX_unrecognized []byte           `json:"-"`
 }
 
@@ -1616,7 +1616,7 @@ func (m *ListIndexesResponse) GetIndexMetadata() []*IndexMetadata {
 
 type DeleteSchemaParams struct {
 	Source           *IndexSpec_Source `protobuf:"varint,1,opt,name=source,enum=search.IndexSpec_Source,def=0" json:"source,omitempty"`
-	IndexSpec        []*IndexSpec      `protobuf:"bytes,2,rep,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec        []*IndexSpec      `protobuf:"bytes,2,rep,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -1642,7 +1642,7 @@ func (m *DeleteSchemaParams) GetIndexSpec() []*IndexSpec {
 
 type DeleteSchemaRequest struct {
 	Params           *DeleteSchemaParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte              `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte              `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -1681,10 +1681,10 @@ func (m *DeleteSchemaResponse) GetStatus() []*RequestStatus {
 }
 
 type SortSpec struct {
-	SortExpression      *string  `protobuf:"bytes,1,req,name=sort_expression" json:"sort_expression,omitempty"`
-	SortDescending      *bool    `protobuf:"varint,2,opt,name=sort_descending,def=1" json:"sort_descending,omitempty"`
-	DefaultValueText    *string  `protobuf:"bytes,4,opt,name=default_value_text" json:"default_value_text,omitempty"`
-	DefaultValueNumeric *float64 `protobuf:"fixed64,5,opt,name=default_value_numeric" json:"default_value_numeric,omitempty"`
+	SortExpression      *string  `protobuf:"bytes,1,req,name=sort_expression,json=sortExpression" json:"sort_expression,omitempty"`
+	SortDescending      *bool    `protobuf:"varint,2,opt,name=sort_descending,json=sortDescending,def=1" json:"sort_descending,omitempty"`
+	DefaultValueText    *string  `protobuf:"bytes,4,opt,name=default_value_text,json=defaultValueText" json:"default_value_text,omitempty"`
+	DefaultValueNumeric *float64 `protobuf:"fixed64,5,opt,name=default_value_numeric,json=defaultValueNumeric" json:"default_value_numeric,omitempty"`
 	XXX_unrecognized    []byte   `json:"-"`
 }
 
@@ -1725,7 +1725,7 @@ func (m *SortSpec) GetDefaultValueNumeric() float64 {
 type ScorerSpec struct {
 	Scorer                *ScorerSpec_Scorer `protobuf:"varint,1,opt,name=scorer,enum=search.ScorerSpec_Scorer,def=2" json:"scorer,omitempty"`
 	Limit                 *int32             `protobuf:"varint,2,opt,name=limit,def=1000" json:"limit,omitempty"`
-	MatchScorerParameters *string            `protobuf:"bytes,9,opt,name=match_scorer_parameters" json:"match_scorer_parameters,omitempty"`
+	MatchScorerParameters *string            `protobuf:"bytes,9,opt,name=match_scorer_parameters,json=matchScorerParameters" json:"match_scorer_parameters,omitempty"`
 	XXX_unrecognized      []byte             `json:"-"`
 }
 
@@ -1759,7 +1759,7 @@ func (m *ScorerSpec) GetMatchScorerParameters() string {
 
 type FieldSpec struct {
 	Name             []string                `protobuf:"bytes,1,rep,name=name" json:"name,omitempty"`
-	Expression       []*FieldSpec_Expression `protobuf:"group,2,rep,name=Expression" json:"expression,omitempty"`
+	Expression       []*FieldSpec_Expression `protobuf:"group,2,rep,name=Expression,json=expression" json:"expression,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -1838,9 +1838,9 @@ func (m *FacetRange) GetEnd() string {
 }
 
 type FacetRequestParam struct {
-	ValueLimit       *int32        `protobuf:"varint,1,opt,name=value_limit" json:"value_limit,omitempty"`
+	ValueLimit       *int32        `protobuf:"varint,1,opt,name=value_limit,json=valueLimit" json:"value_limit,omitempty"`
 	Range            []*FacetRange `protobuf:"bytes,2,rep,name=range" json:"range,omitempty"`
-	ValueConstraint  []string      `protobuf:"bytes,3,rep,name=value_constraint" json:"value_constraint,omitempty"`
+	ValueConstraint  []string      `protobuf:"bytes,3,rep,name=value_constraint,json=valueConstraint" json:"value_constraint,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -1870,7 +1870,7 @@ func (m *FacetRequestParam) GetValueConstraint() []string {
 }
 
 type FacetAutoDetectParam struct {
-	ValueLimit       *int32 `protobuf:"varint,1,opt,name=value_limit,def=10" json:"value_limit,omitempty"`
+	ValueLimit       *int32 `protobuf:"varint,1,opt,name=value_limit,json=valueLimit,def=10" json:"value_limit,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1968,23 +1968,23 @@ func (m *FacetRefinement_Range) GetEnd() string {
 }
 
 type SearchParams struct {
-	IndexSpec              *IndexSpec                `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	IndexSpec              *IndexSpec                `protobuf:"bytes,1,req,name=index_spec,json=indexSpec" json:"index_spec,omitempty"`
 	Query                  *string                   `protobuf:"bytes,2,req,name=query" json:"query,omitempty"`
 	Cursor                 *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
 	Offset                 *int32                    `protobuf:"varint,11,opt,name=offset" json:"offset,omitempty"`
-	CursorType             *SearchParams_CursorType  `protobuf:"varint,5,opt,name=cursor_type,enum=search.SearchParams_CursorType,def=0" json:"cursor_type,omitempty"`
+	CursorType             *SearchParams_CursorType  `protobuf:"varint,5,opt,name=cursor_type,json=cursorType,enum=search.SearchParams_CursorType,def=0" json:"cursor_type,omitempty"`
 	Limit                  *int32                    `protobuf:"varint,6,opt,name=limit,def=20" json:"limit,omitempty"`
-	MatchedCountAccuracy   *int32                    `protobuf:"varint,7,opt,name=matched_count_accuracy" json:"matched_count_accuracy,omitempty"`
-	SortSpec               []*SortSpec               `protobuf:"bytes,8,rep,name=sort_spec" json:"sort_spec,omitempty"`
-	ScorerSpec             *ScorerSpec               `protobuf:"bytes,9,opt,name=scorer_spec" json:"scorer_spec,omitempty"`
-	FieldSpec              *FieldSpec                `protobuf:"bytes,10,opt,name=field_spec" json:"field_spec,omitempty"`
-	KeysOnly               *bool                     `protobuf:"varint,12,opt,name=keys_only" json:"keys_only,omitempty"`
-	ParsingMode            *SearchParams_ParsingMode `protobuf:"varint,13,opt,name=parsing_mode,enum=search.SearchParams_ParsingMode,def=0" json:"parsing_mode,omitempty"`
-	AutoDiscoverFacetCount *int32                    `protobuf:"varint,15,opt,name=auto_discover_facet_count,def=0" json:"auto_discover_facet_count,omitempty"`
-	IncludeFacet           []*FacetRequest           `protobuf:"bytes,16,rep,name=include_facet" json:"include_facet,omitempty"`
-	FacetRefinement        []*FacetRefinement        `protobuf:"bytes,17,rep,name=facet_refinement" json:"facet_refinement,omitempty"`
-	FacetAutoDetectParam   *FacetAutoDetectParam     `protobuf:"bytes,18,opt,name=facet_auto_detect_param" json:"facet_auto_detect_param,omitempty"`
-	FacetDepth             *int32                    `protobuf:"varint,19,opt,name=facet_depth,def=1000" json:"facet_depth,omitempty"`
+	MatchedCountAccuracy   *int32                    `protobuf:"varint,7,opt,name=matched_count_accuracy,json=matchedCountAccuracy" json:"matched_count_accuracy,omitempty"`
+	SortSpec               []*SortSpec               `protobuf:"bytes,8,rep,name=sort_spec,json=sortSpec" json:"sort_spec,omitempty"`
+	ScorerSpec             *ScorerSpec               `protobuf:"bytes,9,opt,name=scorer_spec,json=scorerSpec" json:"scorer_spec,omitempty"`
+	FieldSpec              *FieldSpec                `protobuf:"bytes,10,opt,name=field_spec,json=fieldSpec" json:"field_spec,omitempty"`
+	KeysOnly               *bool                     `protobuf:"varint,12,opt,name=keys_only,json=keysOnly" json:"keys_only,omitempty"`
+	ParsingMode            *SearchParams_ParsingMode `protobuf:"varint,13,opt,name=parsing_mode,json=parsingMode,enum=search.SearchParams_ParsingMode,def=0" json:"parsing_mode,omitempty"`
+	AutoDiscoverFacetCount *int32                    `protobuf:"varint,15,opt,name=auto_discover_facet_count,json=autoDiscoverFacetCount,def=0" json:"auto_discover_facet_count,omitempty"`
+	IncludeFacet           []*FacetRequest           `protobuf:"bytes,16,rep,name=include_facet,json=includeFacet" json:"include_facet,omitempty"`
+	FacetRefinement        []*FacetRefinement        `protobuf:"bytes,17,rep,name=facet_refinement,json=facetRefinement" json:"facet_refinement,omitempty"`
+	FacetAutoDetectParam   *FacetAutoDetectParam     `protobuf:"bytes,18,opt,name=facet_auto_detect_param,json=facetAutoDetectParam" json:"facet_auto_detect_param,omitempty"`
+	FacetDepth             *int32                    `protobuf:"varint,19,opt,name=facet_depth,json=facetDepth,def=1000" json:"facet_depth,omitempty"`
 	XXX_unrecognized       []byte                    `json:"-"`
 }
 
@@ -2119,7 +2119,7 @@ func (m *SearchParams) GetFacetDepth() int32 {
 
 type SearchRequest struct {
 	Params           *SearchParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
-	AppId            []byte        `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
+	AppId            []byte        `protobuf:"bytes,3,opt,name=app_id,json=appId" json:"app_id,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -2239,10 +2239,11 @@ func (m *SearchResult) GetCursor() string {
 
 type SearchResponse struct {
 	Result           []*SearchResult           `protobuf:"bytes,1,rep,name=result" json:"result,omitempty"`
-	MatchedCount     *int64                    `protobuf:"varint,2,req,name=matched_count" json:"matched_count,omitempty"`
+	MatchedCount     *int64                    `protobuf:"varint,2,req,name=matched_count,json=matchedCount" json:"matched_count,omitempty"`
 	Status           *RequestStatus            `protobuf:"bytes,3,req,name=status" json:"status,omitempty"`
 	Cursor           *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
-	FacetResult      []*FacetResult            `protobuf:"bytes,5,rep,name=facet_result" json:"facet_result,omitempty"`
+	FacetResult      []*FacetResult            `protobuf:"bytes,5,rep,name=facet_result,json=facetResult" json:"facet_result,omitempty"`
+	DocsScored       *int32                    `protobuf:"varint,6,opt,name=docs_scored,json=docsScored" json:"docs_scored,omitempty"`
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -2300,7 +2301,68 @@ func (m *SearchResponse) GetFacetResult() []*FacetResult {
 	return nil
 }
 
+func (m *SearchResponse) GetDocsScored() int32 {
+	if m != nil && m.DocsScored != nil {
+		return *m.DocsScored
+	}
+	return 0
+}
+
 func init() {
+	proto.RegisterType((*Scope)(nil), "search.Scope")
+	proto.RegisterType((*Entry)(nil), "search.Entry")
+	proto.RegisterType((*AccessControlList)(nil), "search.AccessControlList")
+	proto.RegisterType((*FieldValue)(nil), "search.FieldValue")
+	proto.RegisterType((*FieldValue_Geo)(nil), "search.FieldValue.Geo")
+	proto.RegisterType((*Field)(nil), "search.Field")
+	proto.RegisterType((*FieldTypes)(nil), "search.FieldTypes")
+	proto.RegisterType((*IndexShardSettings)(nil), "search.IndexShardSettings")
+	proto.RegisterType((*FacetValue)(nil), "search.FacetValue")
+	proto.RegisterType((*Facet)(nil), "search.Facet")
+	proto.RegisterType((*DocumentMetadata)(nil), "search.DocumentMetadata")
+	proto.RegisterType((*Document)(nil), "search.Document")
+	proto.RegisterType((*SearchServiceError)(nil), "search.SearchServiceError")
+	proto.RegisterType((*RequestStatus)(nil), "search.RequestStatus")
+	proto.RegisterType((*IndexSpec)(nil), "search.IndexSpec")
+	proto.RegisterType((*IndexMetadata)(nil), "search.IndexMetadata")
+	proto.RegisterType((*IndexMetadata_Storage)(nil), "search.IndexMetadata.Storage")
+	proto.RegisterType((*IndexDocumentParams)(nil), "search.IndexDocumentParams")
+	proto.RegisterType((*IndexDocumentRequest)(nil), "search.IndexDocumentRequest")
+	proto.RegisterType((*IndexDocumentResponse)(nil), "search.IndexDocumentResponse")
+	proto.RegisterType((*DeleteDocumentParams)(nil), "search.DeleteDocumentParams")
+	proto.RegisterType((*DeleteDocumentRequest)(nil), "search.DeleteDocumentRequest")
+	proto.RegisterType((*DeleteDocumentResponse)(nil), "search.DeleteDocumentResponse")
+	proto.RegisterType((*ListDocumentsParams)(nil), "search.ListDocumentsParams")
+	proto.RegisterType((*ListDocumentsRequest)(nil), "search.ListDocumentsRequest")
+	proto.RegisterType((*ListDocumentsResponse)(nil), "search.ListDocumentsResponse")
+	proto.RegisterType((*DeleteIndexParams)(nil), "search.DeleteIndexParams")
+	proto.RegisterType((*DeleteIndexRequest)(nil), "search.DeleteIndexRequest")
+	proto.RegisterType((*DeleteIndexResponse)(nil), "search.DeleteIndexResponse")
+	proto.RegisterType((*CancelDeleteIndexParams)(nil), "search.CancelDeleteIndexParams")
+	proto.RegisterType((*CancelDeleteIndexRequest)(nil), "search.CancelDeleteIndexRequest")
+	proto.RegisterType((*CancelDeleteIndexResponse)(nil), "search.CancelDeleteIndexResponse")
+	proto.RegisterType((*ListIndexesParams)(nil), "search.ListIndexesParams")
+	proto.RegisterType((*ListIndexesRequest)(nil), "search.ListIndexesRequest")
+	proto.RegisterType((*ListIndexesResponse)(nil), "search.ListIndexesResponse")
+	proto.RegisterType((*DeleteSchemaParams)(nil), "search.DeleteSchemaParams")
+	proto.RegisterType((*DeleteSchemaRequest)(nil), "search.DeleteSchemaRequest")
+	proto.RegisterType((*DeleteSchemaResponse)(nil), "search.DeleteSchemaResponse")
+	proto.RegisterType((*SortSpec)(nil), "search.SortSpec")
+	proto.RegisterType((*ScorerSpec)(nil), "search.ScorerSpec")
+	proto.RegisterType((*FieldSpec)(nil), "search.FieldSpec")
+	proto.RegisterType((*FieldSpec_Expression)(nil), "search.FieldSpec.Expression")
+	proto.RegisterType((*FacetRange)(nil), "search.FacetRange")
+	proto.RegisterType((*FacetRequestParam)(nil), "search.FacetRequestParam")
+	proto.RegisterType((*FacetAutoDetectParam)(nil), "search.FacetAutoDetectParam")
+	proto.RegisterType((*FacetRequest)(nil), "search.FacetRequest")
+	proto.RegisterType((*FacetRefinement)(nil), "search.FacetRefinement")
+	proto.RegisterType((*FacetRefinement_Range)(nil), "search.FacetRefinement.Range")
+	proto.RegisterType((*SearchParams)(nil), "search.SearchParams")
+	proto.RegisterType((*SearchRequest)(nil), "search.SearchRequest")
+	proto.RegisterType((*FacetResultValue)(nil), "search.FacetResultValue")
+	proto.RegisterType((*FacetResult)(nil), "search.FacetResult")
+	proto.RegisterType((*SearchResult)(nil), "search.SearchResult")
+	proto.RegisterType((*SearchResponse)(nil), "search.SearchResponse")
 	proto.RegisterEnum("search.Scope_Type", Scope_Type_name, Scope_Type_value)
 	proto.RegisterEnum("search.Entry_Permission", Entry_Permission_name, Entry_Permission_value)
 	proto.RegisterEnum("search.FieldValue_ContentType", FieldValue_ContentType_name, FieldValue_ContentType_value)
