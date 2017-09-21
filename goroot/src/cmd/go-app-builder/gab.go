@@ -39,7 +39,7 @@ import (
 )
 
 const (
-	// go15 indicates that we're building using the 1.5 toolchain, which has
+	// go15 indicates that we're building using the 1.5 (or later) toolchain, which has
 	// different compiler/linker binary names uses different output file
 	// extensions.
 	// It may be set to true by the toolchain build.sh script.

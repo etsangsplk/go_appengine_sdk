@@ -602,7 +602,7 @@ class ServiceHandler(webapp.RequestHandler):
       except remote.ApplicationError, err:
         self.__send_error(400,
                           remote.RpcState.APPLICATION_ERROR,
-                          str(err),
+                          unicode(err),
                           mapper,
                           err.error_name)
         return

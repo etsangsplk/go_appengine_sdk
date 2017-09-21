@@ -183,7 +183,7 @@ def service_mapping(service_factory, service_path=r'.*', protocols=None):
     except remote.ApplicationError, err:
       return send_rpc_error(httplib.BAD_REQUEST,
                             remote.RpcState.APPLICATION_ERROR,
-                            str(err),
+                            unicode(err),
                             err.error_name)
     except Exception, err:
       logging.exception('Encountered unexpected error from ProtoRPC '
