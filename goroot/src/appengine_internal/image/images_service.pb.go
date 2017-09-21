@@ -275,18 +275,18 @@ func (*ImagesServiceTransform) ProtoMessage()    {}
 type Transform struct {
 	Width            *int32   `protobuf:"varint,1,opt,name=width" json:"width,omitempty"`
 	Height           *int32   `protobuf:"varint,2,opt,name=height" json:"height,omitempty"`
-	CropToFit        *bool    `protobuf:"varint,11,opt,name=crop_to_fit,def=0" json:"crop_to_fit,omitempty"`
+	CropToFit        *bool    `protobuf:"varint,11,opt,name=crop_to_fit" json:"crop_to_fit,omitempty"`
 	CropOffsetX      *float32 `protobuf:"fixed32,12,opt,name=crop_offset_x,def=0.5" json:"crop_offset_x,omitempty"`
 	CropOffsetY      *float32 `protobuf:"fixed32,13,opt,name=crop_offset_y,def=0.5" json:"crop_offset_y,omitempty"`
-	Rotate           *int32   `protobuf:"varint,3,opt,name=rotate,def=0" json:"rotate,omitempty"`
-	HorizontalFlip   *bool    `protobuf:"varint,4,opt,name=horizontal_flip,def=0" json:"horizontal_flip,omitempty"`
-	VerticalFlip     *bool    `protobuf:"varint,5,opt,name=vertical_flip,def=0" json:"vertical_flip,omitempty"`
-	CropLeftX        *float32 `protobuf:"fixed32,6,opt,name=crop_left_x,def=0" json:"crop_left_x,omitempty"`
-	CropTopY         *float32 `protobuf:"fixed32,7,opt,name=crop_top_y,def=0" json:"crop_top_y,omitempty"`
+	Rotate           *int32   `protobuf:"varint,3,opt,name=rotate" json:"rotate,omitempty"`
+	HorizontalFlip   *bool    `protobuf:"varint,4,opt,name=horizontal_flip" json:"horizontal_flip,omitempty"`
+	VerticalFlip     *bool    `protobuf:"varint,5,opt,name=vertical_flip" json:"vertical_flip,omitempty"`
+	CropLeftX        *float32 `protobuf:"fixed32,6,opt,name=crop_left_x" json:"crop_left_x,omitempty"`
+	CropTopY         *float32 `protobuf:"fixed32,7,opt,name=crop_top_y" json:"crop_top_y,omitempty"`
 	CropRightX       *float32 `protobuf:"fixed32,8,opt,name=crop_right_x,def=1" json:"crop_right_x,omitempty"`
 	CropBottomY      *float32 `protobuf:"fixed32,9,opt,name=crop_bottom_y,def=1" json:"crop_bottom_y,omitempty"`
-	Autolevels       *bool    `protobuf:"varint,10,opt,name=autolevels,def=0" json:"autolevels,omitempty"`
-	AllowStretch     *bool    `protobuf:"varint,14,opt,name=allow_stretch,def=0" json:"allow_stretch,omitempty"`
+	Autolevels       *bool    `protobuf:"varint,10,opt,name=autolevels" json:"autolevels,omitempty"`
+	AllowStretch     *bool    `protobuf:"varint,14,opt,name=allow_stretch" json:"allow_stretch,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -294,18 +294,10 @@ func (m *Transform) Reset()         { *m = Transform{} }
 func (m *Transform) String() string { return proto.CompactTextString(m) }
 func (*Transform) ProtoMessage()    {}
 
-const Default_Transform_CropToFit bool = false
 const Default_Transform_CropOffsetX float32 = 0.5
 const Default_Transform_CropOffsetY float32 = 0.5
-const Default_Transform_Rotate int32 = 0
-const Default_Transform_HorizontalFlip bool = false
-const Default_Transform_VerticalFlip bool = false
-const Default_Transform_CropLeftX float32 = 0
-const Default_Transform_CropTopY float32 = 0
 const Default_Transform_CropRightX float32 = 1
 const Default_Transform_CropBottomY float32 = 1
-const Default_Transform_Autolevels bool = false
-const Default_Transform_AllowStretch bool = false
 
 func (m *Transform) GetWidth() int32 {
 	if m != nil && m.Width != nil {
@@ -325,7 +317,7 @@ func (m *Transform) GetCropToFit() bool {
 	if m != nil && m.CropToFit != nil {
 		return *m.CropToFit
 	}
-	return Default_Transform_CropToFit
+	return false
 }
 
 func (m *Transform) GetCropOffsetX() float32 {
@@ -346,35 +338,35 @@ func (m *Transform) GetRotate() int32 {
 	if m != nil && m.Rotate != nil {
 		return *m.Rotate
 	}
-	return Default_Transform_Rotate
+	return 0
 }
 
 func (m *Transform) GetHorizontalFlip() bool {
 	if m != nil && m.HorizontalFlip != nil {
 		return *m.HorizontalFlip
 	}
-	return Default_Transform_HorizontalFlip
+	return false
 }
 
 func (m *Transform) GetVerticalFlip() bool {
 	if m != nil && m.VerticalFlip != nil {
 		return *m.VerticalFlip
 	}
-	return Default_Transform_VerticalFlip
+	return false
 }
 
 func (m *Transform) GetCropLeftX() float32 {
 	if m != nil && m.CropLeftX != nil {
 		return *m.CropLeftX
 	}
-	return Default_Transform_CropLeftX
+	return 0
 }
 
 func (m *Transform) GetCropTopY() float32 {
 	if m != nil && m.CropTopY != nil {
 		return *m.CropTopY
 	}
-	return Default_Transform_CropTopY
+	return 0
 }
 
 func (m *Transform) GetCropRightX() float32 {
@@ -395,14 +387,14 @@ func (m *Transform) GetAutolevels() bool {
 	if m != nil && m.Autolevels != nil {
 		return *m.Autolevels
 	}
-	return Default_Transform_Autolevels
+	return false
 }
 
 func (m *Transform) GetAllowStretch() bool {
 	if m != nil && m.AllowStretch != nil {
 		return *m.AllowStretch
 	}
-	return Default_Transform_AllowStretch
+	return false
 }
 
 type ImageData struct {
@@ -446,8 +438,8 @@ func (m *ImageData) GetHeight() int32 {
 }
 
 type InputSettings struct {
-	CorrectExifOrientation     *InputSettings_ORIENTATION_CORRECTION_TYPE `protobuf:"varint,1,opt,name=correct_exif_orientation,enum=appengine.InputSettings_ORIENTATION_CORRECTION_TYPE,def=0" json:"correct_exif_orientation,omitempty"`
-	ParseMetadata              *bool                                      `protobuf:"varint,2,opt,name=parse_metadata,def=0" json:"parse_metadata,omitempty"`
+	CorrectExifOrientation     *InputSettings_ORIENTATION_CORRECTION_TYPE `protobuf:"varint,1,opt,name=correct_exif_orientation,enum=appengine.InputSettings_ORIENTATION_CORRECTION_TYPE" json:"correct_exif_orientation,omitempty"`
+	ParseMetadata              *bool                                      `protobuf:"varint,2,opt,name=parse_metadata" json:"parse_metadata,omitempty"`
 	TransparentSubstitutionRgb *int32                                     `protobuf:"varint,3,opt,name=transparent_substitution_rgb" json:"transparent_substitution_rgb,omitempty"`
 	XXX_unrecognized           []byte                                     `json:"-"`
 }
@@ -456,21 +448,18 @@ func (m *InputSettings) Reset()         { *m = InputSettings{} }
 func (m *InputSettings) String() string { return proto.CompactTextString(m) }
 func (*InputSettings) ProtoMessage()    {}
 
-const Default_InputSettings_CorrectExifOrientation InputSettings_ORIENTATION_CORRECTION_TYPE = InputSettings_UNCHANGED_ORIENTATION
-const Default_InputSettings_ParseMetadata bool = false
-
 func (m *InputSettings) GetCorrectExifOrientation() InputSettings_ORIENTATION_CORRECTION_TYPE {
 	if m != nil && m.CorrectExifOrientation != nil {
 		return *m.CorrectExifOrientation
 	}
-	return Default_InputSettings_CorrectExifOrientation
+	return InputSettings_UNCHANGED_ORIENTATION
 }
 
 func (m *InputSettings) GetParseMetadata() bool {
 	if m != nil && m.ParseMetadata != nil {
 		return *m.ParseMetadata
 	}
-	return Default_InputSettings_ParseMetadata
+	return false
 }
 
 func (m *InputSettings) GetTransparentSubstitutionRgb() int32 {
@@ -481,7 +470,7 @@ func (m *InputSettings) GetTransparentSubstitutionRgb() int32 {
 }
 
 type OutputSettings struct {
-	MimeType         *OutputSettings_MIME_TYPE `protobuf:"varint,1,opt,name=mime_type,enum=appengine.OutputSettings_MIME_TYPE,def=0" json:"mime_type,omitempty"`
+	MimeType         *OutputSettings_MIME_TYPE `protobuf:"varint,1,opt,name=mime_type,enum=appengine.OutputSettings_MIME_TYPE" json:"mime_type,omitempty"`
 	Quality          *int32                    `protobuf:"varint,2,opt,name=quality" json:"quality,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -490,13 +479,11 @@ func (m *OutputSettings) Reset()         { *m = OutputSettings{} }
 func (m *OutputSettings) String() string { return proto.CompactTextString(m) }
 func (*OutputSettings) ProtoMessage()    {}
 
-const Default_OutputSettings_MimeType OutputSettings_MIME_TYPE = OutputSettings_PNG
-
 func (m *OutputSettings) GetMimeType() OutputSettings_MIME_TYPE {
 	if m != nil && m.MimeType != nil {
 		return *m.MimeType
 	}
-	return Default_OutputSettings_MimeType
+	return OutputSettings_PNG
 }
 
 func (m *OutputSettings) GetQuality() int32 {
@@ -774,15 +761,13 @@ func (m *ImagesHistogramResponse) GetHistogram() *ImagesHistogram {
 
 type ImagesGetUrlBaseRequest struct {
 	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
-	CreateSecureUrl  *bool   `protobuf:"varint,2,opt,name=create_secure_url,def=0" json:"create_secure_url,omitempty"`
+	CreateSecureUrl  *bool   `protobuf:"varint,2,opt,name=create_secure_url" json:"create_secure_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *ImagesGetUrlBaseRequest) Reset()         { *m = ImagesGetUrlBaseRequest{} }
 func (m *ImagesGetUrlBaseRequest) String() string { return proto.CompactTextString(m) }
 func (*ImagesGetUrlBaseRequest) ProtoMessage()    {}
-
-const Default_ImagesGetUrlBaseRequest_CreateSecureUrl bool = false
 
 func (m *ImagesGetUrlBaseRequest) GetBlobKey() string {
 	if m != nil && m.BlobKey != nil {
@@ -795,7 +780,7 @@ func (m *ImagesGetUrlBaseRequest) GetCreateSecureUrl() bool {
 	if m != nil && m.CreateSecureUrl != nil {
 		return *m.CreateSecureUrl
 	}
-	return Default_ImagesGetUrlBaseRequest_CreateSecureUrl
+	return false
 }
 
 type ImagesGetUrlBaseResponse struct {

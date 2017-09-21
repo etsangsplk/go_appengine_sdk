@@ -82,6 +82,7 @@ type MailAttachment struct {
 	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,req" json:"Data,omitempty"`
 	ContentID        *string `protobuf:"bytes,3,opt" json:"ContentID,omitempty"`
+	ContentIDSet     *bool   `protobuf:"varint,13,opt,name=ContentID_set" json:"ContentID_set,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -108,6 +109,13 @@ func (m *MailAttachment) GetContentID() string {
 		return *m.ContentID
 	}
 	return ""
+}
+
+func (m *MailAttachment) GetContentIDSet() bool {
+	if m != nil && m.ContentIDSet != nil {
+		return *m.ContentIDSet
+	}
+	return false
 }
 
 type MailHeader struct {
