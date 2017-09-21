@@ -33,6 +33,26 @@ type Field struct {
 	Derived bool
 }
 
+// Facet is a name/value pair which is used to add categorical information to a
+// document.
+type Facet struct {
+	// Name is the facet name. A valid facet name matches /[A-Z][A-Za-z0-9_]*/.
+	// A facet name cannot be longer than 500 characters.
+	Name string
+	// Value is the facet value.
+	//
+	// When being used in documents (for example, in
+	// DocumentMetadata.Facets), the valid types are:
+	//  - search.Atom,
+	//  - float64.
+	//
+	// When being used in SearchOptions.Refinements or being returned
+	// in FacetResult, the valid types are:
+	//  - search.Atom,
+	//  - search.Range.
+	Value interface{}
+}
+
 // DocumentMetadata is a struct containing information describing a given
 // document.
 type DocumentMetadata struct {
@@ -40,6 +60,8 @@ type DocumentMetadata struct {
 	// search results. If zero, the rank will be set to the number of seconds since
 	// 2011-01-01 00:00:00 UTC when being Put into an index.
 	Rank int
+	// Facets is the set of facets for this document.
+	Facets []Facet
 }
 
 // FieldLoadSaver can be converted from and to a slice of Fields.
