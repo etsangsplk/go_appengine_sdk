@@ -59,6 +59,7 @@ type Config struct {
 	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config,json=vmConfig" json:"vm_config,omitempty"`
 	ServerPort       *int32        `protobuf:"varint,20,opt,name=server_port,json=serverPort" json:"server_port,omitempty"`
 	Vm               *bool         `protobuf:"varint,22,opt,name=vm,def=0" json:"vm,omitempty"`
+	GrpcApis         []string      `protobuf:"bytes,24,rep,name=grpc_apis,json=grpcApis" json:"grpc_apis,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -232,6 +233,13 @@ func (m *Config) GetVm() bool {
 		return *m.Vm
 	}
 	return Default_Config_Vm
+}
+
+func (m *Config) GetGrpcApis() []string {
+	if m != nil {
+		return m.GrpcApis
+	}
+	return nil
 }
 
 type PhpConfig struct {

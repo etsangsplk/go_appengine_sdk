@@ -110,10 +110,14 @@ func (e *CallError) Error() string {
 		return e.Detail
 	case 4: // OVER_QUOTA
 		msg = "Over quota"
+	case 5: // REQUEST_TOO_LARGE
+		msg = "Request too large"
 	case 6: // CAPABILITY_DISABLED
 		msg = "Capability disabled"
 	case 9: // BUFFER_ERROR
 		msg = "Buffer error"
+	case 10: // RESPONSE_TOO_LARGE
+		msg = "Response too large"
 	case 11: // CANCELLED
 		msg = "Canceled"
 	default:

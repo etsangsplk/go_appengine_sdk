@@ -2002,6 +2002,7 @@ type SearchParams struct {
 	FacetRefinement        []*FacetRefinement        `protobuf:"bytes,17,rep,name=facet_refinement,json=facetRefinement" json:"facet_refinement,omitempty"`
 	FacetAutoDetectParam   *FacetAutoDetectParam     `protobuf:"bytes,18,opt,name=facet_auto_detect_param,json=facetAutoDetectParam" json:"facet_auto_detect_param,omitempty"`
 	FacetDepth             *int32                    `protobuf:"varint,19,opt,name=facet_depth,json=facetDepth,def=1000" json:"facet_depth,omitempty"`
+	EnableQueryRewrite     *bool                     `protobuf:"varint,20,opt,name=enable_query_rewrite,json=enableQueryRewrite,def=0" json:"enable_query_rewrite,omitempty"`
 	XXX_unrecognized       []byte                    `json:"-"`
 }
 
@@ -2014,6 +2015,7 @@ const Default_SearchParams_Limit int32 = 20
 const Default_SearchParams_ParsingMode SearchParams_ParsingMode = SearchParams_STRICT
 const Default_SearchParams_AutoDiscoverFacetCount int32 = 0
 const Default_SearchParams_FacetDepth int32 = 1000
+const Default_SearchParams_EnableQueryRewrite bool = false
 
 func (m *SearchParams) GetIndexSpec() *IndexSpec {
 	if m != nil {
@@ -2132,6 +2134,13 @@ func (m *SearchParams) GetFacetDepth() int32 {
 		return *m.FacetDepth
 	}
 	return Default_SearchParams_FacetDepth
+}
+
+func (m *SearchParams) GetEnableQueryRewrite() bool {
+	if m != nil && m.EnableQueryRewrite != nil {
+		return *m.EnableQueryRewrite
+	}
+	return Default_SearchParams_EnableQueryRewrite
 }
 
 type SearchRequest struct {

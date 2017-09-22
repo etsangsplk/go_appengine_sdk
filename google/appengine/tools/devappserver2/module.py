@@ -265,10 +265,14 @@ class Module(object):
     handlers.append(
         wsgi_handler.WSGIHandler(gcs_server.Application(), url_pattern))
 
-    url_pattern = '/%s' % endpoints.API_SERVING_PATTERN
-    handlers.append(
-        wsgi_handler.WSGIHandler(
-            endpoints.EndpointsDispatcher(self._dispatcher), url_pattern))
+    # Add a handler for Endpoints, only if version == 1.0
+    runtime_config = self._get_runtime_config()
+    for library in runtime_config.libraries:
+      if library.name == 'endpoints' and library.version == '1.0':
+        url_pattern = '/%s' % endpoints.API_SERVING_PATTERN
+        handlers.append(
+            wsgi_handler.WSGIHandler(
+                endpoints.EndpointsDispatcher(self._dispatcher), url_pattern))
 
     found_start_handler = False
     found_warmup_handler = False
@@ -541,6 +545,8 @@ class Module(object):
           [self._module_configuration.application_root] +
           self._instance_factory.get_restart_directories(),
           self._use_mtime_file_watcher)
+      if hasattr(self._watcher, 'set_skip_files_re'):
+        self._watcher.set_skip_files_re(self._module_configuration.skip_files)
     else:
       self._watcher = None
     self._handler_lock = threading.Lock()

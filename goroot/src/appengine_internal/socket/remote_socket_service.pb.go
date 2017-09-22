@@ -1107,6 +1107,7 @@ type CreateSocketReply struct {
 	SocketDescriptor             *string      `protobuf:"bytes,1,opt,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	ServerAddress                *AddressPort `protobuf:"bytes,3,opt,name=server_address,json=serverAddress" json:"server_address,omitempty"`
 	ProxyExternalIp              *AddressPort `protobuf:"bytes,4,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	GatewayAddress               *string      `protobuf:"bytes,5,opt,name=gateway_address,json=gatewayAddress" json:"gateway_address,omitempty"`
 	proto.XXX_InternalExtensions `json:"-"`
 	XXX_unrecognized             []byte `json:"-"`
 }
@@ -1142,6 +1143,13 @@ func (m *CreateSocketReply) GetProxyExternalIp() *AddressPort {
 		return m.ProxyExternalIp
 	}
 	return nil
+}
+
+func (m *CreateSocketReply) GetGatewayAddress() string {
+	if m != nil && m.GatewayAddress != nil {
+		return *m.GatewayAddress
+	}
+	return ""
 }
 
 type BindRequest struct {

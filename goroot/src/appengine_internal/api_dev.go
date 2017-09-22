@@ -35,12 +35,17 @@ func IsDevAppServer() bool {
 // serveHTTP serves App Engine HTTP requests.
 func serveHTTP() {
 	// The development server reads the HTTP address and port that the
-	// server is listening to from stdout. We listen on 127.0.0.1:0 to
-	// avoid firewall restrictions.
+	// server is listening to from stdout. We listen on 127.0.0.1:0 or
+	// [::1]:0 to avoid firewall restrictions.
 	conn, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		log.Fatal("appengine: couldn't listen to TCP socket: ", err)
+		log.Print("appengine: couldn't listen on IPv4 TCP socket: ", err)
+		conn, err = net.Listen("tcp", "[::1]:0")
+		if err != nil {
+			log.Fatal("appengine: couldn't listen on IPv6 TCP socket: ", err)
+		}
 	}
+
 	addr := conn.Addr().(*net.TCPAddr)
 
 	fmt.Fprintf(os.Stdout, "%s\t%d\n", addr.IP, addr.Port)

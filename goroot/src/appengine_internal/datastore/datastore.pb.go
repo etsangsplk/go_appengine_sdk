@@ -516,6 +516,9 @@ const (
 	Error_TRY_ALTERNATE_BACKEND        Error_ErrorCode = 10
 	Error_SAFE_TIME_TOO_OLD            Error_ErrorCode = 11
 	Error_RESOURCE_EXHAUSTED           Error_ErrorCode = 12
+	Error_NOT_FOUND                    Error_ErrorCode = 13
+	Error_ALREADY_EXISTS               Error_ErrorCode = 14
+	Error_FAILED_PRECONDITION          Error_ErrorCode = 15
 )
 
 var Error_ErrorCode_name = map[int32]string{
@@ -531,6 +534,9 @@ var Error_ErrorCode_name = map[int32]string{
 	10: "TRY_ALTERNATE_BACKEND",
 	11: "SAFE_TIME_TOO_OLD",
 	12: "RESOURCE_EXHAUSTED",
+	13: "NOT_FOUND",
+	14: "ALREADY_EXISTS",
+	15: "FAILED_PRECONDITION",
 }
 var Error_ErrorCode_value = map[string]int32{
 	"BAD_REQUEST":                  1,
@@ -545,6 +551,9 @@ var Error_ErrorCode_value = map[string]int32{
 	"TRY_ALTERNATE_BACKEND":        10,
 	"SAFE_TIME_TOO_OLD":            11,
 	"RESOURCE_EXHAUSTED":           12,
+	"NOT_FOUND":                    13,
+	"ALREADY_EXISTS":               14,
+	"FAILED_PRECONDITION":          15,
 }
 
 func (x Error_ErrorCode) Enum() *Error_ErrorCode {
@@ -594,6 +603,42 @@ func (x *PutRequest_AutoIdPolicy) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = PutRequest_AutoIdPolicy(value)
+	return nil
+}
+
+type BeginTransactionRequest_TransactionMode int32
+
+const (
+	BeginTransactionRequest_UNKNOWN    BeginTransactionRequest_TransactionMode = 0
+	BeginTransactionRequest_READ_ONLY  BeginTransactionRequest_TransactionMode = 1
+	BeginTransactionRequest_READ_WRITE BeginTransactionRequest_TransactionMode = 2
+)
+
+var BeginTransactionRequest_TransactionMode_name = map[int32]string{
+	0: "UNKNOWN",
+	1: "READ_ONLY",
+	2: "READ_WRITE",
+}
+var BeginTransactionRequest_TransactionMode_value = map[string]int32{
+	"UNKNOWN":    0,
+	"READ_ONLY":  1,
+	"READ_WRITE": 2,
+}
+
+func (x BeginTransactionRequest_TransactionMode) Enum() *BeginTransactionRequest_TransactionMode {
+	p := new(BeginTransactionRequest_TransactionMode)
+	*p = x
+	return p
+}
+func (x BeginTransactionRequest_TransactionMode) String() string {
+	return proto.EnumName(BeginTransactionRequest_TransactionMode_name, int32(x))
+}
+func (x *BeginTransactionRequest_TransactionMode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(BeginTransactionRequest_TransactionMode_value, data, "BeginTransactionRequest_TransactionMode")
+	if err != nil {
+		return err
+	}
+	*x = BeginTransactionRequest_TransactionMode(value)
 	return nil
 }
 
@@ -1410,18 +1455,18 @@ func (m *Index_Property) GetMode() Index_Property_Mode {
 }
 
 type CompositeIndex struct {
-	AppId               *string                       `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
-	DatabaseId          *string                       `protobuf:"bytes,12,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
-	Id                  *int64                        `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
-	Definition          *Index                        `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
-	State               *CompositeIndex_State         `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
-	WorkflowState       *CompositeIndex_WorkflowState `protobuf:"varint,10,opt,name=workflow_state,json=workflowState,enum=datastore.CompositeIndex_WorkflowState" json:"workflow_state,omitempty"`
-	ErrorMessage        *string                       `protobuf:"bytes,11,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
-	OnlyUseIfRequired   *bool                         `protobuf:"varint,6,opt,name=only_use_if_required,json=onlyUseIfRequired,def=0" json:"only_use_if_required,omitempty"`
-	DisabledIndex       *bool                         `protobuf:"varint,9,opt,name=disabled_index,json=disabledIndex,def=0" json:"disabled_index,omitempty"`
-	ReadDivisionFamily  []string                      `protobuf:"bytes,7,rep,name=read_division_family,json=readDivisionFamily" json:"read_division_family,omitempty"`
-	WriteDivisionFamily *string                       `protobuf:"bytes,8,opt,name=write_division_family,json=writeDivisionFamily" json:"write_division_family,omitempty"`
-	XXX_unrecognized    []byte                        `json:"-"`
+	AppId                         *string                       `protobuf:"bytes,1,req,name=app_id,json=appId" json:"app_id,omitempty"`
+	DatabaseId                    *string                       `protobuf:"bytes,12,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
+	Id                            *int64                        `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
+	Definition                    *Index                        `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
+	State                         *CompositeIndex_State         `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
+	WorkflowState                 *CompositeIndex_WorkflowState `protobuf:"varint,10,opt,name=workflow_state,json=workflowState,enum=datastore.CompositeIndex_WorkflowState" json:"workflow_state,omitempty"`
+	ErrorMessage                  *string                       `protobuf:"bytes,11,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	OnlyUseIfRequired             *bool                         `protobuf:"varint,6,opt,name=only_use_if_required,json=onlyUseIfRequired,def=0" json:"only_use_if_required,omitempty"`
+	DisabledIndex                 *bool                         `protobuf:"varint,9,opt,name=disabled_index,json=disabledIndex,def=0" json:"disabled_index,omitempty"`
+	DeprecatedReadDivisionFamily  []string                      `protobuf:"bytes,7,rep,name=deprecated_read_division_family,json=deprecatedReadDivisionFamily" json:"deprecated_read_division_family,omitempty"`
+	DeprecatedWriteDivisionFamily *string                       `protobuf:"bytes,8,opt,name=deprecated_write_division_family,json=deprecatedWriteDivisionFamily" json:"deprecated_write_division_family,omitempty"`
+	XXX_unrecognized              []byte                        `json:"-"`
 }
 
 func (m *CompositeIndex) Reset()         { *m = CompositeIndex{} }
@@ -1494,16 +1539,16 @@ func (m *CompositeIndex) GetDisabledIndex() bool {
 	return Default_CompositeIndex_DisabledIndex
 }
 
-func (m *CompositeIndex) GetReadDivisionFamily() []string {
+func (m *CompositeIndex) GetDeprecatedReadDivisionFamily() []string {
 	if m != nil {
-		return m.ReadDivisionFamily
+		return m.DeprecatedReadDivisionFamily
 	}
 	return nil
 }
 
-func (m *CompositeIndex) GetWriteDivisionFamily() string {
-	if m != nil && m.WriteDivisionFamily != nil {
-		return *m.WriteDivisionFamily
+func (m *CompositeIndex) GetDeprecatedWriteDivisionFamily() string {
+	if m != nil && m.DeprecatedWriteDivisionFamily != nil {
+		return *m.DeprecatedWriteDivisionFamily
 	}
 	return ""
 }
@@ -3239,10 +3284,12 @@ func (m *AddActionsResponse) String() string { return proto.CompactTextString(m)
 func (*AddActionsResponse) ProtoMessage()    {}
 
 type BeginTransactionRequest struct {
-	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
-	AllowMultipleEg  *bool   `protobuf:"varint,2,opt,name=allow_multiple_eg,json=allowMultipleEg,def=0" json:"allow_multiple_eg,omitempty"`
-	DatabaseId       *string `protobuf:"bytes,4,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	App                 *string                                  `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
+	AllowMultipleEg     *bool                                    `protobuf:"varint,2,opt,name=allow_multiple_eg,json=allowMultipleEg,def=0" json:"allow_multiple_eg,omitempty"`
+	DatabaseId          *string                                  `protobuf:"bytes,4,opt,name=database_id,json=databaseId" json:"database_id,omitempty"`
+	Mode                *BeginTransactionRequest_TransactionMode `protobuf:"varint,5,opt,name=mode,enum=datastore.BeginTransactionRequest_TransactionMode,def=0" json:"mode,omitempty"`
+	PreviousTransaction *Transaction                             `protobuf:"bytes,7,opt,name=previous_transaction,json=previousTransaction" json:"previous_transaction,omitempty"`
+	XXX_unrecognized    []byte                                   `json:"-"`
 }
 
 func (m *BeginTransactionRequest) Reset()         { *m = BeginTransactionRequest{} }
@@ -3250,6 +3297,7 @@ func (m *BeginTransactionRequest) String() string { return proto.CompactTextStri
 func (*BeginTransactionRequest) ProtoMessage()    {}
 
 const Default_BeginTransactionRequest_AllowMultipleEg bool = false
+const Default_BeginTransactionRequest_Mode BeginTransactionRequest_TransactionMode = BeginTransactionRequest_UNKNOWN
 
 func (m *BeginTransactionRequest) GetApp() string {
 	if m != nil && m.App != nil {
@@ -3270,6 +3318,20 @@ func (m *BeginTransactionRequest) GetDatabaseId() string {
 		return *m.DatabaseId
 	}
 	return ""
+}
+
+func (m *BeginTransactionRequest) GetMode() BeginTransactionRequest_TransactionMode {
+	if m != nil && m.Mode != nil {
+		return *m.Mode
+	}
+	return Default_BeginTransactionRequest_Mode
+}
+
+func (m *BeginTransactionRequest) GetPreviousTransaction() *Transaction {
+	if m != nil {
+		return m.PreviousTransaction
+	}
+	return nil
 }
 
 type CommitResponse struct {
@@ -3434,6 +3496,7 @@ func init() {
 	proto.RegisterEnum("datastore.Query_Order_Direction", Query_Order_Direction_name, Query_Order_Direction_value)
 	proto.RegisterEnum("datastore.Error_ErrorCode", Error_ErrorCode_name, Error_ErrorCode_value)
 	proto.RegisterEnum("datastore.PutRequest_AutoIdPolicy", PutRequest_AutoIdPolicy_name, PutRequest_AutoIdPolicy_value)
+	proto.RegisterEnum("datastore.BeginTransactionRequest_TransactionMode", BeginTransactionRequest_TransactionMode_name, BeginTransactionRequest_TransactionMode_value)
 	proto.RegisterEnum("datastore.DatastoreService_3_Method", DatastoreService_3_Method_name, DatastoreService_3_Method_value)
 }
 
