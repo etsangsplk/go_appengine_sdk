@@ -169,6 +169,7 @@ const (
 	FieldValue_GEO                FieldValue_ContentType = 5
 	FieldValue_UNTOKENIZED_PREFIX FieldValue_ContentType = 6
 	FieldValue_TOKENIZED_PREFIX   FieldValue_ContentType = 7
+	FieldValue_VECTOR             FieldValue_ContentType = 8
 )
 
 var FieldValue_ContentType_name = map[int32]string{
@@ -180,6 +181,7 @@ var FieldValue_ContentType_name = map[int32]string{
 	5: "GEO",
 	6: "UNTOKENIZED_PREFIX",
 	7: "TOKENIZED_PREFIX",
+	8: "VECTOR",
 }
 var FieldValue_ContentType_value = map[string]int32{
 	"TEXT":               0,
@@ -190,6 +192,7 @@ var FieldValue_ContentType_value = map[string]int32{
 	"GEO":                5,
 	"UNTOKENIZED_PREFIX": 6,
 	"TOKENIZED_PREFIX":   7,
+	"VECTOR":             8,
 }
 
 func (x FieldValue_ContentType) Enum() *FieldValue_ContentType {
@@ -678,6 +681,7 @@ type FieldValue struct {
 	Language         *string                 `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
 	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value,json=stringValue" json:"string_value,omitempty"`
 	Geo              *FieldValue_Geo         `protobuf:"group,4,opt,name=Geo,json=geo" json:"geo,omitempty"`
+	VectorValue      []float64               `protobuf:"fixed64,7,rep,name=vector_value,json=vectorValue" json:"vector_value,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -712,6 +716,13 @@ func (m *FieldValue) GetStringValue() string {
 func (m *FieldValue) GetGeo() *FieldValue_Geo {
 	if m != nil {
 		return m.Geo
+	}
+	return nil
+}
+
+func (m *FieldValue) GetVectorValue() []float64 {
+	if m != nil {
+		return m.VectorValue
 	}
 	return nil
 }
