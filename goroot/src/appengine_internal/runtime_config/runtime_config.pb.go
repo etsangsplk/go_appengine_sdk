@@ -441,6 +441,3 @@ func (m *VMConfig) GetEnableLogs() bool {
 	}
 	return false
 }
-
-func init() {
-}

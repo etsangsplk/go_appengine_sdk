@@ -203,9 +203,9 @@ Example code:
 		if x.Sum != x.I + x.J {
 			return errors.New("CustomPropsExample has inconsistent sum")
 		}
-		// Save I and J as usual. The code below is equivalent to calling
-		// "return datastore.SaveStruct(x, c)", but is done manually for
-		// demonstration purposes.
+		// Save I and J as usual. The code below, along with "defer close(c)"
+		// above, is equivalent to calling "return datastore.SaveStruct(x, c)",
+		// but is done manually for demonstration purposes.
 		c <- datastore.Property{
 			Name:  "I",
 			Value: int64(x.I),

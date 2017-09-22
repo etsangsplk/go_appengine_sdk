@@ -214,9 +214,9 @@ func (cn *Conn) Write(b []byte) (n int, err error) {
 			break
 		}
 		n += int(res.GetDataSent())
+		cn.offset += int64(res.GetDataSent())
 	}
 
-	cn.offset += int64(n)
 	return
 }
 

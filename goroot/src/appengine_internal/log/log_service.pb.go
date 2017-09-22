@@ -158,6 +158,7 @@ func (m *SetStatusRequest) GetStatus() string {
 
 type LogOffset struct {
 	RequestId        []byte `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
+	RequestIdSet     *bool  `protobuf:"varint,101,opt,name=request_id_set" json:"request_id_set,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -170,6 +171,13 @@ func (m *LogOffset) GetRequestId() []byte {
 		return m.RequestId
 	}
 	return nil
+}
+
+func (m *LogOffset) GetRequestIdSet() bool {
+	if m != nil && m.RequestIdSet != nil {
+		return *m.RequestIdSet
+	}
+	return false
 }
 
 type LogLine struct {
@@ -531,6 +539,7 @@ func (m *RequestLog) GetServerName() []byte {
 type LogModuleVersion struct {
 	ModuleId         *string `protobuf:"bytes,1,opt,name=module_id,def=default" json:"module_id,omitempty"`
 	VersionId        *string `protobuf:"bytes,2,opt,name=version_id" json:"version_id,omitempty"`
+	VersionIdSet     *bool   `protobuf:"varint,102,opt,name=version_id_set" json:"version_id_set,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -554,27 +563,43 @@ func (m *LogModuleVersion) GetVersionId() string {
 	return ""
 }
 
+func (m *LogModuleVersion) GetVersionIdSet() bool {
+	if m != nil && m.VersionIdSet != nil {
+		return *m.VersionIdSet
+	}
+	return false
+}
+
 type LogReadRequest struct {
-	AppId             *string             `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	VersionId         []string            `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
-	ModuleVersion     []*LogModuleVersion `protobuf:"bytes,19,rep,name=module_version" json:"module_version,omitempty"`
-	StartTime         *int64              `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
-	EndTime           *int64              `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
-	Offset            *LogOffset          `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
-	RequestId         [][]byte            `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
-	MinimumLogLevel   *int32              `protobuf:"varint,7,opt,name=minimum_log_level" json:"minimum_log_level,omitempty"`
-	IncludeIncomplete *bool               `protobuf:"varint,8,opt,name=include_incomplete" json:"include_incomplete,omitempty"`
-	Count             *int64              `protobuf:"varint,9,opt,name=count" json:"count,omitempty"`
-	CombinedLogRegex  *string             `protobuf:"bytes,14,opt,name=combined_log_regex" json:"combined_log_regex,omitempty"`
-	HostRegex         *string             `protobuf:"bytes,15,opt,name=host_regex" json:"host_regex,omitempty"`
-	ReplicaIndex      *int32              `protobuf:"varint,16,opt,name=replica_index" json:"replica_index,omitempty"`
-	IncludeAppLogs    *bool               `protobuf:"varint,10,opt,name=include_app_logs" json:"include_app_logs,omitempty"`
-	AppLogsPerRequest *int32              `protobuf:"varint,17,opt,name=app_logs_per_request" json:"app_logs_per_request,omitempty"`
-	IncludeHost       *bool               `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
-	IncludeAll        *bool               `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
-	CacheIterator     *bool               `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`
-	NumShards         *int32              `protobuf:"varint,18,opt,name=num_shards" json:"num_shards,omitempty"`
-	XXX_unrecognized  []byte              `json:"-"`
+	AppId                *string             `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	VersionId            []string            `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
+	ModuleVersion        []*LogModuleVersion `protobuf:"bytes,19,rep,name=module_version" json:"module_version,omitempty"`
+	StartTime            *int64              `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
+	StartTimeSet         *bool               `protobuf:"varint,103,opt,name=start_time_set" json:"start_time_set,omitempty"`
+	EndTime              *int64              `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
+	EndTimeSet           *bool               `protobuf:"varint,104,opt,name=end_time_set" json:"end_time_set,omitempty"`
+	Offset               *LogOffset          `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
+	RequestId            [][]byte            `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
+	MinimumLogLevel      *int32              `protobuf:"varint,7,opt,name=minimum_log_level" json:"minimum_log_level,omitempty"`
+	MinimumLogLevelSet   *bool               `protobuf:"varint,107,opt,name=minimum_log_level_set" json:"minimum_log_level_set,omitempty"`
+	IncludeIncomplete    *bool               `protobuf:"varint,8,opt,name=include_incomplete" json:"include_incomplete,omitempty"`
+	Count                *int64              `protobuf:"varint,9,opt,name=count" json:"count,omitempty"`
+	CountSet             *bool               `protobuf:"varint,109,opt,name=count_set" json:"count_set,omitempty"`
+	CombinedLogRegex     *string             `protobuf:"bytes,14,opt,name=combined_log_regex" json:"combined_log_regex,omitempty"`
+	CombinedLogRegexSet  *bool               `protobuf:"varint,114,opt,name=combined_log_regex_set" json:"combined_log_regex_set,omitempty"`
+	HostRegex            *string             `protobuf:"bytes,15,opt,name=host_regex" json:"host_regex,omitempty"`
+	HostRegexSet         *bool               `protobuf:"varint,115,opt,name=host_regex_set" json:"host_regex_set,omitempty"`
+	ReplicaIndex         *int32              `protobuf:"varint,16,opt,name=replica_index" json:"replica_index,omitempty"`
+	ReplicaIndexSet      *bool               `protobuf:"varint,116,opt,name=replica_index_set" json:"replica_index_set,omitempty"`
+	IncludeAppLogs       *bool               `protobuf:"varint,10,opt,name=include_app_logs" json:"include_app_logs,omitempty"`
+	AppLogsPerRequest    *int32              `protobuf:"varint,17,opt,name=app_logs_per_request" json:"app_logs_per_request,omitempty"`
+	AppLogsPerRequestSet *bool               `protobuf:"varint,117,opt,name=app_logs_per_request_set" json:"app_logs_per_request_set,omitempty"`
+	IncludeHost          *bool               `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
+	IncludeAll           *bool               `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
+	CacheIterator        *bool               `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`
+	NumShards            *int32              `protobuf:"varint,18,opt,name=num_shards" json:"num_shards,omitempty"`
+	NumShardsSet         *bool               `protobuf:"varint,118,opt,name=num_shards_set" json:"num_shards_set,omitempty"`
+	XXX_unrecognized     []byte              `json:"-"`
 }
 
 func (m *LogReadRequest) Reset()         { *m = LogReadRequest{} }
@@ -609,11 +634,25 @@ func (m *LogReadRequest) GetStartTime() int64 {
 	return 0
 }
 
+func (m *LogReadRequest) GetStartTimeSet() bool {
+	if m != nil && m.StartTimeSet != nil {
+		return *m.StartTimeSet
+	}
+	return false
+}
+
 func (m *LogReadRequest) GetEndTime() int64 {
 	if m != nil && m.EndTime != nil {
 		return *m.EndTime
 	}
 	return 0
+}
+
+func (m *LogReadRequest) GetEndTimeSet() bool {
+	if m != nil && m.EndTimeSet != nil {
+		return *m.EndTimeSet
+	}
+	return false
 }
 
 func (m *LogReadRequest) GetOffset() *LogOffset {
@@ -637,6 +676,13 @@ func (m *LogReadRequest) GetMinimumLogLevel() int32 {
 	return 0
 }
 
+func (m *LogReadRequest) GetMinimumLogLevelSet() bool {
+	if m != nil && m.MinimumLogLevelSet != nil {
+		return *m.MinimumLogLevelSet
+	}
+	return false
+}
+
 func (m *LogReadRequest) GetIncludeIncomplete() bool {
 	if m != nil && m.IncludeIncomplete != nil {
 		return *m.IncludeIncomplete
@@ -651,11 +697,25 @@ func (m *LogReadRequest) GetCount() int64 {
 	return 0
 }
 
+func (m *LogReadRequest) GetCountSet() bool {
+	if m != nil && m.CountSet != nil {
+		return *m.CountSet
+	}
+	return false
+}
+
 func (m *LogReadRequest) GetCombinedLogRegex() string {
 	if m != nil && m.CombinedLogRegex != nil {
 		return *m.CombinedLogRegex
 	}
 	return ""
+}
+
+func (m *LogReadRequest) GetCombinedLogRegexSet() bool {
+	if m != nil && m.CombinedLogRegexSet != nil {
+		return *m.CombinedLogRegexSet
+	}
+	return false
 }
 
 func (m *LogReadRequest) GetHostRegex() string {
@@ -665,11 +725,25 @@ func (m *LogReadRequest) GetHostRegex() string {
 	return ""
 }
 
+func (m *LogReadRequest) GetHostRegexSet() bool {
+	if m != nil && m.HostRegexSet != nil {
+		return *m.HostRegexSet
+	}
+	return false
+}
+
 func (m *LogReadRequest) GetReplicaIndex() int32 {
 	if m != nil && m.ReplicaIndex != nil {
 		return *m.ReplicaIndex
 	}
 	return 0
+}
+
+func (m *LogReadRequest) GetReplicaIndexSet() bool {
+	if m != nil && m.ReplicaIndexSet != nil {
+		return *m.ReplicaIndexSet
+	}
+	return false
 }
 
 func (m *LogReadRequest) GetIncludeAppLogs() bool {
@@ -684,6 +758,13 @@ func (m *LogReadRequest) GetAppLogsPerRequest() int32 {
 		return *m.AppLogsPerRequest
 	}
 	return 0
+}
+
+func (m *LogReadRequest) GetAppLogsPerRequestSet() bool {
+	if m != nil && m.AppLogsPerRequestSet != nil {
+		return *m.AppLogsPerRequestSet
+	}
+	return false
 }
 
 func (m *LogReadRequest) GetIncludeHost() bool {
@@ -712,6 +793,13 @@ func (m *LogReadRequest) GetNumShards() int32 {
 		return *m.NumShards
 	}
 	return 0
+}
+
+func (m *LogReadRequest) GetNumShardsSet() bool {
+	if m != nil && m.NumShardsSet != nil {
+		return *m.NumShardsSet
+	}
+	return false
 }
 
 type LogReadResponse struct {
@@ -810,6 +898,7 @@ type LogUsageRequest struct {
 	ResolutionHours  *uint32  `protobuf:"varint,5,opt,name=resolution_hours,def=1" json:"resolution_hours,omitempty"`
 	CombineVersions  *bool    `protobuf:"varint,6,opt,name=combine_versions" json:"combine_versions,omitempty"`
 	UsageVersion     *int32   `protobuf:"varint,7,opt,name=usage_version" json:"usage_version,omitempty"`
+	UsageVersionSet  *bool    `protobuf:"varint,107,opt,name=usage_version_set" json:"usage_version_set,omitempty"`
 	VersionsOnly     *bool    `protobuf:"varint,8,opt,name=versions_only" json:"versions_only,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
@@ -867,6 +956,13 @@ func (m *LogUsageRequest) GetUsageVersion() int32 {
 		return *m.UsageVersion
 	}
 	return 0
+}
+
+func (m *LogUsageRequest) GetUsageVersionSet() bool {
+	if m != nil && m.UsageVersionSet != nil {
+		return *m.UsageVersionSet
+	}
+	return false
 }
 
 func (m *LogUsageRequest) GetVersionsOnly() bool {

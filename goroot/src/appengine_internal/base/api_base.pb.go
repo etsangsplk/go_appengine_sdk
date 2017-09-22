@@ -128,6 +128,3 @@ type VoidProto struct {
 func (m *VoidProto) Reset()         { *m = VoidProto{} }
 func (m *VoidProto) String() string { return proto.CompactTextString(m) }
 func (*VoidProto) ProtoMessage()    {}
-
-func init() {
-}
