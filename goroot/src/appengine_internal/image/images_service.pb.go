@@ -31,10 +31,12 @@ It has these top-level messages:
 package appengine
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
 var _ = math.Inf
 
 type ImagesServiceError_ErrorCode int32
@@ -274,7 +276,9 @@ func (*ImagesServiceTransform) ProtoMessage()    {}
 
 type Transform struct {
 	Width            *int32   `protobuf:"varint,1,opt,name=width" json:"width,omitempty"`
+	WidthSet         *bool    `protobuf:"varint,101,opt,name=width_set" json:"width_set,omitempty"`
 	Height           *int32   `protobuf:"varint,2,opt,name=height" json:"height,omitempty"`
+	HeightSet        *bool    `protobuf:"varint,102,opt,name=height_set" json:"height_set,omitempty"`
 	CropToFit        *bool    `protobuf:"varint,11,opt,name=crop_to_fit" json:"crop_to_fit,omitempty"`
 	CropOffsetX      *float32 `protobuf:"fixed32,12,opt,name=crop_offset_x,def=0.5" json:"crop_offset_x,omitempty"`
 	CropOffsetY      *float32 `protobuf:"fixed32,13,opt,name=crop_offset_y,def=0.5" json:"crop_offset_y,omitempty"`
@@ -284,7 +288,9 @@ type Transform struct {
 	CropLeftX        *float32 `protobuf:"fixed32,6,opt,name=crop_left_x" json:"crop_left_x,omitempty"`
 	CropTopY         *float32 `protobuf:"fixed32,7,opt,name=crop_top_y" json:"crop_top_y,omitempty"`
 	CropRightX       *float32 `protobuf:"fixed32,8,opt,name=crop_right_x,def=1" json:"crop_right_x,omitempty"`
+	CropRightXSet    *bool    `protobuf:"varint,108,opt,name=crop_right_x_set" json:"crop_right_x_set,omitempty"`
 	CropBottomY      *float32 `protobuf:"fixed32,9,opt,name=crop_bottom_y,def=1" json:"crop_bottom_y,omitempty"`
+	CropBottomYSet   *bool    `protobuf:"varint,109,opt,name=crop_bottom_y_set" json:"crop_bottom_y_set,omitempty"`
 	Autolevels       *bool    `protobuf:"varint,10,opt,name=autolevels" json:"autolevels,omitempty"`
 	AllowStretch     *bool    `protobuf:"varint,14,opt,name=allow_stretch" json:"allow_stretch,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
@@ -306,11 +312,25 @@ func (m *Transform) GetWidth() int32 {
 	return 0
 }
 
+func (m *Transform) GetWidthSet() bool {
+	if m != nil && m.WidthSet != nil {
+		return *m.WidthSet
+	}
+	return false
+}
+
 func (m *Transform) GetHeight() int32 {
 	if m != nil && m.Height != nil {
 		return *m.Height
 	}
 	return 0
+}
+
+func (m *Transform) GetHeightSet() bool {
+	if m != nil && m.HeightSet != nil {
+		return *m.HeightSet
+	}
+	return false
 }
 
 func (m *Transform) GetCropToFit() bool {
@@ -376,11 +396,25 @@ func (m *Transform) GetCropRightX() float32 {
 	return Default_Transform_CropRightX
 }
 
+func (m *Transform) GetCropRightXSet() bool {
+	if m != nil && m.CropRightXSet != nil {
+		return *m.CropRightXSet
+	}
+	return false
+}
+
 func (m *Transform) GetCropBottomY() float32 {
 	if m != nil && m.CropBottomY != nil {
 		return *m.CropBottomY
 	}
 	return Default_Transform_CropBottomY
+}
+
+func (m *Transform) GetCropBottomYSet() bool {
+	if m != nil && m.CropBottomYSet != nil {
+		return *m.CropBottomYSet
+	}
+	return false
 }
 
 func (m *Transform) GetAutolevels() bool {
