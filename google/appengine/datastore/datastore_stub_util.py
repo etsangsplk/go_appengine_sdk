@@ -114,10 +114,19 @@ _MAX_EG_PER_TXN = 25
 
 
 
-_BLOB_MEANINGS = frozenset((entity_pb.Property.BLOB,
-                            entity_pb.Property.ENTITY_PROTO,
-                            entity_pb.Property.TEXT))
+_UNINDEXABLE_MEANINGS = frozenset((entity_pb.Property.BLOB,
+                                   entity_pb.Property.TEXT))
 
+
+_NO_UTF8_CHECK_MEANINGS = frozenset((entity_pb.Property.BLOB,
+                                     entity_pb.Property.TEXT,
+                                     entity_pb.Property.ENTITY_PROTO,
+                                     entity_pb.Property.BYTESTRING))
+
+
+_STRING_VALUE_MEANINGS = frozenset((entity_pb.Property.BLOB,
+                                    entity_pb.Property.TEXT,
+                                    entity_pb.Property.ENTITY_PROTO))
 
 
 
@@ -251,16 +260,56 @@ def _PrepareSpecialProperties(entity_proto, is_load):
 _METADATA_PROPERTY_NAME = '__metadata__'
 
 
-def _ScrubMetadataProperty(entity):
-  """Remove the metadata property from an entity protobuf.
+def _FromStorageEntity(entity):
+  """Converts a stored entity protobuf to an EntityRecord (with metadata).
+
+  This function is only provided as convenience for storage implementations that
+  wish to store metadata directly on EntityProto.
 
   Args:
     entity: An Entity protobuf.
+
+  Returns:
+    The EntityRecord including the EntityMetadata protobuf that was stored as a
+    property on the Entity protobuf or an empty EntityMetadata if that Entity
+    has no metadata property.
   """
-  for i in reversed(xrange(entity.property_size())):
-    property = entity.property(i)
+  clone = entity_pb.EntityProto()
+  clone.CopyFrom(entity)
+  metadata = entity_pb.EntityMetadata()
+  for i in xrange(clone.property_size() - 1, -1, -1):
+    property = clone.property(i)
     if _METADATA_PROPERTY_NAME == property.name():
-      del entity.property_list()[i]
+      del clone.property_list()[i]
+      metadata = entity_pb.EntityMetadata(property.value().stringvalue())
+  return EntityRecord(clone, metadata)
+
+
+def _ToStorageEntity(record):
+  """Store a metadata object as a pickled string property on an entity protobuf.
+
+  This function is only provided as convenience for storage implementations that
+  wish to store metadata directly on EntityProto.
+
+  Args:
+    record: An EntityRecord.
+
+  Returns:
+    A copy of the entity with an additional string property that contains the
+    pickled metadata object. Returns None If the record is None.
+  """
+  if record:
+    clone = entity_pb.EntityProto()
+    clone.CopyFrom(record.entity)
+
+    serialized_metadata = record.metadata.SerializeToString()
+    metadata_property = clone.add_property()
+    metadata_property.set_name(_METADATA_PROPERTY_NAME)
+    metadata_property.set_meaning(entity_pb.Property.BLOB)
+    metadata_property.set_multiple(False)
+    metadata_property.mutable_value().set_stringvalue(serialized_metadata)
+
+    return clone
 
 
 def _GetGroupByKey(entity, property_names):
@@ -291,7 +340,7 @@ def LoadEntity(entity, keys_only=False, property_names=None):
     entity: a entity_pb.EntityProto or None
     keys_only: if a keys only result should be produced
     property_names: if not None or empty, cause a projected entity
-  to be produced with the given properties.
+        to be produced with the given properties.
 
   Returns:
     A user friendly copy of entity or None.
@@ -323,31 +372,119 @@ def LoadEntity(entity, keys_only=False, property_names=None):
 
       clone.CopyFrom(entity)
     PrepareSpecialPropertiesForLoad(clone)
+    _ProcessStashedAndComputedPropertiesForLoad(clone)
     return clone
 
 
-def StoreEntity(entity):
-  """Prepares an entity for storing.
+def LoadRecord(record, keys_only=False, property_names=None):
+  """Prepares a record to be returned to the user.
 
   Args:
-    entity: a entity_pb.EntityProto to prepare
+    record: an EntityRecord or None
+    keys_only: if a keys only result should be produced
+    property_names: if not None or empty, cause a projected entity
+        to be produced with the given properties.
 
   Returns:
-    A copy of entity that should be stored in its place.
+    A user friendly copy of record or None.
+  """
+  if record:
+    metadata = record.metadata
+    if keys_only or property_names:
+      metadata = entity_pb.EntityMetadata()
+    return EntityRecord(LoadEntity(record.entity, keys_only, property_names),
+                        metadata)
+
+
+def StoreRecord(record):
+  """Prepares a record for storing.
+
+  Args:
+    record: an EntityRecord to prepare
+
+  Returns:
+    A copy of the record that can be stored.
   """
   clone = entity_pb.EntityProto()
-  clone.CopyFrom(entity)
+  clone.CopyFrom(record.entity)
 
 
 
   PrepareSpecialPropertiesForStore(clone)
-  return clone
+  _ProcessIndexedEntityValuesForStore(clone)
+
+  return EntityRecord(clone, record.metadata)
 
 
 def PrepareSpecialPropertiesForLoad(entity_proto):
   """Computes special properties that are user-visible.
   Strips other special properties."""
   _PrepareSpecialProperties(entity_proto, True)
+
+
+def _ProcessStashedAndComputedPropertiesForLoad(entity):
+  """Inverts the changes made by _ProcessIndexedEntityValuesForStore."""
+  for prop in entity.property_list()[:]:
+    if prop.computed():
+      entity.property_list().remove(prop)
+  for prop in entity.raw_property_list()[:]:
+    if prop.has_stashed():
+      stashed = prop.stashed()
+      entity.raw_property_list().remove(prop)
+      prop.clear_stashed()
+      entity.property_list().insert(stashed, prop)
+
+
+def _ProcessIndexedEntityValuesForStore(entity):
+  """Prepares indexed entity values for storage."""
+
+
+  for (i, prop) in enumerate(entity.property_list()[:]):
+    if prop.meaning() == entity_pb.Property.ENTITY_PROTO:
+      entity.property_list().remove(prop)
+      prop.set_stashed(i)
+      entity.raw_property_list().append(prop)
+      _FlattenIndexedEntityValues(prop.name(),
+                                  prop.multiple(),
+                                  prop.value().stringvalue(),
+                                  entity.property_list())
+
+
+def _FlattenIndexedEntityValues(prefix, multiple, serialized_value, root_props):
+  """Recursively flattens the properties found in the serialized entity."""
+  entity = entity_pb.EntityProto()
+  entity.MergePartialFromString(serialized_value)
+
+  if entity.key().path().element_size():
+    p = entity_pb.Property()
+    p.set_name(prefix + '.__key__')
+    entity_converter = get_query_converter().get_entity_converter()
+    entity_converter.v3_reference_to_v3_property_value(
+        entity.key(), p.mutable_value())
+    p.set_multiple(multiple)
+    p.set_computed(True)
+    root_props.append(p)
+
+    p = entity_pb.Property()
+    p.set_name(prefix + '.__kind__')
+    p.mutable_value().set_stringvalue(
+        entity.key().path().element_list()[-1].type())
+    p.set_multiple(multiple)
+    p.set_computed(True)
+    root_props.append(p)
+
+  for prop in entity.property_list():
+    if prop.meaning() == entity_pb.Property.ENTITY_PROTO:
+      _FlattenIndexedEntityValues(prefix + '.' + prop.name(),
+                                  multiple or prop.multiple(),
+                                  prop.value().stringvalue(),
+                                  root_props)
+    else:
+      prop.set_name(prefix + '.' + prop.name())
+      prop.set_multiple(multiple or prop.multiple())
+      prop.set_computed(True)
+      FillUser(prop)
+      root_props.append(prop)
 
 
 def Check(test, msg='', error_code=datastore_pb.Error.BAD_REQUEST):
@@ -436,20 +573,22 @@ def CheckReference(request_trusted,
       CheckValidUTF8(elem.name(), 'key path element name')
 
 
-def CheckEntity(request_trusted, request_app_id, entity):
+def CheckEntity(request_trusted, request_app_id, entity, require_key=True):
   """Check if this entity can be stored.
 
   Args:
     request_trusted: If the request is trusted.
     request_app_id: The application ID of the app making the request.
     entity: entity_pb.EntityProto
+    require_key: Whether the entity must have a key set.
 
   Raises:
     apiproxy_errors.ApplicationError: if the entity is invalid
   """
 
 
-  CheckReference(request_trusted, request_app_id, entity.key(), False)
+  if require_key or entity.has_key():
+    CheckReference(request_trusted, request_app_id, entity.key(), False)
   for prop in entity.property_list():
     CheckProperty(request_trusted, request_app_id, prop)
   for prop in entity.raw_property_list():
@@ -477,22 +616,31 @@ def CheckProperty(request_trusted, request_app_id, prop, indexed=True):
         'cannot store entity with reserved property name \'%s\'' % name)
   Check(prop.meaning() != entity_pb.Property.INDEX_VALUE,
         'Entities with incomplete properties cannot be written.')
-  is_blob = meaning in _BLOB_MEANINGS
   if indexed:
-    Check(not is_blob,
-          'BLOB, ENITY_PROTO or TEXT property ' + name +
+    Check(meaning not in _UNINDEXABLE_MEANINGS,
+          'BLOB or TEXT property ' + name +
           ' must be in a raw_property field')
     max_length = datastore_types._MAX_STRING_LENGTH
+
+
+    if meaning == entity_pb.Property.ENTITY_PROTO:
+      max_length = datastore_types._MAX_RAW_PROPERTY_BYTES
   else:
-    if is_blob:
+    if meaning in _STRING_VALUE_MEANINGS:
       Check(value.has_stringvalue(),
             'BLOB / ENTITY_PROTO / TEXT raw property ' + name +
             'must have a string value')
     max_length = datastore_types._MAX_RAW_PROPERTY_BYTES
+
   if meaning == entity_pb.Property.ATOM_LINK:
     max_length = datastore_types._MAX_LINK_PROPERTY_LENGTH
 
   CheckPropertyValue(name, value, max_length, meaning)
+
+  if indexed and meaning == entity_pb.Property.ENTITY_PROTO:
+    entity_value = entity_pb.EntityProto()
+    entity_value.MergePartialFromString(value.stringvalue())
+    CheckEntity(request_trusted, request_app_id, entity_value, False)
 
 
 def CheckPropertyValue(name, value, max_length, meaning):
@@ -523,8 +671,7 @@ def CheckPropertyValue(name, value, max_length, meaning):
       s = s.encode('utf-8')
     Check(len(s) <= max_length,
           'Property %s is too long. Maximum length is %d.' % (name, max_length))
-    if (meaning not in _BLOB_MEANINGS and
-        meaning != entity_pb.Property.BYTESTRING):
+    if (meaning not in _NO_UTF8_CHECK_MEANINGS):
       CheckValidUTF8(value.stringvalue(), 'String property value')
 
 
@@ -1490,8 +1637,8 @@ class LiveTxn(object):
       The associated entity_pb.EntityProto or None if no such entity exists.
     """
     snapshot = self._GrabSnapshot(reference)
-    entity = snapshot.get(datastore_types.ReferenceToKeyValue(reference))
-    return LoadEntity(entity)
+    record = snapshot.get(datastore_types.ReferenceToKeyValue(reference))
+    return LoadEntity(record and record.entity)
 
   @_SynchronizeTxn
   def GetQueryCursor(self, query, filters, orders, index_list,
@@ -1515,7 +1662,8 @@ class LiveTxn(object):
     Check(query.has_ancestor(),
           'Query must have an ancestor when performed in a transaction.')
     snapshot = self._GrabSnapshot(query.ancestor())
-    return _ExecuteQuery(snapshot.values(), query, filters, orders, index_list,
+    entities = [record.entity for record in snapshot.values()]
+    return _ExecuteQuery(entities, query, filters, orders, index_list,
                          filter_predicate)
 
   @_SynchronizeTxn
@@ -1601,7 +1749,7 @@ class LiveTxn(object):
           old_entity = None
           key = datastore_types.ReferenceToKeyValue(entity.key())
           if key in snapshot:
-            old_entity = snapshot[key]
+            old_entity = snapshot[key].entity
           self._AddWriteOps(old_entity, entity)
 
         for reference in tracker._delete.itervalues():
@@ -1610,7 +1758,7 @@ class LiveTxn(object):
           old_entity = None
           key = datastore_types.ReferenceToKeyValue(reference)
           if key in snapshot:
-            old_entity = snapshot[key]
+            old_entity = snapshot[key].entity
             if old_entity is not None:
               self._AddWriteOps(None, old_entity)
 
@@ -1697,7 +1845,8 @@ class LiveTxn(object):
 
 
       for entity, insert in tracker._put.itervalues():
-        self._txn_manager._Put(entity, insert)
+        record = EntityRecord(entity, entity_pb.EntityMetadata())
+        self._txn_manager._Put(record, insert)
 
 
       for key in tracker._delete.itervalues():
@@ -1710,6 +1859,14 @@ class LiveTxn(object):
       tracker._meta_data.Unlog(self)
     finally:
       self._apply_lock.release()
+
+
+class EntityRecord(object):
+  """An EntityProto and its associated EntityMetadata protobuf."""
+
+  def __init__(self, entity, metadata=None):
+    self.entity = entity
+    self.metadata = metadata or entity_pb.EntityMetadata()
 
 
 class EntityGroupTracker(object):
@@ -2131,14 +2288,14 @@ class BaseTransactionManager(object):
     """Removes a LiveTxn from the txn_map (if present)."""
     self._txn_map.pop(id(txn), None)
 
-  def _Put(self, entity, insert):
-    """Put the given entity.
+  def _Put(self, record, insert):
+    """Put the given entity record.
 
     This must be implemented by a sub-class. The sub-class can assume that any
     need consistency is enforced at a higher level (and can just put blindly).
 
     Args:
-      entity: The entity_pb.EntityProto to put.
+      record: The EntityRecord to put.
       insert: A boolean that indicates if we should fail if the entity already
         exists.
     """
@@ -2168,7 +2325,7 @@ class BaseTransactionManager(object):
       entity_group: A entity_pb.Reference of the entity group to get.
 
     Returns:
-      A dict mapping datastore_types.ReferenceToKeyValue(key) to EntityProto
+      A dict mapping datastore_types.ReferenceToKeyValue(key) to EntityRecord.
     """
     raise NotImplementedError
 
@@ -2506,7 +2663,8 @@ class BaseDatastore(BaseTransactionManager, BaseIndexManager):
     elif txn:
       return txn.Get(key)
     else:
-      return self._Get(key)
+      record = self._Get(key)
+      return record and record.entity
 
   def Put(self, raw_entities, cost, transaction=None,
           trusted=False, calling_app=None):
@@ -2757,7 +2915,7 @@ class BaseDatastore(BaseTransactionManager, BaseIndexManager):
     raise NotImplementedError
 
   def _Get(self, reference):
-    """Get the entity for the given reference or None.
+    """Get the entity record for the given reference or None.
 
     This must be implemented by a sub-class. The sub-class does not need to
     enforced any consistency guarantees (and can just blindly read).
@@ -2766,7 +2924,7 @@ class BaseDatastore(BaseTransactionManager, BaseIndexManager):
       reference: A entity_pb.Reference to loop up.
 
     Returns:
-      The entity_pb.EntityProto associated with the given reference or None.
+      The EntityRecord associated with the given reference or None.
     """
     raise NotImplementedError
 

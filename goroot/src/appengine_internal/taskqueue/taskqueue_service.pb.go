@@ -487,7 +487,7 @@ type TaskQueueAddRequest struct {
 	EtaUsec             *int64                             `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
 	Method              *TaskQueueAddRequest_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueAddRequest_RequestMethod,def=2" json:"method,omitempty"`
 	Url                 []byte                             `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	Header              []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep" json:"header,omitempty"`
+	Header              []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep,name=Header" json:"header,omitempty"`
 	Body                []byte                             `protobuf:"bytes,9,opt,name=body" json:"body,omitempty"`
 	Transaction         *Transaction                       `protobuf:"bytes,10,opt,name=transaction" json:"transaction,omitempty"`
 	AppId               []byte                             `protobuf:"bytes,11,opt,name=app_id" json:"app_id,omitempty"`
@@ -956,7 +956,7 @@ func (m *TaskQueueFetchQueuesRequest) GetMaxRows() int32 {
 }
 
 type TaskQueueFetchQueuesResponse struct {
-	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep" json:"queue,omitempty"`
+	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep,name=Queue" json:"queue,omitempty"`
 	XXX_unrecognized []byte                                `json:"-"`
 }
 
@@ -1388,7 +1388,7 @@ func (m *TaskQueueQueryTasksRequest) GetMaxRows() int32 {
 }
 
 type TaskQueueQueryTasksResponse struct {
-	Task             []*TaskQueueQueryTasksResponse_Task `protobuf:"group,1,rep" json:"task,omitempty"`
+	Task             []*TaskQueueQueryTasksResponse_Task `protobuf:"group,1,rep,name=Task" json:"task,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
@@ -1409,7 +1409,7 @@ type TaskQueueQueryTasksResponse_Task struct {
 	Url              []byte                                          `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
 	Method           *TaskQueueQueryTasksResponse_Task_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueQueryTasksResponse_Task_RequestMethod" json:"method,omitempty"`
 	RetryCount       *int32                                          `protobuf:"varint,6,opt,name=retry_count" json:"retry_count,omitempty"`
-	Header           []*TaskQueueQueryTasksResponse_Task_Header      `protobuf:"group,7,rep" json:"header,omitempty"`
+	Header           []*TaskQueueQueryTasksResponse_Task_Header      `protobuf:"group,7,rep,name=Header" json:"header,omitempty"`
 	BodySize         *int32                                          `protobuf:"varint,10,opt,name=body_size" json:"body_size,omitempty"`
 	Body             []byte                                          `protobuf:"bytes,11,opt,name=body" json:"body,omitempty"`
 	CreationTimeUsec *int64                                          `protobuf:"varint,12,req,name=creation_time_usec" json:"creation_time_usec,omitempty"`
@@ -1788,7 +1788,7 @@ func (m *TaskQueueQueryAndOwnTasksRequest) GetTag() []byte {
 }
 
 type TaskQueueQueryAndOwnTasksResponse struct {
-	Task             []*TaskQueueQueryAndOwnTasksResponse_Task `protobuf:"group,1,rep" json:"task,omitempty"`
+	Task             []*TaskQueueQueryAndOwnTasksResponse_Task `protobuf:"group,1,rep,name=Task" json:"task,omitempty"`
 	XXX_unrecognized []byte                                    `json:"-"`
 }
 

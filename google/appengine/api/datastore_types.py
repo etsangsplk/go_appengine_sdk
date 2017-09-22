@@ -1220,22 +1220,31 @@ class Blob(_BaseByteType):
 class EmbeddedEntity(_BaseByteType):
   """A proto encoded EntityProto.
 
-  This behaves identically to Blob, except for the
-  constructor, which accepts a str or EntityProto argument.
+  Similar to Blob, but accepts a str or EntityProto as argument in the
+  constructor. It also stores a bit to determine whether the value is indexed
+  or not. This bit is needed to preserve backwards compatibility with older code
+  which assumed all EmbeddedEntity values were unindexed.
 
   Can be decoded using datastore.Entity.FromProto(), db.model_from_protobuf() or
   ndb.LocalStructuredProperty.
   """
 
-  def __new__(cls, arg=None):
+  def __new__(cls, arg=None, indexed=False):
     """Constructor.
 
     Args:
       arg: optional str or EntityProto instance (default '')
+      indexed: whether this EmbeddedEntity is build from an indexed property
     """
     if isinstance(arg, entity_pb.EntityProto):
       arg = arg.SerializePartialToString()
     return super(EmbeddedEntity, cls).__new__(cls, arg)
+
+  def __init__(self, arg=None, indexed=False):
+    self._indexed = indexed
+
+  def IsIndexed(self):
+    return self._indexed
 
 
 class ByteString(_BaseByteType):
@@ -1357,9 +1366,11 @@ _PROPERTY_TYPES = frozenset([
 
 
 
-_RAW_PROPERTY_TYPES = (Blob, Text, EmbeddedEntity)
-_RAW_PROPERTY_MEANINGS = (entity_pb.Property.BLOB, entity_pb.Property.TEXT,
-                          entity_pb.Property.ENTITY_PROTO)
+_PROPERTY_TYPES_FORBIDDEN_IN_FILTERS = (Blob, Text, EmbeddedEntity)
+
+
+
+_RAW_PROPERTY_MEANINGS = (entity_pb.Property.BLOB, entity_pb.Property.TEXT)
 
 
 def ValidatePropertyInteger(name, value):
@@ -1438,7 +1449,8 @@ def ValidatePropertyKey(name, value):
   Raises:
     datastore_errors.BadValueError if the value is invalid.
   """
-  if not value.has_id_or_name():
+
+  if not name.endswith('.__key__') and not value.has_id_or_name():
     raise datastore_errors.BadValueError(
         'Incomplete key found for reference property %s.' % name)
 

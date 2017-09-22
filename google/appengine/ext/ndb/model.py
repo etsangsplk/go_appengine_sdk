@@ -152,11 +152,9 @@ the value to be something other than None (and valid).
 The StructuredProperty is different from most other properties; it
 lets you define a sub-structure for your entities.  The substructure
 itself is defined using a model class, and the attribute value is an
-instance of that model class.  However it is not stored in the
-datastore as a separate entity; instead, its attribute values are
-included in the parent entity using a naming convention (the name of
-the structured attribute followed by a dot followed by the name of the
-subattribute).  For example:
+instance of that model class.  The properties in the substructure are
+accessible using a naming convention (the name of the structured attribute
+followed by a dot followed by the name of the subattribute).  For example:
 
   class Address(Model):
     street = StringProperty()
@@ -171,24 +169,29 @@ subattribute).  For example:
                              city='Little Whinging'))
   k.put()
 
-This would write a single 'Person' entity with three attributes (as
-you could verify using the Datastore Viewer in the Admin Console):
+These subproperties would be accessible using the following names in queries
+and models:
 
   name = 'Harry Potter'
   address.street = '4 Privet Drive'
   address.city = 'Little Whinging'
 
-Structured property types can be nested arbitrarily deep, but in a
-hierarchy of nested structured property types, only one level can have
-the repeated flag set.  It is fine to have multiple structured
-properties referencing the same model class.
+The historical and default implementation of StructuredProperty, selectable by
+passing store_as_entity_value=False to the constructor of StructuredProperty,
+stored the hierarchy of nested properties as top level properties with the
+corresponding names. For this reason, only one StructuredProperty with the
+repeated flag set was allowed in the hierarchy. Today a new backwards-compatible
+behavior is supported and can be used by passing store_as_entity_value=True to
+the StructuredProperty constructor. In this new mode of operation, the
+StructuredProperty is transmitted as is to the Datastore backend, which takes
+care of indexing, supporting all kinds of nested structures.
 
-It is also fine to use the same model class both as a top-level entity
+It is fine to use the same model class both as a top-level entity
 class and as for a structured property; however queries for the model
 class will only return the top-level entities.
 
-The LocalStructuredProperty works similar to StructuredProperty on the
-Python side.  For example:
+The LocalStructuredProperty works similarly to StructuredProperty on the
+Python side, but its contents are not indexed. For example:
 
   class Address(Model):
     street = StringProperty()
@@ -202,11 +205,6 @@ Python side.  For example:
              address=Address(street='4 Privet Drive',
                              city='Little Whinging'))
   k.put()
-
-However the data written to the datastore is different; it writes a
-'Person' entity with a 'name' attribute as before and a single
-'address' attribute whose value is a blob which encodes the Address
-value (using the standard"protocol buffer" encoding).
 
 Sometimes the set of properties is not known ahead of time.  In such
 cases you can use the Expando class.  This is a Model subclass that
@@ -1994,10 +1992,6 @@ class KeyProperty(Property):
   def _validate(self, value):
     if not isinstance(value, Key):
       raise datastore_errors.BadValueError('Expected Key, got %r' % (value,))
-    # Reject incomplete keys.
-    if not value.id():
-      raise datastore_errors.BadValueError('Expected complete Key, got %r' %
-                                           (value,))
     if self._kind is not None:
       if value.kind() != self._kind:
         raise datastore_errors.BadValueError(
@@ -2226,20 +2220,44 @@ class StructuredProperty(_StructuredGetForDictMixin):
   """
 
   _modelclass = None
+  _store_as_entity_value = False
 
-  _attributes = ['_modelclass'] + Property._attributes
+  _attributes = (
+      ['_modelclass'] + Property._attributes + ['_store_as_entity_value'])
   _positional = 1 + Property._positional  # Add modelclass as positional arg.
 
   @utils.positional(1 + _positional)
-  def __init__(self, modelclass, name=None, **kwds):
+  def __init__(self, modelclass, name=None, store_as_entity_value=None,
+               **kwds):
     super(StructuredProperty, self).__init__(name=name, **kwds)
-    if self._repeated:
-      if modelclass._has_repeated:
+
+    self._modelclass = modelclass
+
+    if store_as_entity_value is not None:
+      self._store_as_entity_value = store_as_entity_value
+
+    if not self._store_as_entity_value:
+      if self._repeated and modelclass._has_repeated:
         raise TypeError('This StructuredProperty cannot use repeated=True '
                         'because its model class (%s) contains repeated '
-                        'properties (directly or indirectly).' %
+                        'properties (directly or indirectly) and '
+                        'store_as_entity_value=False. The new implementation '
+                        'with store_as_entity_value=True supports this use '
+                        'case.' %
                         modelclass.__name__)
-    self._modelclass = modelclass
+
+    for prop in modelclass._properties:
+      prop = modelclass._properties[prop]
+      if isinstance(prop, StructuredProperty):
+        if self._store_as_entity_value != prop._store_as_entity_value:
+          raise TypeError('This StructuredProperty cannot use '
+                          'store_as_entity_value=%s '
+                          'because its model class contains a '
+                          'StructuredProperty with store_as_entity_value=%s.'
+                          % (self._store_as_entity_value,
+                             prop._store_as_entity_value))
+
+
 
   def _get_value(self, entity):
     """Override _get_value() to *not* raise UnprojectedPropertyError."""
@@ -2370,20 +2388,47 @@ class StructuredProperty(_StructuredGetForDictMixin):
                  projection=None):
     # entity -> pb; pb is an EntityProto message
     values = self._get_base_value_unwrapped_as_list(entity)
-    for value in values:
-      if value is not None:
-        # TODO: Avoid re-sorting for repeated values.
-        for unused_name, prop in sorted(value._properties.iteritems()):
-          prop._serialize(value, pb, prefix + self._name + '.',
-                          self._repeated or parent_repeated,
-                          projection=projection)
-      else:
-        # Serialize a single None
-        super(StructuredProperty, self)._serialize(
-          entity, pb, prefix=prefix, parent_repeated=parent_repeated,
-          projection=projection)
+
+    # Datastore now supports indexed entity values, so if
+    # store_as_entity_value=True, we just need to serialize the
+    # StructuredProperty protocol buffer representation into a property value.
+    if self._store_as_entity_value and not projection:
+      super(StructuredProperty, self)._serialize(
+          entity, pb, prefix, parent_repeated, projection)
+    else:
+      # The old StructuredProperty serialization algorithm starts here.
+      for value in values:
+        if value is not None:
+          # TODO: Avoid re-sorting for repeated values.
+          for unused_name, prop in sorted(value._properties.iteritems()):
+            prop._serialize(value, pb, prefix + self._name + '.',
+                            self._repeated or parent_repeated,
+                            projection=projection)
+        else:
+          # Serialize a single None
+          super(StructuredProperty, self)._serialize(
+            entity, pb, prefix=prefix, parent_repeated=parent_repeated,
+            projection=projection)
+
+  def _db_set_value(self, v, p, value):
+    assert self._store_as_entity_value
+    p.set_meaning(entity_pb.Property.ENTITY_PROTO)
+    v.set_stringvalue(value._to_pb().SerializePartialToString())
+
+  def _db_get_value(self, v, unused_p):
+    pb = entity_pb.EntityProto()
+    pb.MergePartialFromString(v.stringvalue())
+    return self._modelclass._from_pb(pb, set_key=False)
 
   def _deserialize(self, entity, p, depth=1):
+    # Datastore now supports indexed entity values. In this case, we simply need
+    # to deserialize the entity proto and parse it. We still need to keep around
+    # the old algorithm to support pre-existing entities.
+    if p.meaning() == entity_pb.Property.ENTITY_PROTO:
+      super(StructuredProperty, self)._deserialize(entity, p, depth)
+      return
+
+    # The old StructuredProperty deserialization algorithm starts here.
     if not self._repeated:
       subentity = self._retrieve_value(entity)
       if subentity is None:
@@ -3187,7 +3232,6 @@ class Model(_NotEqualMixin):
         if p.meaning() == entity_pb.Property.INDEX_VALUE:
           projection.append(p.name())
         ent._get_property_for(p, indexed)._deserialize(ent, p)
-
 
     ent._set_projection(projection)
     return ent
