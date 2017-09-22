@@ -47,6 +47,7 @@ type Package struct {
 	HasInit      bool       // whether the package has any init functions
 	HasMain      bool       // whether the file has internal.Main
 	Dupe         bool       // whether the package is a duplicate
+	Synthetic    bool       // whether the package is a synthetic main or import tree package
 
 	compiled chan struct{} // closed when the package has finished compiling
 }
@@ -328,6 +329,10 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 		p := app.Packages[i]
 		for _, f := range p.Files {
 			for _, path := range f.ImportPaths {
+				// Check for invalid imports.
+				if !checkImport(path) {
+					return fmt.Errorf("parser: bad import %q in %s from GOPATH", path, f.Name)
+				}
 				if isStandardPackage(path) || app.PackageIndex[path] != nil {
 					continue
 				}
@@ -707,6 +712,81 @@ func findInternal(path string) bool {
 		strings.HasPrefix(path, "internal/") ||
 		strings.Contains(path, "/internal/") ||
 		path == "internal"
+}
+
+// constructRootPackageTree takes an unbounded-size list of root packages that
+// need to be imported by the synthetic main package, and constructs a new list
+// of root packages of size bounded by the given limit, such that importing
+// those packages will transitively import all the input root packages.  This
+// reduces the problem of a single compilation having a very large number of
+// direct imports.
+//
+// Constructs a tree of new synthetic packages as necessary, such that none of
+// those packages import more than the given limit of packages.  Source files
+// are created for them.
+//
+// For example, with limit=2 and 5 root packages, it changes this:
+//
+// main->[a, b, c, d, e]
+//
+// to this:
+//
+// t1->[a, b], t2->[c, d], t3->[e, t1], main->[t2, t3]
+//
+// It returns a slice of the additional packages created, and a new slice of the
+// root packages that the main package should import (which could include some
+// packages from the original list in rootPackages.)
+func constructRootPackageTree(rootPackages []*Package, limit int) (newPackages []*Package, newRootPackages []*Package, err error) {
+	var (
+		files []string
+		count int
+	)
+	defer func() {
+		if err != nil {
+			for _, f := range files {
+				os.Remove(f)
+			}
+		}
+	}()
+	newRootPackages = make([]*Package, len(rootPackages))
+	copy(newRootPackages, rootPackages)
+	for len(newRootPackages) > limit {
+		// Modify newPackages and newRootPackages to add an additional tree node package.
+		count++
+		packageName := fmt.Sprintf("_import_tree%d", count)
+		dir := filepath.Join(*workDir, packageName)
+		filename := fmt.Sprintf("_go_main_tree%d.go", count)
+		filePath := filepath.Join(dir, filename)
+		file := &File{
+			Name:        filePath,
+			PackageName: packageName,
+		}
+		p := &Package{
+			ImportPath: packageName,
+			Files:      []*File{file},
+			Synthetic:  true,
+		}
+		newPackages = append(newPackages, p)
+		p.Dependencies, newRootPackages = newRootPackages[0:limit], append(newRootPackages[limit:], p)
+
+		// Write the source file for the new package.
+		var depPackageNames []string
+		for _, d := range p.Dependencies {
+			depPackageNames = append(depPackageNames, d.ImportPath)
+		}
+		nodeStr, err := MakeExtraImports(packageName, depPackageNames)
+		if err != nil {
+			return nil, nil, err
+		}
+		if err = os.MkdirAll(dir, 0750); err != nil {
+			return nil, nil, err
+		}
+		files = append(files, filePath)
+		if err = ioutil.WriteFile(filePath, []byte(nodeStr), 0640); err != nil {
+			return nil, nil, err
+		}
+	}
+	return newPackages, newRootPackages, nil
 }
 
 func init() {

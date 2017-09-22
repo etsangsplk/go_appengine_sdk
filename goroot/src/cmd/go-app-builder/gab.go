@@ -45,6 +45,13 @@ const (
 	// It may be set to true by the toolchain build.sh script.
 	// TODO: delete this flag once 1.4 is no longer used.
 	go15 = false
+	// Root packages are those packages that are part of the app and have init functions.
+	// To avoid importing huge numbers of these packages from main directly, a tree of
+	// packages is constructed, with the main package as its root, and the root packages
+	// as its leaves, so that the main package transitively imports all the root packages.
+	// maxRootPackageTreeImportsPerFile is the maximum number of imports that are part of
+	// this tree in any single file.
+	maxRootPackageTreeImportsPerFile = 20
 )
 
 var (
@@ -190,6 +197,20 @@ func plural(n int, suffix string) string {
 }
 
 func buildApp(app *App) error {
+	newPackages, newRootPackages, err := constructRootPackageTree(app.RootPackages, maxRootPackageTreeImportsPerFile)
+	if err != nil {
+		return fmt.Errorf("failed creating import tree: %v", err)
+	}
+	app.Packages = append(app.Packages, newPackages...)
+	app.RootPackages = newRootPackages
+
+	defer func() {
+		for _, p := range newPackages {
+			for _, f := range p.Files {
+				os.Remove(f.Name)
+			}
+		}
+	}()
 	mainStr, err := MakeMain(app)
 	if err != nil {
 		return fmt.Errorf("failed creating main: %v", err)
@@ -209,6 +230,7 @@ func buildApp(app *App) error {
 			},
 		},
 		Dependencies: app.RootPackages,
+		Synthetic:    true,
 	})
 
 	// Prepare dependency channels.
@@ -394,7 +416,7 @@ func (c *compiler) compile(i int, pkg *Package) error {
 	}
 	stripDir := *appBase
 	var files []string
-	if i < len(c.app.Packages)-1 {
+	if !pkg.Synthetic {
 		// regular package
 		base := *appBase
 		if pkg.BaseDir != "" {
@@ -441,8 +463,10 @@ func (c *compiler) compile(i int, pkg *Package) error {
 			files = append(files, extraImportsFile)
 		}
 	} else {
-		// synthetic main package
-		files = []string{c.mainFile}
+		// synthetic package
+		for _, f := range pkg.Files {
+			files = append(files, f.Name)
+		}
 		stripDir = *workDir
 	}
 

@@ -157,14 +157,14 @@ func (x *Entry_Permission) UnmarshalJSON(data []byte) error {
 type FieldValue_ContentType int32
 
 const (
-	FieldValue_TEXT             FieldValue_ContentType = 0
-	FieldValue_HTML             FieldValue_ContentType = 1
-	FieldValue_ATOM             FieldValue_ContentType = 2
-	FieldValue_DATE             FieldValue_ContentType = 3
-	FieldValue_NUMBER           FieldValue_ContentType = 4
-	FieldValue_GEO              FieldValue_ContentType = 5
-	FieldValue_PREFIX           FieldValue_ContentType = 6
-	FieldValue_TOKENIZED_PREFIX FieldValue_ContentType = 7
+	FieldValue_TEXT               FieldValue_ContentType = 0
+	FieldValue_HTML               FieldValue_ContentType = 1
+	FieldValue_ATOM               FieldValue_ContentType = 2
+	FieldValue_DATE               FieldValue_ContentType = 3
+	FieldValue_NUMBER             FieldValue_ContentType = 4
+	FieldValue_GEO                FieldValue_ContentType = 5
+	FieldValue_UNTOKENIZED_PREFIX FieldValue_ContentType = 6
+	FieldValue_TOKENIZED_PREFIX   FieldValue_ContentType = 7
 )
 
 var FieldValue_ContentType_name = map[int32]string{
@@ -174,18 +174,18 @@ var FieldValue_ContentType_name = map[int32]string{
 	3: "DATE",
 	4: "NUMBER",
 	5: "GEO",
-	6: "PREFIX",
+	6: "UNTOKENIZED_PREFIX",
 	7: "TOKENIZED_PREFIX",
 }
 var FieldValue_ContentType_value = map[string]int32{
-	"TEXT":             0,
-	"HTML":             1,
-	"ATOM":             2,
-	"DATE":             3,
-	"NUMBER":           4,
-	"GEO":              5,
-	"PREFIX":           6,
-	"TOKENIZED_PREFIX": 7,
+	"TEXT":               0,
+	"HTML":               1,
+	"ATOM":               2,
+	"DATE":               3,
+	"NUMBER":             4,
+	"GEO":                5,
+	"UNTOKENIZED_PREFIX": 6,
+	"TOKENIZED_PREFIX":   7,
 }
 
 func (x FieldValue_ContentType) Enum() *FieldValue_ContentType {
