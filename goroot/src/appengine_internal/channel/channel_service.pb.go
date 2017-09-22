@@ -78,8 +78,8 @@ func (m *ChannelServiceError) String() string { return proto.CompactTextString(m
 func (*ChannelServiceError) ProtoMessage()    {}
 
 type CreateChannelRequest struct {
-	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
-	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
+	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key,json=applicationKey" json:"application_key,omitempty"`
+	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes,json=durationMinutes" json:"duration_minutes,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -103,7 +103,7 @@ func (m *CreateChannelRequest) GetDurationMinutes() int32 {
 
 type CreateChannelResponse struct {
 	Token            *string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
-	DurationMinutes  *int32  `protobuf:"varint,3,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
+	DurationMinutes  *int32  `protobuf:"varint,3,opt,name=duration_minutes,json=durationMinutes" json:"duration_minutes,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -126,7 +126,7 @@ func (m *CreateChannelResponse) GetDurationMinutes() int32 {
 }
 
 type SendMessageRequest struct {
-	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
+	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key,json=applicationKey" json:"application_key,omitempty"`
 	Message          *string `protobuf:"bytes,2,req,name=message" json:"message,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -150,5 +150,9 @@ func (m *SendMessageRequest) GetMessage() string {
 }
 
 func init() {
+	proto.RegisterType((*ChannelServiceError)(nil), "appengine.ChannelServiceError")
+	proto.RegisterType((*CreateChannelRequest)(nil), "appengine.CreateChannelRequest")
+	proto.RegisterType((*CreateChannelResponse)(nil), "appengine.CreateChannelResponse")
+	proto.RegisterType((*SendMessageRequest)(nil), "appengine.SendMessageRequest")
 	proto.RegisterEnum("appengine.ChannelServiceError_ErrorCode", ChannelServiceError_ErrorCode_name, ChannelServiceError_ErrorCode_value)
 }

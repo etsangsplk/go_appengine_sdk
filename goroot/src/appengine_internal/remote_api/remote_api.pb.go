@@ -91,10 +91,10 @@ func (x *RpcError_ErrorCode) UnmarshalJSON(data []byte) error {
 }
 
 type Request struct {
-	ServiceName      *string `protobuf:"bytes,2,req,name=service_name" json:"service_name,omitempty"`
+	ServiceName      *string `protobuf:"bytes,2,req,name=service_name,json=serviceName" json:"service_name,omitempty"`
 	Method           *string `protobuf:"bytes,3,req,name=method" json:"method,omitempty"`
 	Request          []byte  `protobuf:"bytes,4,req,name=request" json:"request,omitempty"`
-	RequestId        *string `protobuf:"bytes,5,opt,name=request_id" json:"request_id,omitempty"`
+	RequestId        *string `protobuf:"bytes,5,opt,name=request_id,json=requestId" json:"request_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -181,9 +181,9 @@ func (m *RpcError) GetDetail() string {
 type Response struct {
 	Response         []byte            `protobuf:"bytes,1,opt,name=response" json:"response,omitempty"`
 	Exception        []byte            `protobuf:"bytes,2,opt,name=exception" json:"exception,omitempty"`
-	ApplicationError *ApplicationError `protobuf:"bytes,3,opt,name=application_error" json:"application_error,omitempty"`
-	JavaException    []byte            `protobuf:"bytes,4,opt,name=java_exception" json:"java_exception,omitempty"`
-	RpcError         *RpcError         `protobuf:"bytes,5,opt,name=rpc_error" json:"rpc_error,omitempty"`
+	ApplicationError *ApplicationError `protobuf:"bytes,3,opt,name=application_error,json=applicationError" json:"application_error,omitempty"`
+	JavaException    []byte            `protobuf:"bytes,4,opt,name=java_exception,json=javaException" json:"java_exception,omitempty"`
+	RpcError         *RpcError         `protobuf:"bytes,5,opt,name=rpc_error,json=rpcError" json:"rpc_error,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -227,5 +227,9 @@ func (m *Response) GetRpcError() *RpcError {
 }
 
 func init() {
+	proto.RegisterType((*Request)(nil), "appengine.ext.remote_api.Request")
+	proto.RegisterType((*ApplicationError)(nil), "appengine.ext.remote_api.ApplicationError")
+	proto.RegisterType((*RpcError)(nil), "appengine.ext.remote_api.RpcError")
+	proto.RegisterType((*Response)(nil), "appengine.ext.remote_api.Response")
 	proto.RegisterEnum("appengine.ext.remote_api.RpcError_ErrorCode", RpcError_ErrorCode_name, RpcError_ErrorCode_value)
 }

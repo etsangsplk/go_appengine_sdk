@@ -173,7 +173,7 @@ func (*XmppServiceError) ProtoMessage()    {}
 
 type PresenceRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
-	FromJid          *string `protobuf:"bytes,2,opt,name=from_jid" json:"from_jid,omitempty"`
+	FromJid          *string `protobuf:"bytes,2,opt,name=from_jid,json=fromJid" json:"from_jid,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -196,7 +196,7 @@ func (m *PresenceRequest) GetFromJid() string {
 }
 
 type PresenceResponse struct {
-	IsAvailable      *bool                  `protobuf:"varint,1,req,name=is_available" json:"is_available,omitempty"`
+	IsAvailable      *bool                  `protobuf:"varint,1,req,name=is_available,json=isAvailable" json:"is_available,omitempty"`
 	Presence         *PresenceResponse_SHOW `protobuf:"varint,2,opt,name=presence,enum=appengine.PresenceResponse_SHOW" json:"presence,omitempty"`
 	Valid            *bool                  `protobuf:"varint,3,opt,name=valid" json:"valid,omitempty"`
 	XXX_unrecognized []byte                 `json:"-"`
@@ -229,7 +229,7 @@ func (m *PresenceResponse) GetValid() bool {
 
 type BulkPresenceRequest struct {
 	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
-	FromJid          *string  `protobuf:"bytes,2,opt,name=from_jid" json:"from_jid,omitempty"`
+	FromJid          *string  `protobuf:"bytes,2,opt,name=from_jid,json=fromJid" json:"from_jid,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -252,7 +252,7 @@ func (m *BulkPresenceRequest) GetFromJid() string {
 }
 
 type BulkPresenceResponse struct {
-	PresenceResponse []*PresenceResponse `protobuf:"bytes,1,rep,name=presence_response" json:"presence_response,omitempty"`
+	PresenceResponse []*PresenceResponse `protobuf:"bytes,1,rep,name=presence_response,json=presenceResponse" json:"presence_response,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -270,9 +270,9 @@ func (m *BulkPresenceResponse) GetPresenceResponse() []*PresenceResponse {
 type XmppMessageRequest struct {
 	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
 	Body             *string  `protobuf:"bytes,2,req,name=body" json:"body,omitempty"`
-	RawXml           *bool    `protobuf:"varint,3,opt,name=raw_xml,def=0" json:"raw_xml,omitempty"`
+	RawXml           *bool    `protobuf:"varint,3,opt,name=raw_xml,json=rawXml,def=0" json:"raw_xml,omitempty"`
 	Type             *string  `protobuf:"bytes,4,opt,name=type,def=chat" json:"type,omitempty"`
-	FromJid          *string  `protobuf:"bytes,5,opt,name=from_jid" json:"from_jid,omitempty"`
+	FromJid          *string  `protobuf:"bytes,5,opt,name=from_jid,json=fromJid" json:"from_jid,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -339,7 +339,7 @@ type XmppSendPresenceRequest struct {
 	Type             *string `protobuf:"bytes,2,opt,name=type" json:"type,omitempty"`
 	Show             *string `protobuf:"bytes,3,opt,name=show" json:"show,omitempty"`
 	Status           *string `protobuf:"bytes,4,opt,name=status" json:"status,omitempty"`
-	FromJid          *string `protobuf:"bytes,5,opt,name=from_jid" json:"from_jid,omitempty"`
+	FromJid          *string `protobuf:"bytes,5,opt,name=from_jid,json=fromJid" json:"from_jid,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -392,7 +392,7 @@ func (*XmppSendPresenceResponse) ProtoMessage()    {}
 
 type XmppInviteRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
-	FromJid          *string `protobuf:"bytes,2,opt,name=from_jid" json:"from_jid,omitempty"`
+	FromJid          *string `protobuf:"bytes,2,opt,name=from_jid,json=fromJid" json:"from_jid,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -423,6 +423,17 @@ func (m *XmppInviteResponse) String() string { return proto.CompactTextString(m)
 func (*XmppInviteResponse) ProtoMessage()    {}
 
 func init() {
+	proto.RegisterType((*XmppServiceError)(nil), "appengine.XmppServiceError")
+	proto.RegisterType((*PresenceRequest)(nil), "appengine.PresenceRequest")
+	proto.RegisterType((*PresenceResponse)(nil), "appengine.PresenceResponse")
+	proto.RegisterType((*BulkPresenceRequest)(nil), "appengine.BulkPresenceRequest")
+	proto.RegisterType((*BulkPresenceResponse)(nil), "appengine.BulkPresenceResponse")
+	proto.RegisterType((*XmppMessageRequest)(nil), "appengine.XmppMessageRequest")
+	proto.RegisterType((*XmppMessageResponse)(nil), "appengine.XmppMessageResponse")
+	proto.RegisterType((*XmppSendPresenceRequest)(nil), "appengine.XmppSendPresenceRequest")
+	proto.RegisterType((*XmppSendPresenceResponse)(nil), "appengine.XmppSendPresenceResponse")
+	proto.RegisterType((*XmppInviteRequest)(nil), "appengine.XmppInviteRequest")
+	proto.RegisterType((*XmppInviteResponse)(nil), "appengine.XmppInviteResponse")
 	proto.RegisterEnum("appengine.XmppServiceError_ErrorCode", XmppServiceError_ErrorCode_name, XmppServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.PresenceResponse_SHOW", PresenceResponse_SHOW_name, PresenceResponse_SHOW_value)
 	proto.RegisterEnum("appengine.XmppMessageResponse_XmppMessageStatus", XmppMessageResponse_XmppMessageStatus_name, XmppMessageResponse_XmppMessageStatus_value)

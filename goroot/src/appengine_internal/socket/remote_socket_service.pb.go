@@ -958,8 +958,8 @@ func (x *ResolveReply_ErrorCode) UnmarshalJSON(data []byte) error {
 }
 
 type RemoteSocketServiceError struct {
-	SystemError      *int32  `protobuf:"varint,1,opt,name=system_error,def=0" json:"system_error,omitempty"`
-	ErrorDetail      *string `protobuf:"bytes,2,opt,name=error_detail" json:"error_detail,omitempty"`
+	SystemError      *int32  `protobuf:"varint,1,opt,name=system_error,json=systemError,def=0" json:"system_error,omitempty"`
+	ErrorDetail      *string `protobuf:"bytes,2,opt,name=error_detail,json=errorDetail" json:"error_detail,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -985,8 +985,8 @@ func (m *RemoteSocketServiceError) GetErrorDetail() string {
 
 type AddressPort struct {
 	Port             *int32  `protobuf:"varint,1,req,name=port" json:"port,omitempty"`
-	PackedAddress    []byte  `protobuf:"bytes,2,opt,name=packed_address" json:"packed_address,omitempty"`
-	HostnameHint     *string `protobuf:"bytes,3,opt,name=hostname_hint" json:"hostname_hint,omitempty"`
+	PackedAddress    []byte  `protobuf:"bytes,2,opt,name=packed_address,json=packedAddress" json:"packed_address,omitempty"`
+	HostnameHint     *string `protobuf:"bytes,3,opt,name=hostname_hint,json=hostnameHint" json:"hostname_hint,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1018,12 +1018,12 @@ func (m *AddressPort) GetHostnameHint() string {
 type CreateSocketRequest struct {
 	Family           *CreateSocketRequest_SocketFamily   `protobuf:"varint,1,req,name=family,enum=appengine.CreateSocketRequest_SocketFamily" json:"family,omitempty"`
 	Protocol         *CreateSocketRequest_SocketProtocol `protobuf:"varint,2,req,name=protocol,enum=appengine.CreateSocketRequest_SocketProtocol" json:"protocol,omitempty"`
-	SocketOptions    []*SocketOption                     `protobuf:"bytes,3,rep,name=socket_options" json:"socket_options,omitempty"`
-	ProxyExternalIp  *AddressPort                        `protobuf:"bytes,4,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
-	ListenBacklog    *int32                              `protobuf:"varint,5,opt,name=listen_backlog,def=0" json:"listen_backlog,omitempty"`
-	RemoteIp         *AddressPort                        `protobuf:"bytes,6,opt,name=remote_ip" json:"remote_ip,omitempty"`
-	AppId            *string                             `protobuf:"bytes,9,opt,name=app_id" json:"app_id,omitempty"`
-	ProjectId        *int64                              `protobuf:"varint,10,opt,name=project_id" json:"project_id,omitempty"`
+	SocketOptions    []*SocketOption                     `protobuf:"bytes,3,rep,name=socket_options,json=socketOptions" json:"socket_options,omitempty"`
+	ProxyExternalIp  *AddressPort                        `protobuf:"bytes,4,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
+	ListenBacklog    *int32                              `protobuf:"varint,5,opt,name=listen_backlog,json=listenBacklog,def=0" json:"listen_backlog,omitempty"`
+	RemoteIp         *AddressPort                        `protobuf:"bytes,6,opt,name=remote_ip,json=remoteIp" json:"remote_ip,omitempty"`
+	AppId            *string                             `protobuf:"bytes,9,opt,name=app_id,json=appId" json:"app_id,omitempty"`
+	ProjectId        *int64                              `protobuf:"varint,10,opt,name=project_id,json=projectId" json:"project_id,omitempty"`
 	Pool             *string                             `protobuf:"bytes,11,opt,name=pool" json:"pool,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
@@ -1098,9 +1098,9 @@ func (m *CreateSocketRequest) GetPool() string {
 }
 
 type CreateSocketReply struct {
-	SocketDescriptor *string                   `protobuf:"bytes,1,opt,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	ServerAddress    *AddressPort              `protobuf:"bytes,3,opt,name=server_address" json:"server_address,omitempty"`
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,4,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	SocketDescriptor *string                   `protobuf:"bytes,1,opt,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	ServerAddress    *AddressPort              `protobuf:"bytes,3,opt,name=server_address,json=serverAddress" json:"server_address,omitempty"`
+	ProxyExternalIp  *AddressPort              `protobuf:"bytes,4,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -1145,8 +1145,8 @@ func (m *CreateSocketReply) GetProxyExternalIp() *AddressPort {
 }
 
 type BindRequest struct {
-	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	ProxyExternalIp  *AddressPort `protobuf:"bytes,2,req,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	ProxyExternalIp  *AddressPort `protobuf:"bytes,2,req,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1169,7 +1169,7 @@ func (m *BindRequest) GetProxyExternalIp() *AddressPort {
 }
 
 type BindReply struct {
-	ProxyExternalIp  *AddressPort `protobuf:"bytes,1,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	ProxyExternalIp  *AddressPort `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1185,7 +1185,7 @@ func (m *BindReply) GetProxyExternalIp() *AddressPort {
 }
 
 type GetSocketNameRequest struct {
-	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1201,7 +1201,7 @@ func (m *GetSocketNameRequest) GetSocketDescriptor() string {
 }
 
 type GetSocketNameReply struct {
-	ProxyExternalIp  *AddressPort `protobuf:"bytes,2,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	ProxyExternalIp  *AddressPort `protobuf:"bytes,2,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1217,7 +1217,7 @@ func (m *GetSocketNameReply) GetProxyExternalIp() *AddressPort {
 }
 
 type GetPeerNameRequest struct {
-	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1233,7 +1233,7 @@ func (m *GetPeerNameRequest) GetSocketDescriptor() string {
 }
 
 type GetPeerNameReply struct {
-	PeerIp           *AddressPort `protobuf:"bytes,2,opt,name=peer_ip" json:"peer_ip,omitempty"`
+	PeerIp           *AddressPort `protobuf:"bytes,2,opt,name=peer_ip,json=peerIp" json:"peer_ip,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1281,7 +1281,7 @@ func (m *SocketOption) GetValue() []byte {
 }
 
 type SetSocketOptionsRequest struct {
-	SocketDescriptor *string         `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string         `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	Options          []*SocketOption `protobuf:"bytes,2,rep,name=options" json:"options,omitempty"`
 	XXX_unrecognized []byte          `json:"-"`
 }
@@ -1313,7 +1313,7 @@ func (m *SetSocketOptionsReply) String() string { return proto.CompactTextString
 func (*SetSocketOptionsReply) ProtoMessage()    {}
 
 type GetSocketOptionsRequest struct {
-	SocketDescriptor *string         `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string         `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	Options          []*SocketOption `protobuf:"bytes,2,rep,name=options" json:"options,omitempty"`
 	XXX_unrecognized []byte          `json:"-"`
 }
@@ -1353,9 +1353,9 @@ func (m *GetSocketOptionsReply) GetOptions() []*SocketOption {
 }
 
 type ConnectRequest struct {
-	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	RemoteIp         *AddressPort `protobuf:"bytes,2,req,name=remote_ip" json:"remote_ip,omitempty"`
-	TimeoutSeconds   *float64     `protobuf:"fixed64,3,opt,name=timeout_seconds,def=-1" json:"timeout_seconds,omitempty"`
+	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	RemoteIp         *AddressPort `protobuf:"bytes,2,req,name=remote_ip,json=remoteIp" json:"remote_ip,omitempty"`
+	TimeoutSeconds   *float64     `protobuf:"fixed64,3,opt,name=timeout_seconds,json=timeoutSeconds,def=-1" json:"timeout_seconds,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1387,7 +1387,7 @@ func (m *ConnectRequest) GetTimeoutSeconds() float64 {
 }
 
 type ConnectReply struct {
-	ProxyExternalIp  *AddressPort              `protobuf:"bytes,1,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	ProxyExternalIp  *AddressPort              `protobuf:"bytes,1,opt,name=proxy_external_ip,json=proxyExternalIp" json:"proxy_external_ip,omitempty"`
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -1418,7 +1418,7 @@ func (m *ConnectReply) GetProxyExternalIp() *AddressPort {
 }
 
 type ListenRequest struct {
-	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	Backlog          *int32  `protobuf:"varint,2,req,name=backlog" json:"backlog,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -1450,8 +1450,8 @@ func (m *ListenReply) String() string { return proto.CompactTextString(m) }
 func (*ListenReply) ProtoMessage()    {}
 
 type AcceptRequest struct {
-	SocketDescriptor *string  `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	TimeoutSeconds   *float64 `protobuf:"fixed64,2,opt,name=timeout_seconds,def=-1" json:"timeout_seconds,omitempty"`
+	SocketDescriptor *string  `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	TimeoutSeconds   *float64 `protobuf:"fixed64,2,opt,name=timeout_seconds,json=timeoutSeconds,def=-1" json:"timeout_seconds,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -1476,8 +1476,8 @@ func (m *AcceptRequest) GetTimeoutSeconds() float64 {
 }
 
 type AcceptReply struct {
-	NewSocketDescriptor []byte       `protobuf:"bytes,2,opt,name=new_socket_descriptor" json:"new_socket_descriptor,omitempty"`
-	RemoteAddress       *AddressPort `protobuf:"bytes,3,opt,name=remote_address" json:"remote_address,omitempty"`
+	NewSocketDescriptor []byte       `protobuf:"bytes,2,opt,name=new_socket_descriptor,json=newSocketDescriptor" json:"new_socket_descriptor,omitempty"`
+	RemoteAddress       *AddressPort `protobuf:"bytes,3,opt,name=remote_address,json=remoteAddress" json:"remote_address,omitempty"`
 	XXX_unrecognized    []byte       `json:"-"`
 }
 
@@ -1500,9 +1500,9 @@ func (m *AcceptReply) GetRemoteAddress() *AddressPort {
 }
 
 type ShutDownRequest struct {
-	SocketDescriptor *string              `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string              `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	How              *ShutDownRequest_How `protobuf:"varint,2,req,name=how,enum=appengine.ShutDownRequest_How" json:"how,omitempty"`
-	SendOffset       *int64               `protobuf:"varint,3,req,name=send_offset" json:"send_offset,omitempty"`
+	SendOffset       *int64               `protobuf:"varint,3,req,name=send_offset,json=sendOffset" json:"send_offset,omitempty"`
 	XXX_unrecognized []byte               `json:"-"`
 }
 
@@ -1540,8 +1540,8 @@ func (m *ShutDownReply) String() string { return proto.CompactTextString(m) }
 func (*ShutDownReply) ProtoMessage()    {}
 
 type CloseRequest struct {
-	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	SendOffset       *int64  `protobuf:"varint,2,opt,name=send_offset,def=-1" json:"send_offset,omitempty"`
+	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	SendOffset       *int64  `protobuf:"varint,2,opt,name=send_offset,json=sendOffset,def=-1" json:"send_offset,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1574,12 +1574,12 @@ func (m *CloseReply) String() string { return proto.CompactTextString(m) }
 func (*CloseReply) ProtoMessage()    {}
 
 type SendRequest struct {
-	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
 	Data             []byte       `protobuf:"bytes,2,req,name=data" json:"data,omitempty"`
-	StreamOffset     *int64       `protobuf:"varint,3,req,name=stream_offset" json:"stream_offset,omitempty"`
+	StreamOffset     *int64       `protobuf:"varint,3,req,name=stream_offset,json=streamOffset" json:"stream_offset,omitempty"`
 	Flags            *int32       `protobuf:"varint,4,opt,name=flags,def=0" json:"flags,omitempty"`
-	SendTo           *AddressPort `protobuf:"bytes,5,opt,name=send_to" json:"send_to,omitempty"`
-	TimeoutSeconds   *float64     `protobuf:"fixed64,6,opt,name=timeout_seconds,def=-1" json:"timeout_seconds,omitempty"`
+	SendTo           *AddressPort `protobuf:"bytes,5,opt,name=send_to,json=sendTo" json:"send_to,omitempty"`
+	TimeoutSeconds   *float64     `protobuf:"fixed64,6,opt,name=timeout_seconds,json=timeoutSeconds,def=-1" json:"timeout_seconds,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1633,7 +1633,7 @@ func (m *SendRequest) GetTimeoutSeconds() float64 {
 }
 
 type SendReply struct {
-	DataSent         *int32 `protobuf:"varint,1,opt,name=data_sent" json:"data_sent,omitempty"`
+	DataSent         *int32 `protobuf:"varint,1,opt,name=data_sent,json=dataSent" json:"data_sent,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
@@ -1649,10 +1649,10 @@ func (m *SendReply) GetDataSent() int32 {
 }
 
 type ReceiveRequest struct {
-	SocketDescriptor *string  `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	DataSize         *int32   `protobuf:"varint,2,req,name=data_size" json:"data_size,omitempty"`
+	SocketDescriptor *string  `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	DataSize         *int32   `protobuf:"varint,2,req,name=data_size,json=dataSize" json:"data_size,omitempty"`
 	Flags            *int32   `protobuf:"varint,3,opt,name=flags,def=0" json:"flags,omitempty"`
-	TimeoutSeconds   *float64 `protobuf:"fixed64,5,opt,name=timeout_seconds,def=-1" json:"timeout_seconds,omitempty"`
+	TimeoutSeconds   *float64 `protobuf:"fixed64,5,opt,name=timeout_seconds,json=timeoutSeconds,def=-1" json:"timeout_seconds,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -1692,10 +1692,10 @@ func (m *ReceiveRequest) GetTimeoutSeconds() float64 {
 }
 
 type ReceiveReply struct {
-	StreamOffset     *int64       `protobuf:"varint,2,opt,name=stream_offset" json:"stream_offset,omitempty"`
+	StreamOffset     *int64       `protobuf:"varint,2,opt,name=stream_offset,json=streamOffset" json:"stream_offset,omitempty"`
 	Data             []byte       `protobuf:"bytes,3,opt,name=data" json:"data,omitempty"`
-	ReceivedFrom     *AddressPort `protobuf:"bytes,4,opt,name=received_from" json:"received_from,omitempty"`
-	BufferSize       *int32       `protobuf:"varint,5,opt,name=buffer_size" json:"buffer_size,omitempty"`
+	ReceivedFrom     *AddressPort `protobuf:"bytes,4,opt,name=received_from,json=receivedFrom" json:"received_from,omitempty"`
+	BufferSize       *int32       `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize" json:"buffer_size,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1732,9 +1732,9 @@ func (m *ReceiveReply) GetBufferSize() int32 {
 }
 
 type PollEvent struct {
-	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	RequestedEvents  *int32  `protobuf:"varint,2,req,name=requested_events" json:"requested_events,omitempty"`
-	ObservedEvents   *int32  `protobuf:"varint,3,req,name=observed_events" json:"observed_events,omitempty"`
+	SocketDescriptor *string `protobuf:"bytes,1,req,name=socket_descriptor,json=socketDescriptor" json:"socket_descriptor,omitempty"`
+	RequestedEvents  *int32  `protobuf:"varint,2,req,name=requested_events,json=requestedEvents" json:"requested_events,omitempty"`
+	ObservedEvents   *int32  `protobuf:"varint,3,req,name=observed_events,json=observedEvents" json:"observed_events,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1765,7 +1765,7 @@ func (m *PollEvent) GetObservedEvents() int32 {
 
 type PollRequest struct {
 	Events           []*PollEvent `protobuf:"bytes,1,rep,name=events" json:"events,omitempty"`
-	TimeoutSeconds   *float64     `protobuf:"fixed64,2,opt,name=timeout_seconds,def=-1" json:"timeout_seconds,omitempty"`
+	TimeoutSeconds   *float64     `protobuf:"fixed64,2,opt,name=timeout_seconds,json=timeoutSeconds,def=-1" json:"timeout_seconds,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -1807,7 +1807,7 @@ func (m *PollReply) GetEvents() []*PollEvent {
 
 type ResolveRequest struct {
 	Name             *string                            `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	AddressFamilies  []CreateSocketRequest_SocketFamily `protobuf:"varint,2,rep,name=address_families,enum=appengine.CreateSocketRequest_SocketFamily" json:"address_families,omitempty"`
+	AddressFamilies  []CreateSocketRequest_SocketFamily `protobuf:"varint,2,rep,name=address_families,json=addressFamilies,enum=appengine.CreateSocketRequest_SocketFamily" json:"address_families,omitempty"`
 	XXX_unrecognized []byte                             `json:"-"`
 }
 
@@ -1830,8 +1830,8 @@ func (m *ResolveRequest) GetAddressFamilies() []CreateSocketRequest_SocketFamily
 }
 
 type ResolveReply struct {
-	PackedAddress    [][]byte `protobuf:"bytes,2,rep,name=packed_address" json:"packed_address,omitempty"`
-	CanonicalName    *string  `protobuf:"bytes,3,opt,name=canonical_name" json:"canonical_name,omitempty"`
+	PackedAddress    [][]byte `protobuf:"bytes,2,rep,name=packed_address,json=packedAddress" json:"packed_address,omitempty"`
+	CanonicalName    *string  `protobuf:"bytes,3,opt,name=canonical_name,json=canonicalName" json:"canonical_name,omitempty"`
 	Aliases          []string `protobuf:"bytes,4,rep,name=aliases" json:"aliases,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
@@ -1862,6 +1862,40 @@ func (m *ResolveReply) GetAliases() []string {
 }
 
 func init() {
+	proto.RegisterType((*RemoteSocketServiceError)(nil), "appengine.RemoteSocketServiceError")
+	proto.RegisterType((*AddressPort)(nil), "appengine.AddressPort")
+	proto.RegisterType((*CreateSocketRequest)(nil), "appengine.CreateSocketRequest")
+	proto.RegisterType((*CreateSocketReply)(nil), "appengine.CreateSocketReply")
+	proto.RegisterType((*BindRequest)(nil), "appengine.BindRequest")
+	proto.RegisterType((*BindReply)(nil), "appengine.BindReply")
+	proto.RegisterType((*GetSocketNameRequest)(nil), "appengine.GetSocketNameRequest")
+	proto.RegisterType((*GetSocketNameReply)(nil), "appengine.GetSocketNameReply")
+	proto.RegisterType((*GetPeerNameRequest)(nil), "appengine.GetPeerNameRequest")
+	proto.RegisterType((*GetPeerNameReply)(nil), "appengine.GetPeerNameReply")
+	proto.RegisterType((*SocketOption)(nil), "appengine.SocketOption")
+	proto.RegisterType((*SetSocketOptionsRequest)(nil), "appengine.SetSocketOptionsRequest")
+	proto.RegisterType((*SetSocketOptionsReply)(nil), "appengine.SetSocketOptionsReply")
+	proto.RegisterType((*GetSocketOptionsRequest)(nil), "appengine.GetSocketOptionsRequest")
+	proto.RegisterType((*GetSocketOptionsReply)(nil), "appengine.GetSocketOptionsReply")
+	proto.RegisterType((*ConnectRequest)(nil), "appengine.ConnectRequest")
+	proto.RegisterType((*ConnectReply)(nil), "appengine.ConnectReply")
+	proto.RegisterType((*ListenRequest)(nil), "appengine.ListenRequest")
+	proto.RegisterType((*ListenReply)(nil), "appengine.ListenReply")
+	proto.RegisterType((*AcceptRequest)(nil), "appengine.AcceptRequest")
+	proto.RegisterType((*AcceptReply)(nil), "appengine.AcceptReply")
+	proto.RegisterType((*ShutDownRequest)(nil), "appengine.ShutDownRequest")
+	proto.RegisterType((*ShutDownReply)(nil), "appengine.ShutDownReply")
+	proto.RegisterType((*CloseRequest)(nil), "appengine.CloseRequest")
+	proto.RegisterType((*CloseReply)(nil), "appengine.CloseReply")
+	proto.RegisterType((*SendRequest)(nil), "appengine.SendRequest")
+	proto.RegisterType((*SendReply)(nil), "appengine.SendReply")
+	proto.RegisterType((*ReceiveRequest)(nil), "appengine.ReceiveRequest")
+	proto.RegisterType((*ReceiveReply)(nil), "appengine.ReceiveReply")
+	proto.RegisterType((*PollEvent)(nil), "appengine.PollEvent")
+	proto.RegisterType((*PollRequest)(nil), "appengine.PollRequest")
+	proto.RegisterType((*PollReply)(nil), "appengine.PollReply")
+	proto.RegisterType((*ResolveRequest)(nil), "appengine.ResolveRequest")
+	proto.RegisterType((*ResolveReply)(nil), "appengine.ResolveReply")
 	proto.RegisterEnum("appengine.RemoteSocketServiceError_ErrorCode", RemoteSocketServiceError_ErrorCode_name, RemoteSocketServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.RemoteSocketServiceError_SystemError", RemoteSocketServiceError_SystemError_name, RemoteSocketServiceError_SystemError_value)
 	proto.RegisterEnum("appengine.CreateSocketRequest_SocketFamily", CreateSocketRequest_SocketFamily_name, CreateSocketRequest_SocketFamily_value)

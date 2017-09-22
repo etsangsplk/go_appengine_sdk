@@ -58,7 +58,7 @@ func init() {
 	// break init cycle
 	cmdServe.Run = runServe
 
-	cmdServe.Flag.StringVar(&serveHost, "host", "localhost", "")
+	cmdServe.Flag.StringVar(&serveHost, "host", "", "")
 	cmdServe.Flag.IntVar(&servePort, "port", 8080, "")
 	cmdServe.Flag.BoolVar(&serveUseModTime, "use_mtime_file_watcher", false, "")
 	cmdServe.Flag.IntVar(&serveAdminPort, "admin_port", 8000, "")
@@ -71,10 +71,12 @@ func runServe(cmd *Command, args []string) {
 		fatalf("goapp serve: %v", err)
 	}
 	toolArgs := []string{
-		"--host", serveHost,
 		"--port", strconv.Itoa(servePort),
 		"--admin_port", strconv.Itoa(serveAdminPort),
 		"--skip_sdk_update_check", "yes",
+	}
+	if serveHost != "" {
+		toolArgs = append(toolArgs, "--host", serveHost)
 	}
 	if serveUseModTime {
 		toolArgs = append(toolArgs, "--use_mtime_file_watcher", "yes")

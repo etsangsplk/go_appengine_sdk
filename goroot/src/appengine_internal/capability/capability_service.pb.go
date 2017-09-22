@@ -113,7 +113,7 @@ func (x *IsEnabledResponse_SummaryStatus) UnmarshalJSON(data []byte) error {
 
 type CapabilityConfigList struct {
 	Config           []*CapabilityConfig `protobuf:"bytes,1,rep,name=config" json:"config,omitempty"`
-	DefaultConfig    *CapabilityConfig   `protobuf:"bytes,2,opt,name=default_config" json:"default_config,omitempty"`
+	DefaultConfig    *CapabilityConfig   `protobuf:"bytes,2,opt,name=default_config,json=defaultConfig" json:"default_config,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -139,10 +139,10 @@ type CapabilityConfig struct {
 	Package          *string                  `protobuf:"bytes,1,req,name=package" json:"package,omitempty"`
 	Capability       *string                  `protobuf:"bytes,2,req,name=capability" json:"capability,omitempty"`
 	Status           *CapabilityConfig_Status `protobuf:"varint,3,opt,name=status,enum=appengine.CapabilityConfig_Status,def=4" json:"status,omitempty"`
-	ScheduledTime    *string                  `protobuf:"bytes,7,opt,name=scheduled_time" json:"scheduled_time,omitempty"`
-	InternalMessage  *string                  `protobuf:"bytes,4,opt,name=internal_message" json:"internal_message,omitempty"`
-	AdminMessage     *string                  `protobuf:"bytes,5,opt,name=admin_message" json:"admin_message,omitempty"`
-	ErrorMessage     *string                  `protobuf:"bytes,6,opt,name=error_message" json:"error_message,omitempty"`
+	ScheduledTime    *string                  `protobuf:"bytes,7,opt,name=scheduled_time,json=scheduledTime" json:"scheduled_time,omitempty"`
+	InternalMessage  *string                  `protobuf:"bytes,4,opt,name=internal_message,json=internalMessage" json:"internal_message,omitempty"`
+	AdminMessage     *string                  `protobuf:"bytes,5,opt,name=admin_message,json=adminMessage" json:"admin_message,omitempty"`
+	ErrorMessage     *string                  `protobuf:"bytes,6,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
@@ -234,8 +234,8 @@ func (m *IsEnabledRequest) GetCall() []string {
 }
 
 type IsEnabledResponse struct {
-	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,opt,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
-	TimeUntilScheduled *int64                           `protobuf:"varint,2,opt,name=time_until_scheduled" json:"time_until_scheduled,omitempty"`
+	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,opt,name=summary_status,json=summaryStatus,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
+	TimeUntilScheduled *int64                           `protobuf:"varint,2,opt,name=time_until_scheduled,json=timeUntilScheduled" json:"time_until_scheduled,omitempty"`
 	Config             []*CapabilityConfig              `protobuf:"bytes,3,rep,name=config" json:"config,omitempty"`
 	XXX_unrecognized   []byte                           `json:"-"`
 }
@@ -266,6 +266,10 @@ func (m *IsEnabledResponse) GetConfig() []*CapabilityConfig {
 }
 
 func init() {
+	proto.RegisterType((*CapabilityConfigList)(nil), "appengine.CapabilityConfigList")
+	proto.RegisterType((*CapabilityConfig)(nil), "appengine.CapabilityConfig")
+	proto.RegisterType((*IsEnabledRequest)(nil), "appengine.IsEnabledRequest")
+	proto.RegisterType((*IsEnabledResponse)(nil), "appengine.IsEnabledResponse")
 	proto.RegisterEnum("appengine.CapabilityConfig_Status", CapabilityConfig_Status_name, CapabilityConfig_Status_value)
 	proto.RegisterEnum("appengine.IsEnabledResponse_SummaryStatus", IsEnabledResponse_SummaryStatus_name, IsEnabledResponse_SummaryStatus_value)
 }
