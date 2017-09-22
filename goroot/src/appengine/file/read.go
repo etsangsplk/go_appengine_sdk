@@ -13,7 +13,7 @@ import (
 
 	"appengine"
 	blobpb "appengine_internal/blobstore"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 )
 
 // BlobReader is the interface available when reading blobs.

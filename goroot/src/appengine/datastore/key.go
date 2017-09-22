@@ -15,7 +15,7 @@ import (
 
 	"appengine"
 	basepb "appengine_internal/base"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 
 	pb "appengine_internal/datastore"
 )

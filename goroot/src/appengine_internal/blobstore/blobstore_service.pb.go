@@ -23,7 +23,7 @@ It has these top-level messages:
 */
 package appengine
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -31,6 +31,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type BlobstoreServiceError_ErrorCode int32
 
@@ -356,4 +360,7 @@ func init() {
 	proto.RegisterType((*CreateEncodedGoogleStorageKeyRequest)(nil), "appengine.CreateEncodedGoogleStorageKeyRequest")
 	proto.RegisterType((*CreateEncodedGoogleStorageKeyResponse)(nil), "appengine.CreateEncodedGoogleStorageKeyResponse")
 	proto.RegisterEnum("appengine.BlobstoreServiceError_ErrorCode", BlobstoreServiceError_ErrorCode_name, BlobstoreServiceError_ErrorCode_value)
+}
+
+func init() {
 }

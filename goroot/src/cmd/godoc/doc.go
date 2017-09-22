@@ -143,4 +143,4 @@ See "Godoc: documenting Go code" for how to write good comments for godoc:
 http://golang.org/doc/articles/godoc_documenting_go_code.html
 
 */
-package documentation // import "golang.org/x/tools/cmd/godoc"
+package documentation // import "appengine_internal/golang.org/x/tools/cmd/godoc"

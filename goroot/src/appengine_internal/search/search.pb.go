@@ -61,7 +61,7 @@ It has these top-level messages:
 */
 package search
 
-import proto "github.com/golang/protobuf/proto"
+import proto "appengine_internal/github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -69,6 +69,10 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.ProtoPackageIsVersion1
 
 type Scope_Type int32
 
@@ -2377,4 +2381,7 @@ func init() {
 	proto.RegisterEnum("search.ScorerSpec_Scorer", ScorerSpec_Scorer_name, ScorerSpec_Scorer_value)
 	proto.RegisterEnum("search.SearchParams_CursorType", SearchParams_CursorType_name, SearchParams_CursorType_value)
 	proto.RegisterEnum("search.SearchParams_ParsingMode", SearchParams_ParsingMode_name, SearchParams_ParsingMode_value)
+}
+
+func init() {
 }

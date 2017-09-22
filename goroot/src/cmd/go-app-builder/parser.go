@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/tools/cmd/vet/whitelist"
+	"appengine_internal/golang.org/x/tools/cmd/vet/whitelist"
 )
 
 // App represents an entire Go App Engine app.

@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"appengine"
-	"github.com/golang/protobuf/proto"
+	"appengine_internal/github.com/golang/protobuf/proto"
 
 	pb "appengine_internal/datastore"
 )
