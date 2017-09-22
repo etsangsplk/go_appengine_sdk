@@ -6,6 +6,7 @@
 package user
 
 import (
+	"errors"
 	"strings"
 
 	"appengine"
@@ -48,22 +49,23 @@ func (u *User) String() string {
 // LoginURL returns a URL that, when visited, prompts the user to sign in,
 // then redirects the user to the URL specified by dest.
 func LoginURL(c appengine.Context, dest string) (string, error) {
-	return LoginURLFederated(c, dest, "")
-}
-
-// LoginURLFederated is like LoginURL but accepts a user's OpenID identifier.
-func LoginURLFederated(c appengine.Context, dest, identity string) (string, error) {
 	req := &pb.CreateLoginURLRequest{
 		DestinationUrl: proto.String(dest),
-	}
-	if identity != "" {
-		req.FederatedIdentity = proto.String(identity)
 	}
 	res := &pb.CreateLoginURLResponse{}
 	if err := c.Call("user", "CreateLoginURL", req, res, nil); err != nil {
 		return "", err
 	}
 	return *res.LoginUrl, nil
+}
+
+// LoginURLFederated is no longer supported, OpenID 2.0 has been decomissioned.
+// See https://cloud.google.com/appengine/docs/deprecations/open_id for details.
+func LoginURLFederated(c appengine.Context, dest, identity string) (string, error) {
+	if identity != "" {
+		return "", errors.New("user: OpenID 2.0 is decomissioned")
+	}
+	return LoginURL(c, dest)
 }
 
 // LogoutURL returns a URL that, when visited, signs the user out,

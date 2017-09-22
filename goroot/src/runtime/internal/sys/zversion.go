@@ -3,7 +3,7 @@
 package sys
 
 const DefaultGoroot = `C:\Users\sbuss\AppData\Local\Temp\2\appengine\go_appengine\goroot`
-const TheVersion = `go1.6.3 (appengine-1.9.46)`
+const TheVersion = `go1.6.3 (appengine-1.9.48)`
 const Goexperiment = ``
 const StackGuardMultiplier = 1
 

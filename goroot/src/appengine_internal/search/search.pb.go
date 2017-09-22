@@ -247,6 +247,39 @@ func (x *FacetValue_ContentType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type Document_OrderIdSource int32
+
+const (
+	Document_DEFAULTED Document_OrderIdSource = 0
+	Document_SUPPLIED  Document_OrderIdSource = 1
+)
+
+var Document_OrderIdSource_name = map[int32]string{
+	0: "DEFAULTED",
+	1: "SUPPLIED",
+}
+var Document_OrderIdSource_value = map[string]int32{
+	"DEFAULTED": 0,
+	"SUPPLIED":  1,
+}
+
+func (x Document_OrderIdSource) Enum() *Document_OrderIdSource {
+	p := new(Document_OrderIdSource)
+	*p = x
+	return p
+}
+func (x Document_OrderIdSource) String() string {
+	return proto.EnumName(Document_OrderIdSource_name, int32(x))
+}
+func (x *Document_OrderIdSource) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Document_OrderIdSource_value, data, "Document_OrderIdSource")
+	if err != nil {
+		return err
+	}
+	*x = Document_OrderIdSource(value)
+	return nil
+}
+
 type Document_Storage int32
 
 const (
@@ -918,13 +951,14 @@ func (m *DocumentMetadata) GetCommittedStVersion() int64 {
 }
 
 type Document struct {
-	Id               *string           `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Language         *string           `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
-	Field            []*Field          `protobuf:"bytes,3,rep,name=field" json:"field,omitempty"`
-	OrderId          *int32            `protobuf:"varint,4,opt,name=order_id,json=orderId" json:"order_id,omitempty"`
-	Storage          *Document_Storage `protobuf:"varint,5,opt,name=storage,enum=search.Document_Storage,def=0" json:"storage,omitempty"`
-	Facet            []*Facet          `protobuf:"bytes,8,rep,name=facet" json:"facet,omitempty"`
-	XXX_unrecognized []byte            `json:"-"`
+	Id               *string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	Language         *string                 `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
+	Field            []*Field                `protobuf:"bytes,3,rep,name=field" json:"field,omitempty"`
+	OrderId          *int32                  `protobuf:"varint,4,opt,name=order_id,json=orderId" json:"order_id,omitempty"`
+	OrderIdSource    *Document_OrderIdSource `protobuf:"varint,6,opt,name=order_id_source,json=orderIdSource,enum=search.Document_OrderIdSource,def=1" json:"order_id_source,omitempty"`
+	Storage          *Document_Storage       `protobuf:"varint,5,opt,name=storage,enum=search.Document_Storage,def=0" json:"storage,omitempty"`
+	Facet            []*Facet                `protobuf:"bytes,8,rep,name=facet" json:"facet,omitempty"`
+	XXX_unrecognized []byte                  `json:"-"`
 }
 
 func (m *Document) Reset()         { *m = Document{} }
@@ -932,6 +966,7 @@ func (m *Document) String() string { return proto.CompactTextString(m) }
 func (*Document) ProtoMessage()    {}
 
 const Default_Document_Language string = "en"
+const Default_Document_OrderIdSource Document_OrderIdSource = Document_SUPPLIED
 const Default_Document_Storage Document_Storage = Document_DISK
 
 func (m *Document) GetId() string {
@@ -960,6 +995,13 @@ func (m *Document) GetOrderId() int32 {
 		return *m.OrderId
 	}
 	return 0
+}
+
+func (m *Document) GetOrderIdSource() Document_OrderIdSource {
+	if m != nil && m.OrderIdSource != nil {
+		return *m.OrderIdSource
+	}
+	return Default_Document_OrderIdSource
 }
 
 func (m *Document) GetStorage() Document_Storage {
@@ -2387,6 +2429,7 @@ func init() {
 	proto.RegisterEnum("search.Entry_Permission", Entry_Permission_name, Entry_Permission_value)
 	proto.RegisterEnum("search.FieldValue_ContentType", FieldValue_ContentType_name, FieldValue_ContentType_value)
 	proto.RegisterEnum("search.FacetValue_ContentType", FacetValue_ContentType_name, FacetValue_ContentType_value)
+	proto.RegisterEnum("search.Document_OrderIdSource", Document_OrderIdSource_name, Document_OrderIdSource_value)
 	proto.RegisterEnum("search.Document_Storage", Document_Storage_name, Document_Storage_value)
 	proto.RegisterEnum("search.SearchServiceError_ErrorCode", SearchServiceError_ErrorCode_name, SearchServiceError_ErrorCode_value)
 	proto.RegisterEnum("search.IndexSpec_Consistency", IndexSpec_Consistency_name, IndexSpec_Consistency_value)

@@ -5,6 +5,7 @@
 package user
 
 import (
+	"errors"
 	"appengine"
 
 	pb "appengine_internal/user"
@@ -34,15 +35,8 @@ func CurrentOAuth(c appengine.Context, scope string) (*User, error) {
 	}, nil
 }
 
-// OAuthConsumerKey returns the OAuth consumer key provided with the current
-// request. This method will return an error if the OAuth request was invalid.
+// OAuthConsumerKey is no longer supported. Use the golang.org/x/oauth2 packages
+// directly for OAuth functionality.
 func OAuthConsumerKey(c appengine.Context) (string, error) {
-	req := &pb.CheckOAuthSignatureRequest{}
-	res := &pb.CheckOAuthSignatureResponse{}
-
-	err := c.Call("user", "CheckOAuthSignature", req, res, nil)
-	if err != nil {
-		return "", err
-	}
-	return *res.OauthConsumerKey, err
+	return "", errors.New("user: OAuthConsumerKey is no longer supported")
 }
