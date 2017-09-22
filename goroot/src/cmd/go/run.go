@@ -64,13 +64,7 @@ func printStderr(args ...interface{}) (int, error) {
 }
 
 func runRun(cmd *Command, args []string) {
-
-		if buildContext.InstallSuffix != "" {
-			buildContext.InstallSuffix += "_"
-		}
-		buildContext.InstallSuffix += "appengine"
-		buildContext.BuildTags = append(buildContext.BuildTags, "appengine")
-		instrumentInit()
+	instrumentInit()
 	buildModeInit()
 	var b builder
 	b.init()
