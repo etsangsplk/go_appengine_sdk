@@ -15,7 +15,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -97,17 +96,13 @@ func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 			r.Header[name] = values
 		}
 	}
-	ctxsMu.Lock()
 	ctx := &httpContext{req: &creq, done: make(chan struct{})}
-	ctxs[r] = ctx
-	ctxsMu.Unlock()
+	r = registerContext(r, ctx)
 
 	http.DefaultServeMux.ServeHTTP(w, r)
 	close(ctx.done)
 
-	ctxsMu.Lock()
-	delete(ctxs, r)
-	ctxsMu.Unlock()
+	unregisterContext(r)
 }
 
 var (
@@ -117,9 +112,6 @@ var (
 			Proxy: http.ProxyFromEnvironment,
 		},
 	}
-
-	ctxsMu sync.Mutex
-	ctxs   = make(map[*http.Request]context)
 
 	instanceConfig = struct {
 		AppID      string
@@ -233,18 +225,6 @@ func call(service, method string, data []byte, requestID string, timeout time.Du
 	return res.Response, nil
 }
 
-// context echos the public appengine.Context interface.
-type context interface {
-	Debugf(format string, args ...interface{})
-	Infof(format string, args ...interface{})
-	Warningf(format string, args ...interface{})
-	Errorf(format string, args ...interface{})
-	Criticalf(format string, args ...interface{})
-	Call(service, method string, in, out ProtoMessage, opts *CallOptions) error
-	FullyQualifiedAppID() string
-	Request() interface{}
-}
-
 // httpContext represents the context of an in-flight HTTP request.
 // It implements the appengine.Context interface.
 type httpContext struct {
@@ -252,35 +232,14 @@ type httpContext struct {
 	done chan struct{} // Closed when the context has expired.
 }
 
-func NewContext(req *http.Request) context {
-	ctxsMu.Lock()
-	defer ctxsMu.Unlock()
-	c := ctxs[req]
-
-	if c == nil {
-		// Someone passed in an http.Request that is not in-flight.
-		// We panic here rather than panicking at a later point
-		// so that backtraces will be more sensible.
-		log.Panic("appengine: NewContext passed an unknown http.Request")
-	}
-	return c
-}
-
 // RegisterTestContext associates a test context with the given HTTP request,
 // returning a closure to delete the association. It should only be used by the
 // aetest package, and never directly. It is only available in the SDK.
-func RegisterTestContext(req *http.Request, c context) func() {
-	ctxsMu.Lock()
-	defer ctxsMu.Unlock()
-	if _, ok := ctxs[req]; ok {
-		log.Panic("req already associated with context")
-	}
-	ctxs[req] = c
+func RegisterTestContext(req *http.Request, c context) (*http.Request, func()) {
+	req = registerTestContext(req, c)
 
-	return func() {
-		ctxsMu.Lock()
-		delete(ctxs, req)
-		ctxsMu.Unlock()
+	return req, func() {
+		unregisterContext(req)
 	}
 }
 

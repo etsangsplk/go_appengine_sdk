@@ -8,6 +8,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 
 SDK_BASE = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -137,4 +138,10 @@ if __name__ == '__main__':
   for e in ('GOARCH', 'GOBIN', 'GOOS'):
     os.environ.pop(e, None)
 
-  os.execve(tool, new_argv, os.environ)
+  # Replace the path to this file with the path to the underlying tool
+  new_argv[0] = tool
+  p = subprocess.Popen(new_argv, stdin=subprocess.PIPE, env=os.environ)
+  try:
+    p.wait()
+  except KeyboardInterrupt:
+    pass

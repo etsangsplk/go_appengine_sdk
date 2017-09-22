@@ -171,3 +171,15 @@ var apiOverrides = make(map[struct{ service, method string }]func(in, out ProtoM
 func RegisterAPIOverride(service, method string, f func(in, out ProtoMessage, opts *CallOptions) error) {
 	apiOverrides[struct{ service, method string }{service, method}] = f
 }
+
+// context echoes the public appengine.Context interface.
+type context interface {
+	Debugf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
+	Warningf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
+	Criticalf(format string, args ...interface{})
+	Call(service, method string, in, out ProtoMessage, opts *CallOptions) error
+	FullyQualifiedAppID() string
+	Request() interface{}
+}

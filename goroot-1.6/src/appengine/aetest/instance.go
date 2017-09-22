@@ -115,10 +115,10 @@ func (i *instance) NewRequest(method, urlStr string, body io.Reader) (*http.Requ
 	}
 
 	// Associate this request.
-	release := appengine_internal.RegisterTestContext(req, c)
+	reqWithContext, release := appengine_internal.RegisterTestContext(req, c)
 	i.relFuncs = append(i.relFuncs, release)
 
-	return req, nil
+	return reqWithContext, nil
 }
 
 // Close kills the child api_server.py process, releasing its resources.
@@ -269,6 +269,9 @@ func (i *instance) startChild() (err error) {
 			}
 		}
 		errc <- s.Err()
+
+		// Drain the buffer so child process doesn't block.
+		io.Copy(ioutil.Discard, stderr)
 	}()
 
 	select {

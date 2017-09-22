@@ -4,7 +4,7 @@ package obj
 
 import "runtime"
 
-const defaultGOROOT = `/tmp/go_sdk886933799/appengine/go_appengine/goroot-1.8`
+const defaultGOROOT = `/tmp/go_sdk247347244/appengine/go_appengine/goroot-1.8`
 const defaultGO386 = `sse2`
 const defaultGOARM = `5`
 const defaultGOOS = runtime.GOOS
