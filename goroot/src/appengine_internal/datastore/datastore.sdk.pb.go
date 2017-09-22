@@ -556,6 +556,7 @@ const (
 	Error_ALREADY_EXISTS               Error_ErrorCode = 14
 	Error_FAILED_PRECONDITION          Error_ErrorCode = 15
 	Error_UNAUTHENTICATED              Error_ErrorCode = 16
+	Error_ABORTED                      Error_ErrorCode = 17
 )
 
 var Error_ErrorCode_name = map[int32]string{
@@ -575,6 +576,7 @@ var Error_ErrorCode_name = map[int32]string{
 	14: "ALREADY_EXISTS",
 	15: "FAILED_PRECONDITION",
 	16: "UNAUTHENTICATED",
+	17: "ABORTED",
 }
 var Error_ErrorCode_value = map[string]int32{
 	"BAD_REQUEST":                  1,
@@ -593,6 +595,7 @@ var Error_ErrorCode_value = map[string]int32{
 	"ALREADY_EXISTS":               14,
 	"FAILED_PRECONDITION":          15,
 	"UNAUTHENTICATED":              16,
+	"ABORTED":                      17,
 }
 
 func (x Error_ErrorCode) Enum() *Error_ErrorCode {
