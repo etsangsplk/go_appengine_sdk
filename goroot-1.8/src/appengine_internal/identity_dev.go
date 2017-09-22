@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"appengine_internal/github.com/golang/protobuf/proto"
+	proto "appengine_internal/github.com/golang/protobuf/proto"
 
 	pb "appengine_internal/modules"
 )
