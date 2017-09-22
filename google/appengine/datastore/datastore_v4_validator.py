@@ -809,6 +809,9 @@ class _EntityValidator(object):
                          <= datastore_pbs.MAX_INDEXED_BLOB_BYTES),
                         ('Indexed blob value has more than %d permitted '
                          'bytes.' % datastore_pbs.MAX_INDEXED_BLOB_BYTES))
+    elif value.has_entity_value():
+      _assert_condition(value.has_meaning(),
+                        'Entity value is indexed.')
 
   def validate_property_name(self, constraint, property_name):
     """Validates a property name.

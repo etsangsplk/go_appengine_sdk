@@ -115,7 +115,7 @@ func (m *CreateLoginURLRequest) GetFederatedIdentity() string {
 }
 
 type CreateLoginURLResponse struct {
-	LoginUrl         *string `protobuf:"bytes,1,req,name=login_url" json:"login_url,omitempty"`
+	LoginUrl         *string `protobuf:"bytes,1,opt,name=login_url" json:"login_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -155,7 +155,7 @@ func (m *CreateLogoutURLRequest) GetAuthDomain() string {
 }
 
 type CreateLogoutURLResponse struct {
-	LogoutUrl        *string `protobuf:"bytes,1,req,name=logout_url" json:"logout_url,omitempty"`
+	LogoutUrl        *string `protobuf:"bytes,1,opt,name=logout_url" json:"logout_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -203,9 +203,9 @@ func (m *GetOAuthUserRequest) GetRequestWriterPermission() bool {
 }
 
 type GetOAuthUserResponse struct {
-	Email            *string  `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
-	UserId           *string  `protobuf:"bytes,2,req,name=user_id" json:"user_id,omitempty"`
-	AuthDomain       *string  `protobuf:"bytes,3,req,name=auth_domain" json:"auth_domain,omitempty"`
+	Email            *string  `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+	UserId           *string  `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	AuthDomain       *string  `protobuf:"bytes,3,opt,name=auth_domain" json:"auth_domain,omitempty"`
 	UserOrganization *string  `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
 	IsAdmin          *bool    `protobuf:"varint,5,opt,name=is_admin" json:"is_admin,omitempty"`
 	ClientId         *string  `protobuf:"bytes,6,opt,name=client_id" json:"client_id,omitempty"`
@@ -283,7 +283,7 @@ func (m *CheckOAuthSignatureRequest) String() string { return proto.CompactTextS
 func (*CheckOAuthSignatureRequest) ProtoMessage()    {}
 
 type CheckOAuthSignatureResponse struct {
-	OauthConsumerKey *string `protobuf:"bytes,1,req,name=oauth_consumer_key" json:"oauth_consumer_key,omitempty"`
+	OauthConsumerKey *string `protobuf:"bytes,1,opt,name=oauth_consumer_key" json:"oauth_consumer_key,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 

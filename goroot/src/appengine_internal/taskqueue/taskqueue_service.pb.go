@@ -482,23 +482,24 @@ func (m *TaskQueueMode) String() string { return proto.CompactTextString(m) }
 func (*TaskQueueMode) ProtoMessage()    {}
 
 type TaskQueueAddRequest struct {
-	QueueName           []byte                             `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
-	TaskName            []byte                             `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec             *int64                             `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
-	Method              *TaskQueueAddRequest_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueAddRequest_RequestMethod,def=2" json:"method,omitempty"`
-	Url                 []byte                             `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	Header              []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep,name=Header" json:"header,omitempty"`
-	Body                []byte                             `protobuf:"bytes,9,opt,name=body" json:"body,omitempty"`
-	Transaction         *Transaction                       `protobuf:"bytes,10,opt,name=transaction" json:"transaction,omitempty"`
-	AppId               []byte                             `protobuf:"bytes,11,opt,name=app_id" json:"app_id,omitempty"`
-	Crontimetable       *TaskQueueAddRequest_CronTimetable `protobuf:"group,12,opt,name=CronTimetable" json:"crontimetable,omitempty"`
-	Description         []byte                             `protobuf:"bytes,15,opt,name=description" json:"description,omitempty"`
-	Payload             *TaskPayload                       `protobuf:"bytes,16,opt,name=payload" json:"payload,omitempty"`
-	RetryParameters     *TaskQueueRetryParameters          `protobuf:"bytes,17,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
-	Mode                *TaskQueueMode_Mode                `protobuf:"varint,18,opt,name=mode,enum=appengine.TaskQueueMode_Mode" json:"mode,omitempty"`
-	Tag                 []byte                             `protobuf:"bytes,19,opt,name=tag" json:"tag,omitempty"`
-	CronRetryParameters *TaskQueueRetryParameters          `protobuf:"bytes,20,opt,name=cron_retry_parameters" json:"cron_retry_parameters,omitempty"`
-	XXX_unrecognized    []byte                             `json:"-"`
+	QueueName            []byte                             `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
+	TaskName             []byte                             `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
+	EtaUsec              *int64                             `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
+	Method               *TaskQueueAddRequest_RequestMethod `protobuf:"varint,5,opt,name=method,enum=appengine.TaskQueueAddRequest_RequestMethod,def=2" json:"method,omitempty"`
+	Url                  []byte                             `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
+	Header               []*TaskQueueAddRequest_Header      `protobuf:"group,6,rep,name=Header" json:"header,omitempty"`
+	Body                 []byte                             `protobuf:"bytes,9,opt,name=body" json:"body,omitempty"`
+	Transaction          *Transaction                       `protobuf:"bytes,10,opt,name=transaction" json:"transaction,omitempty"`
+	DatastoreTransaction []byte                             `protobuf:"bytes,21,opt,name=datastore_transaction" json:"datastore_transaction,omitempty"`
+	AppId                []byte                             `protobuf:"bytes,11,opt,name=app_id" json:"app_id,omitempty"`
+	Crontimetable        *TaskQueueAddRequest_CronTimetable `protobuf:"group,12,opt,name=CronTimetable" json:"crontimetable,omitempty"`
+	Description          []byte                             `protobuf:"bytes,15,opt,name=description" json:"description,omitempty"`
+	Payload              *TaskPayload                       `protobuf:"bytes,16,opt,name=payload" json:"payload,omitempty"`
+	RetryParameters      *TaskQueueRetryParameters          `protobuf:"bytes,17,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
+	Mode                 *TaskQueueMode_Mode                `protobuf:"varint,18,opt,name=mode,enum=appengine.TaskQueueMode_Mode" json:"mode,omitempty"`
+	Tag                  []byte                             `protobuf:"bytes,19,opt,name=tag" json:"tag,omitempty"`
+	CronRetryParameters  *TaskQueueRetryParameters          `protobuf:"bytes,20,opt,name=cron_retry_parameters" json:"cron_retry_parameters,omitempty"`
+	XXX_unrecognized     []byte                             `json:"-"`
 }
 
 func (m *TaskQueueAddRequest) Reset()         { *m = TaskQueueAddRequest{} }
@@ -559,6 +560,13 @@ func (m *TaskQueueAddRequest) GetBody() []byte {
 func (m *TaskQueueAddRequest) GetTransaction() *Transaction {
 	if m != nil {
 		return m.Transaction
+	}
+	return nil
+}
+
+func (m *TaskQueueAddRequest) GetDatastoreTransaction() []byte {
+	if m != nil {
+		return m.DatastoreTransaction
 	}
 	return nil
 }

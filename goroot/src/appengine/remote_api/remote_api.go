@@ -19,6 +19,7 @@ import (
 	"appengine/user"
 	"appengine_internal"
 	pb "appengine_internal/remote_api"
+	userpb "appengine_internal/user"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -28,13 +29,7 @@ func init() {
 
 func handle(w http.ResponseWriter, req *http.Request) {
 	c := appengine.NewContext(req)
-
-	u := user.Current(c)
-	if u == nil {
-		u, _ = user.CurrentOAuth(c, "")
-	}
-
-	if u == nil || !u.Admin {
+	if !isAdmin(c) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusUnauthorized)
 		io.WriteString(w, "You must be logged in as an administrator to access this.\n")
@@ -111,6 +106,25 @@ func handle(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", strconv.Itoa(len(out)))
 	w.Write(out)
+}
+
+func isAdmin(c appengine.Context) bool {
+	if u := user.Current(c); u != nil {
+		return u.Admin
+	}
+
+	req := &userpb.GetOAuthUserRequest{
+		Scopes: []string{
+			"https://www.googleapis.com/auth/cloud-platform",
+			"https://www.googleapis.com/auth/appengine.apis",
+		},
+	}
+	res := &userpb.GetOAuthUserResponse{}
+	err := c.Call("user", "GetOAuthUser", req, res, nil)
+	if err != nil {
+		return false
+	}
+	return res.GetIsAdmin()
 }
 
 // rawMessage is a protocol buffer type that is already serialised.

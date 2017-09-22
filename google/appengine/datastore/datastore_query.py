@@ -130,7 +130,10 @@ def _make_key_value_map(entity, property_names):
   value_map = dict((name, []) for name in property_names)
 
 
-  _extract_property_names(entity, value_map)
+  for prop in entity.property_list():
+    if prop.name() in value_map:
+      value_map[prop.name()].append(
+          datastore_types.PropertyValueToKeyValue(prop.value()))
 
 
   if datastore_types.KEY_SPECIAL_PROPERTY in value_map:
@@ -139,19 +142,6 @@ def _make_key_value_map(entity, property_names):
 
   return value_map
 
-def _extract_property_names(entity, value_map, prefix=''):
-  """Extracts key values from the given entity and its entity values."""
-  for prop in entity.property_list():
-    new_prefix = prop.name() if not prefix else prefix + '.' + prop.name()
-    if new_prefix in value_map:
-      value_map[new_prefix].append(
-          datastore_types.PropertyValueToKeyValue(prop.value()))
-    elif prop.meaning() == entity_pb.Property.ENTITY_PROTO:
-
-      if any(x for x in value_map if x.startswith(new_prefix + '.')):
-        subentity = entity_pb.EntityProto()
-        subentity.MergePartialFromString(prop.value().stringvalue())
-        _extract_property_names(subentity, value_map, new_prefix)
 
 class _PropertyComponent(_BaseComponent):
   """A component that operates on a specific set of properties."""
@@ -2222,8 +2212,8 @@ class Query(_BaseQuery):
       raise datastore_errors.BadRequestError(
           'cannot specify group_by without a projection')
 
-def apply_query(query, entities):
-  """Performs the given query on a set of in-memory entities.
+def apply_query(query, entities, _key=None):
+  """Performs the given query on a set of in-memory results.
 
   This function can perform queries impossible in the datastore (e.g a query
   with multiple inequality filters on different properties) because all
@@ -2237,10 +2227,13 @@ def apply_query(query, entities):
 
   Args:
     query: a datastore_query.Query to apply
-    entities: a list of entity_pb.EntityProto on which to apply the query.
+    entities: a list of results, of arbitrary type, on which to apply the query.
+    _key: a function that takes an element of the result array as an argument
+        and must return an entity_pb.EntityProto. If not specified, the identity
+        function is used (and entities must be a list of entity_pb.EntityProto).
 
   Returns:
-    A list of entity_pb.EntityProto contain the results of the query.
+    A subset of entities, filtered and ordered according to the query.
   """
   if not isinstance(query, Query):
     raise datastore_errors.BadArgumentError(
@@ -2250,7 +2243,9 @@ def apply_query(query, entities):
     raise datastore_errors.BadArgumentError(
         'entities argument must be a list (%r)' % (entities,))
 
-  filtered_entities = filter(query._key_filter, entities)
+  key = _key or (lambda x: x)
+
+  filtered_results = filter(lambda r: query._key_filter(key(r)), entities)
 
   if not query._order:
 
@@ -2258,8 +2253,8 @@ def apply_query(query, entities):
 
 
     if query._filter_predicate:
-      return filter(query._filter_predicate, filtered_entities)
-    return filtered_entities
+      return filter(lambda r: query._filter_predicate(key(r)), filtered_results)
+    return filtered_results
 
 
 
@@ -2273,19 +2268,19 @@ def apply_query(query, entities):
   exists_filter = _PropertyExistsFilter(names)
 
   value_maps = []
-  for entity in filtered_entities:
-    value_map = _make_key_value_map(entity, names)
+  for result in filtered_results:
+    value_map = _make_key_value_map(key(result), names)
 
 
 
     if exists_filter._apply(value_map) and (
         not query._filter_predicate or
         query._filter_predicate._prune(value_map)):
-      value_map['__entity__'] = entity
+      value_map['__result__'] = result
       value_maps.append(value_map)
 
   value_maps.sort(query._order._cmp)
-  return [value_map['__entity__'] for value_map in value_maps]
+  return [value_map['__result__'] for value_map in value_maps]
 
 
 class _AugmentedQuery(_BaseQuery):
