@@ -37,6 +37,7 @@ const (
 	URLFetchServiceError_TOO_MANY_REDIRECTS       URLFetchServiceError_ErrorCode = 10
 	URLFetchServiceError_MALFORMED_REPLY          URLFetchServiceError_ErrorCode = 11
 	URLFetchServiceError_CONNECTION_ERROR         URLFetchServiceError_ErrorCode = 12
+	URLFetchServiceError_PAYLOAD_TOO_LARGE        URLFetchServiceError_ErrorCode = 13
 )
 
 var URLFetchServiceError_ErrorCode_name = map[int32]string{
@@ -53,6 +54,7 @@ var URLFetchServiceError_ErrorCode_name = map[int32]string{
 	10: "TOO_MANY_REDIRECTS",
 	11: "MALFORMED_REPLY",
 	12: "CONNECTION_ERROR",
+	13: "PAYLOAD_TOO_LARGE",
 }
 var URLFetchServiceError_ErrorCode_value = map[string]int32{
 	"OK":                       0,
@@ -68,6 +70,7 @@ var URLFetchServiceError_ErrorCode_value = map[string]int32{
 	"TOO_MANY_REDIRECTS":       10,
 	"MALFORMED_REPLY":          11,
 	"CONNECTION_ERROR":         12,
+	"PAYLOAD_TOO_LARGE":        13,
 }
 
 func (x URLFetchServiceError_ErrorCode) Enum() *URLFetchServiceError_ErrorCode {

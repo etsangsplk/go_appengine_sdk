@@ -5,19 +5,47 @@
 /*
 Package cloudsql exposes access to Google Cloud SQL databases.
 
-This package is intended for MySQL drivers to make App Engine-specific connections.
-
-Applications should use this package through database/sql:
+This package is intended for MySQL drivers to make App Engine-specific
+connections. Applications should use this package through database/sql:
 Select a pure Go MySQL driver that supports this package, and use sql.Open
-with protocol "cloudsql" and an address of the CloudSQL instance.
-The exact format of the second argument to sql.Open is driver-dependent;
-consult the driver's documentation for details.
+with protocol "cloudsql" and an address of the Cloud SQL instance.
 
-Example:
+A Go MySQL driver that has been tested to work well with Cloud SQL
+is the go-sql-driver:
 	import "database/sql"
-	import _ "<some mysql package>"
+	import _ "github.com/go-sql-driver/mysql"
 
-	db, err := sql.Open("mysql", "cloudsql:my-instance*dbname/user/passwd")
+	db, err := sql.Open("mysql", "user@cloudsql(project-id:instance-name)/dbname")
+
+
+Another driver that works well with Clould SQL is the mymysql driver:
+	import "database/sql"
+	import _ "github.com/ziutek/mymysql/godrv"
+
+	db, err := sql.Open("mymysql", "cloudsql:instance-name*dbname/user/password")
+
+
+Using either of these drivers, you can perform a standard SQL query.
+This example assumes there is a table named 'users' with
+columns 'first_name' and 'last_name':
+
+	rows, err := db.Query("SELECT first_name, last_name FROM users")
+	if err != nil {
+		c.Errorf("db.Query: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var firstName string
+		var lastName string
+		if err := rows.Scan(&firstName, &lastName); err != nil {
+			c.Errorf("rows.Scan: %v", err)
+		}
+		c.Infof("First: %v - Last: %v\n", firstName, lastName)
+	}
+	if err := rows.Err(); err != nil {
+		c.Errorf("Row error: %v", err)
+	}
 */
 package cloudsql
 

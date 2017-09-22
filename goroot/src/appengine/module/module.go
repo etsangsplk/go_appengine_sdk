@@ -22,6 +22,7 @@ func List(c appengine.Context) ([]string, error) {
 
 // NumInstances returns the number of instances of the given module/version.
 // If either argument is the empty string it means the default.
+// This only works for manual or basic scaled modules.
 func NumInstances(c appengine.Context, module, version string) (int, error) {
 	req := &pb.GetNumInstancesRequest{}
 	if module != "" {

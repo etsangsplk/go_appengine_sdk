@@ -27,7 +27,6 @@ It has these top-level messages:
 	Index
 	CompositeIndex
 	SearchIndexEntry
-	SearchIndexExternalId
 	IndexPostfix
 	IndexPosition
 	Snapshot
@@ -1455,30 +1454,6 @@ func (m *SearchIndexEntry) GetFingerprint_2011() uint64 {
 		return *m.Fingerprint_2011
 	}
 	return 0
-}
-
-type SearchIndexExternalId struct {
-	IndexId          *int64     `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
-	PrimaryKey       *Reference `protobuf:"bytes,2,req,name=primary_key" json:"primary_key,omitempty"`
-	XXX_unrecognized []byte     `json:"-"`
-}
-
-func (m *SearchIndexExternalId) Reset()         { *m = SearchIndexExternalId{} }
-func (m *SearchIndexExternalId) String() string { return proto.CompactTextString(m) }
-func (*SearchIndexExternalId) ProtoMessage()    {}
-
-func (m *SearchIndexExternalId) GetIndexId() int64 {
-	if m != nil && m.IndexId != nil {
-		return *m.IndexId
-	}
-	return 0
-}
-
-func (m *SearchIndexExternalId) GetPrimaryKey() *Reference {
-	if m != nil {
-		return m.PrimaryKey
-	}
-	return nil
 }
 
 type IndexPostfix struct {

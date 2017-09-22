@@ -3,6 +3,16 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.24 - July 2015
+==========================
+appengine/datastore:
+  - Add TransactionOptions.Attempts.
+appengine/search:
+  - Support struct tags in documents to override field names and specify facets.
+  - Allow field names to start with lowercase letters.
+Other:
+  - Respect environment variables defined in app.yaml.
+
 Version 1.9.23 - June 2015
 ==========================
 appengine/search:

@@ -353,7 +353,7 @@ func (m *GetHostnameRequest) GetInstance() string {
 }
 
 type GetHostnameResponse struct {
-	Hostname         *string `protobuf:"bytes,1,req,name=hostname" json:"hostname,omitempty"`
+	Hostname         *string `protobuf:"bytes,1,opt,name=hostname" json:"hostname,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
