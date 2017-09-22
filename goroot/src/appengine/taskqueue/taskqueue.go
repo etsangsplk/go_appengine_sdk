@@ -155,6 +155,10 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*pb.TaskQueue
 	if queueName == "" {
 		queueName = "default"
 	}
+	path := task.Path
+	if path == "" {
+		path = "/_ah/queue/" + queueName
+	}
 	eta := task.ETA
 	if eta.IsZero() {
 		eta = time.Now().Add(task.Delay)
@@ -182,7 +186,7 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*pb.TaskQueue
 		} else {
 			return nil, fmt.Errorf("taskqueue: bad method %q", method)
 		}
-		req.Url = []byte(task.Path)
+		req.Url = []byte(path)
 		for k, vs := range task.Header {
 			for _, v := range vs {
 				req.Header = append(req.Header, &pb.TaskQueueAddRequest_Header{
